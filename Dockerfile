@@ -1,4 +1,4 @@
-# Stage 1: Build the Flutter Web App
+
 FROM debian:latest AS build-env
 
 RUN apt-get update && apt-get install -y curl git unzip
@@ -15,7 +15,7 @@ WORKDIR /app
 RUN flutter pub get
 RUN flutter build web
 
-# Stage 2: Serve it with Nginx
+
 FROM nginx:1.21.1-alpine
 COPY --from=build-env /app/build/web /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf

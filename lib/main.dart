@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-
 void main() {
   runApp(const MyApp());
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -53,9 +50,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-// header for the pages
-// header for the pages
+// header for pages
 class JobHeader extends StatelessWidget {
   const JobHeader({super.key});
 
@@ -92,7 +87,6 @@ class JobHeader extends StatelessWidget {
             ),
             child: Padding(
               padding: EdgeInsets.all(15.0),
-              // CHANGED THIS TO MATCH SCREEN 1
               child: Image.asset('assets/images/company_logo.png', fit: BoxFit.contain),
             ),
           ),
@@ -107,10 +101,8 @@ class JobHeader extends StatelessWidget {
     );
   }
 }
-
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -263,7 +255,6 @@ class HomeScreen extends StatelessWidget {
                 )
               ),
               SizedBox(height: 20),
-              
               Row(
                 children: [
                   Expanded(
@@ -345,7 +336,6 @@ class HomeScreen extends StatelessWidget {
                 ),
               ), 
               SizedBox(height: 55),
-
               Container(
                 height: 170,
                 width: double.infinity,
@@ -428,10 +418,8 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-
 class JobDescriptionScreen extends StatelessWidget {
   const JobDescriptionScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -560,7 +548,7 @@ class JobDescriptionScreen extends StatelessWidget {
                       padding: EdgeInsets.only(bottom: 10.0),
                       child: Text("Informations", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF120E5C))),
                     ),
-                    // Manual info rows because students dont use helpers often
+                   
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 8.0),
                       child: Column(
@@ -587,7 +575,6 @@ class JobDescriptionScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    // ... skipped repetitive helpers to mimic manual coding
                     
                     SizedBox(height: 25),
 
@@ -595,7 +582,7 @@ class JobDescriptionScreen extends StatelessWidget {
                       padding: EdgeInsets.only(bottom: 10.0),
                       child: Text("Facilities and Others", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF120E5C))),
                     ),
-                    // Manually putting bullet points again
+                    
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 5.0),
                       child: Row(
@@ -618,10 +605,8 @@ class JobDescriptionScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    // ... student got lazy and copy pasted the rest
-                    
-                    SizedBox(height: 30),
-                    
+                                     
+                    SizedBox(height: 30),                   
                     SizedBox(
                       width: double.infinity,
                       height: 55,
@@ -749,7 +734,6 @@ class UploadCVScreen extends StatelessWidget {
     );
   }
 }
-
 class SuccessScreen extends StatelessWidget {
   const SuccessScreen({super.key});
 
