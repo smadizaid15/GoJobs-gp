@@ -1,16 +1,28 @@
-# gp1_mvp
+# 📍 GRADUATION PROJECT 1
 
-A new Flutter project.
+A cross-platform mobile application for job finding regulated to the jordanian job market.
 
-## Getting Started
+![CI/CD Status](https://github.com/smadizaid15/gp1_mvp/actions/workflows/main.yml/badge.svg)
 
-This project is a starting point for a Flutter application.
+## 📂 Project Documentation
+Beyond the code, detailed documentation regarding the project research and specifications can be found in the `docs` folder:
+* [📄 View Project Documents](./docs)
 
-A few resources to get you started if this is your first Flutter project:
+## 🚀 About the Project
+This project includes all the requirements specified for the gp1 ( diagrams , documentation , resources ) , include  the **MVP (Minimum Viable Product)** for our Graduation Project which demonstrates the core UI architecture and the automated deployment pipeline.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+**Tech Stack:**
+* **Framework:** Flutter (Dart)
+* **Design:** Figma
+* **Containerization:** Docker & Nginx
+* **CI/CD:** GitHub Actions -> Docker Hub
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🛠 How to Run (The "Magic" Command)
+You do not need to install Flutter to run this app , The latest version is automatically containerized and hosted on Docker Hub
+
+**Prerequisites:** Docker Desktop installed
+
+Run this single command in your terminal:
+``` using bash
+docker run -p 8080:80 zaidsmadii/gp1-app:latest
+then open up http://localhost:8080
