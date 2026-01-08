@@ -34,4 +34,4 @@ jobs:
           context: .
           push: true
           # REPLACE 'smadizaid15' with your ACTUAL Docker Hub username!
-          tags: smadizaid15/gp1-app:latest
+          tags: zaidsmadii/gp1-app:latest
