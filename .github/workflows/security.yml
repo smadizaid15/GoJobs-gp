@@ -1,0 +1,26 @@
+name: Security Scan (NFR)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  security-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build an image from Dockerfile
+        run: |
+          docker build -t app-to-scan .
+
+      - name: Run Trivy Vulnerability Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'app-to-scan'
+          format: 'table'
+          exit-code: '1' # Fails the pipeline if risks are found
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
