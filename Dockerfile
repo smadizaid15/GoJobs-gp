@@ -20,4 +20,9 @@ FROM nginx:1.21.1-alpine
 COPY --from=build-env /app/build/web /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
+# Add this line before the 'CMD' line:
+
+RUN echo -e '#!/bin/sh\necho "\n\n🟢 🟢 🟢 CLICK HERE: http://localhost:8080 🟢 🟢 🟢\n\n"' > /docker-entrypoint.d/99-print-link.sh && chmod +x /docker-entrypoint.d/99-print-link.sh
+
+# Start Nginx normally
 CMD ["nginx", "-g", "daemon off;"]

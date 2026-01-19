@@ -1,24 +1,18 @@
-name: CI/CD Pipeline
-
+name: Backend CI/CD (Docker Hub) 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  # JOB 1: Test and Build (The first bubble)
   test-and-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Build Docker Image
         run: docker build -t my-app .
-      # You can't push here if you want separate bubbles!
-      # Usually, you would save the image as an artifact here, 
-      # but for a simple student project, just building is enough proof for this step.
-
-  # JOB 2: Docker Push (The second bubble)
+      
   docker-push:
-    needs: test-and-build  # <--- THIS CREATES THE LINE
+    needs: test-and-build  
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
