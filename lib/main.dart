@@ -205,7 +205,7 @@ class HomeScreen extends StatelessWidget {
                         ),
                         Icon(Icons.bookmark_border, color: Colors.grey.shade400, size: 28),
                       ],
-                    ),
+                    ), 
                     SizedBox(height: 20),
                     Row(
                       children: [
