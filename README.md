@@ -25,4 +25,4 @@ You do not need to install Flutter to run this app , The latest version is autom
 Run this single command in your terminal:
 ``` using bash
 docker run -p 8080:80 zaidsmadii/gp1-app:latest
-then open up http://localhost:8080
+then open up http://localhost:8080 
