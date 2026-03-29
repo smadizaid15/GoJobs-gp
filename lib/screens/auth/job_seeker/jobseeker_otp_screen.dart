@@ -117,13 +117,12 @@ class _JobseekerOtpScreenState extends State<JobseekerOtpScreen> {
                 child: OutlinedButton(
                   onPressed: () {},
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.secondaryPurple),
+                    side: const BorderSide(color: AppColors.purpleButtonBorder),
                     shape: RoundedRectangleBorder(
                       borderRadius:
                           BorderRadius.circular(AppDimensions.radiusL),
                     ),
-                    backgroundColor:
-                        AppColors.secondaryPurple.withValues(alpha: 0.3),
+                    backgroundColor: AppColors.purpleButton,
                   ),
                   child: Text(
                     'RESEND CODE',

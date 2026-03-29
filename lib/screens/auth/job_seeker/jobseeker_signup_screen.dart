@@ -185,12 +185,12 @@ class _JobseekerSignupScreenState extends State<JobseekerSignupScreen> {
                 child: OutlinedButton(
                   onPressed: () {},
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.divider),
+                    side: const BorderSide(color: AppColors.purpleButtonBorder),
                     shape: RoundedRectangleBorder(
                       borderRadius:
                           BorderRadius.circular(AppDimensions.radiusL),
                     ),
-                    backgroundColor: const Color(0xFFF0EEFF),
+                    backgroundColor: AppColors.purpleButton,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,

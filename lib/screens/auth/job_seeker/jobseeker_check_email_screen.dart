@@ -65,7 +65,7 @@ class _JobseekerCheckEmailScreenState
 
               // Illustration
               Image.asset(
-                'assets/images/Group67.png',
+                'assets/images/undraw_messagelogo.png',
                 height: 180,
                 fit: BoxFit.contain,
               ),
@@ -136,7 +136,7 @@ class _JobseekerCheckEmailScreenState
                 child: GestureDetector(
                   onTap: () {},
                   child: Text(
-                    'You have not received the email? Resend',
+                    'if you didnt recieve the email? press here to resend',
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -153,13 +153,12 @@ class _JobseekerCheckEmailScreenState
                 child: OutlinedButton(
                   onPressed: () => context.go('/jobseeker/login'),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.secondaryPurple),
+                    side: const BorderSide(color: AppColors.purpleButtonBorder),
                     shape: RoundedRectangleBorder(
                       borderRadius:
                           BorderRadius.circular(AppDimensions.radiusL),
                     ),
-                    backgroundColor:
-                        AppColors.secondaryPurple.withValues(alpha: 0.3),
+                    backgroundColor: AppColors.purpleButton,
                   ),
                   child: Text(
                     'BACK TO LOGIN',

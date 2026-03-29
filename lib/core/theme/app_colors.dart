@@ -31,4 +31,6 @@ class AppColors {
   static const Color divider         = Color(0xFFE0E0E0);
   static const Color inputFill       = Color(0xFFF0F0F5);
   static const Color shadow          = Color(0x1A000000);
+static const Color purpleButton = Color(0xFFEEE9FF);
+static const Color purpleButtonBorder = Color(0xFFD0C8FF);
 }
