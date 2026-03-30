@@ -33,4 +33,7 @@ class AppColors {
   static const Color shadow          = Color(0x1A000000);
 static const Color purpleButton = Color(0xFFEEE9FF);
 static const Color purpleButtonBorder = Color(0xFFD0C8FF);
+// Company specific
+static const Color companyGold     = Color(0xFFE6A817);
+static const Color companyGoldLight = Color(0xFFFFF3E0);
 }

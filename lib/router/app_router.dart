@@ -36,6 +36,49 @@ import '../screens/student/internships/student_upload_cv_screen.dart';
 import '../screens/student/internships/student_application_success_screen.dart';
 import '../screens/student/freelancer_marketplace/student_service_providers_screen.dart';
 import 'package:go_router/go_router.dart';
+import '../screens/company/home/company_home_screen.dart';
+import '../screens/company/profile/company_profile_screen.dart';
+import '../screens/company/jobs/company_add_job_screen.dart';
+import '../screens/company/jobs/company_add_job_screen.dart';
+import '../screens/company/jobs/company_job_position_picker.dart';
+import '../screens/company/jobs/company_workplace_type_sheet.dart';
+import '../screens/company/jobs/company_location_picker.dart';
+import '../screens/company/jobs/company_job_type_sheet.dart';
+import '../screens/company/jobs/company_jobs_screen.dart';
+import '../screens/company/applicants/company_applicants_screen.dart';
+import '../screens/company/messages/company_messages_screen.dart';
+import '../screens/company/messages/company_chat_screen.dart';
+import '../screens/company/notifications/company_notifications_screen.dart';
+import '../screens/company/settings/company_settings_screen.dart';
+import '../screens/company/settings/company_update_password_screen.dart';
+import '../screens/company/jobs/company_edit_job_screen.dart';
+import '../screens/company/profile/company_edit_profile_screen.dart';
+import '../screens/job_seeker/home/jobseeker_home_screen.dart';
+import '../screens/job_seeker/search/jobseeker_search_screen.dart';
+import '../screens/job_seeker/search/jobseeker_filter_screen.dart';
+import '../screens/job_seeker/jobs/jobseeker_job_detail_screen.dart';
+import '../screens/job_seeker/jobs/jobseeker_company_profile_screen.dart';
+import '../screens/job_seeker/jobs/jobseeker_upload_cv_screen.dart';
+import '../screens/job_seeker/jobs/jobseeker_application_success_screen.dart';
+import '../screens/job_seeker/jobs/jobseeker_my_application_screen.dart';
+import '../screens/job_seeker/saved/jobseeker_saved_screen.dart';
+import '../screens/job_seeker/messages/jobseeker_messages_screen.dart';
+import '../screens/job_seeker/messages/jobseeker_chat_screen.dart';
+import '../screens/job_seeker/notifications/jobseeker_notifications_screen.dart';
+import '../screens/job_seeker/settings/jobseeker_settings_screen.dart';
+import '../screens/job_seeker/settings/jobseeker_update_password_screen.dart';
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -94,6 +137,38 @@ class AppRouter {
       GoRoute(path: '/student/application-success', builder: (context, state) => const StudentApplicationSuccessScreen()),
       GoRoute(path: '/student/service-providers', builder: (context, state) => const StudentServiceProvidersScreen()),
       GoRoute(path: '/student/chat-from-providers', builder: (context, state) => const StudentChatScreen()),
+      //company
+      GoRoute(path: '/company/home', builder: (context, state) => const CompanyHomeScreen()),
+      GoRoute(path: '/company/profile', builder: (context, state) => const CompanyProfileScreen()),
+      GoRoute(path: '/company/add-job', builder: (context, state) => const CompanyAddJobScreen()),
+      GoRoute(path: '/company/job-position-picker', builder: (context, state) => const CompanyJobPositionPicker()),
+      GoRoute(path: '/company/workplace-type', builder: (context, state) => const CompanyWorkplaceTypeSheet()),
+      GoRoute(path: '/company/location-picker', builder: (context, state) => const CompanyLocationPicker()),
+      GoRoute(path: '/company/job-type', builder: (context, state) => const CompanyJobTypeSheet()),
+      GoRoute(path: '/company/jobs', builder: (context, state) => const CompanyJobsScreen()),
+      GoRoute(path: '/company/applicants', builder: (context, state) => const CompanyApplicantsScreen()),
+      GoRoute(path: '/company/messages', builder: (context, state) => const CompanyMessagesScreen()),
+      GoRoute(path: '/company/chat', builder: (context, state) => const CompanyChatScreen()),
+      GoRoute(path: '/company/notifications', builder: (context, state) => const CompanyNotificationsScreen()),
+      GoRoute(path: '/company/settings', builder: (context, state) => const CompanySettingsScreen()),
+      GoRoute(path: '/company/update-password', builder: (context, state) => const CompanyUpdatePasswordScreen()),
+      GoRoute(path: '/company/edit-job', builder: (context, state) => const CompanyEditJobScreen()),
+GoRoute(path: '/company/edit-profile', builder: (context, state) => const CompanyEditProfileScreen()),
+//jobseeker
+GoRoute(path: '/jobseeker/home', builder: (context, state) => const JobseekerHomeScreen()),
+GoRoute(path: '/jobseeker/search', builder: (context, state) => const JobseekerSearchScreen()),
+GoRoute(path: '/jobseeker/filter', builder: (context, state) => const JobseekerFilterScreen()),
+GoRoute(path: '/jobseeker/job-detail', builder: (context, state) => const JobseekerJobDetailScreen()),
+GoRoute(path: '/jobseeker/company-profile', builder: (context, state) => const JobseekerCompanyProfileScreen()),
+GoRoute(path: '/jobseeker/upload-cv', builder: (context, state) => const JobseekerUploadCvScreen()),
+GoRoute(path: '/jobseeker/application-success', builder: (context, state) => const JobseekerApplicationSuccessScreen()),
+GoRoute(path: '/jobseeker/my-application', builder: (context, state) => const JobseekerMyApplicationScreen()),
+GoRoute(path: '/jobseeker/saved', builder: (context, state) => const JobseekerSavedScreen()),
+GoRoute(path: '/jobseeker/messages', builder: (context, state) => const JobseekerMessagesScreen()),
+GoRoute(path: '/jobseeker/chat', builder: (context, state) => const JobseekerChatScreen()),
+GoRoute(path: '/jobseeker/notifications', builder: (context, state) => const JobseekerNotificationsScreen()),
+GoRoute(path: '/jobseeker/settings', builder: (context, state) => const JobseekerSettingsScreen()),
+GoRoute(path: '/jobseeker/update-password', builder: (context, state) => const JobseekerUpdatePasswordScreen()),
     ],
 
   );
