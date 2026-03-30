@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
@@ -67,14 +68,18 @@ class StudentNotificationsScreen extends StatelessWidget {
 
                         const SizedBox(width: AppDimensions.paddingM),
 
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundColor: AppColors.primaryNavy,
-                          child: Text(
-                            'Z',
-                            style: AppTextStyles.bodyMedium.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                        // Tappable profile pic
+                        GestureDetector(
+                          onTap: () => context.go('/student/profile'),
+                          child: CircleAvatar(
+                            radius: 20,
+                            backgroundColor: AppColors.primaryNavy,
+                            child: Text(
+                              'Z',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),

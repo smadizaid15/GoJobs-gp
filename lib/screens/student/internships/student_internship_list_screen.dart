@@ -106,7 +106,7 @@ class StudentInternshipListScreen extends StatelessWidget {
                     location: 'Amman',
                     type: 'On site',
                     duration: '3 month internship',
-                    onTap: () => context.go('/student/internship-detail'),
+                    onTap: () => context.push('/student/internship-detail')
                   ),
                   const SizedBox(height: AppDimensions.paddingM),
                   _InternshipCard(
@@ -115,7 +115,7 @@ class StudentInternshipListScreen extends StatelessWidget {
                     location: 'Irbid',
                     type: 'Hybrid',
                     duration: '6 month internship',
-                    onTap: () => context.go('/student/internship-detail'),
+                    onTap: () => context.push('/student/internship-detail')
                   ),
                   const SizedBox(height: AppDimensions.paddingM),
                   _InternshipCard(
@@ -124,7 +124,7 @@ class StudentInternshipListScreen extends StatelessWidget {
                     location: 'Amman',
                     type: 'Remote',
                     duration: '3 month internship',
-                    onTap: () => context.go('/student/internship-detail'),
+                    onTap: () => context.push('/student/internship-detail')
                   ),
                   const SizedBox(height: AppDimensions.paddingM),
                   _InternshipCard(
@@ -133,7 +133,7 @@ class StudentInternshipListScreen extends StatelessWidget {
                     location: 'Amman',
                     type: 'On site',
                     duration: '4 month internship',
-                    onTap: () => context.go('/student/internship-detail'),
+                    onTap: () => context.push('/student/internship-detail'),
                   ),
                   const SizedBox(height: AppDimensions.paddingXL),
                 ],

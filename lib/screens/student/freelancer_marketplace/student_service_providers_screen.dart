@@ -56,7 +56,7 @@ class StudentServiceProvidersScreen extends StatelessWidget {
                       description: '24/7 available round clock plumber, bathrooms, kitchens and more!',
                       time: '25 minutes',
                       onViewProfile: () {},
-                      onMessage: () => context.go('/student/chat'),
+                      onMessage: () => context.push('/student/chat-from-providers'),
                     ),
 
                     const SizedBox(height: AppDimensions.paddingM),
@@ -67,7 +67,7 @@ class StudentServiceProvidersScreen extends StatelessWidget {
                       description: 'Repairing refrigerator, Washers, Dryers, Dishwashers, Available round Clock.',
                       time: '25 minutes',
                       onViewProfile: () {},
-                      onMessage: () => context.go('/student/chat'),
+                      onMessage: () => context.push('/student/chat-from-providers'),
                     ),
 
                     const SizedBox(height: AppDimensions.paddingM),
@@ -78,7 +78,7 @@ class StudentServiceProvidersScreen extends StatelessWidget {
                       description: 'Working on doors, living rooms, full kitchen makeovers',
                       time: '25 minutes',
                       onViewProfile: () {},
-                      onMessage: () => context.go('/student/chat'),
+                      onMessage: () => context.push('/student/chat-from-providers'),
                     ),
 
                     const SizedBox(height: AppDimensions.paddingXL),

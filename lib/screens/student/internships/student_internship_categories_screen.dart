@@ -113,8 +113,7 @@ class StudentInternshipCategoriesScreen extends StatelessWidget {
                         final cat = _categories[index];
                         final isFirst = index == 0;
                         return GestureDetector(
-                          onTap: () =>
-                           context.go('/student/internship-list'),
+                          onTap: () => context.push('/student/internship-list'),
                           child: Container(
                             padding: const EdgeInsets.all(
                               AppDimensions.paddingM,

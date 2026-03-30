@@ -203,7 +203,7 @@ class StudentHomeScreen extends StatelessWidget {
                                     ),
                                   ),
                                   Text(
-                                    'Jobs/Internships',
+                                    'courses/workshops',
                                     style: AppTextStyles.bodySmall.copyWith(
                                       color: Colors.white70,
                                     ),
@@ -334,8 +334,7 @@ class StudentHomeScreen extends StatelessWidget {
                       location: 'Amman, Jordan',
                       type: 'On site',
                       jobType: 'Full time',
-                      onTap: () =>
-                          context.go('/student/internship-detail'),
+                      onTap: () => context.push('/student/internship-list'),
                     ),
 
                     const SizedBox(height: AppDimensions.paddingS),
@@ -346,8 +345,7 @@ class StudentHomeScreen extends StatelessWidget {
                       location: 'Irbid, Jordan',
                       type: 'On site',
                       jobType: 'Full time',
-                      onTap: () =>
-                          context.go('/student/internship-detail'),
+                      onTap: () => context.push('/student/internship-list'),
                     ),
 
                     const SizedBox(height: AppDimensions.paddingXL),

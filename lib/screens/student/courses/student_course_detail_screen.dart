@@ -217,8 +217,14 @@ class StudentCourseDetailScreen extends StatelessWidget {
                       width: double.infinity,
                       height: AppDimensions.buttonHeight,
                       child: ElevatedButton(
-                        onPressed: () =>
-                            context.go('/student/application-success'),
+                        onPressed: () {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text('Successfully enrolled!'),
+      backgroundColor: AppColors.primaryNavy,
+    ),
+  );
+},
                         child: Text(
                           'ENROLL NOW',
                           style: AppTextStyles.buttonText,

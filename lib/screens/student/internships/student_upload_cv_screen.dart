@@ -212,47 +212,55 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
               const SizedBox(height: AppDimensions.paddingL),
 
               // Uploaded CV preview
-              if (_hasUploadedCv) ...[
-                Container(
-                  padding: const EdgeInsets.all(AppDimensions.paddingM),
-                  decoration: BoxDecoration(
-                    color: AppColors.purpleButton,
-                    borderRadius:
-                        BorderRadius.circular(AppDimensions.radiusM),
-                    border: Border.all(color: AppColors.purpleButtonBorder),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.picture_as_pdf,
-                        color: Colors.red,
-                        size: 32,
-                      ),
-                      const SizedBox(width: AppDimensions.paddingM),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Zaid Kilany - CV - Head barista',
-                              style: AppTextStyles.bodySmall.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                            Text(
-                              '867 Kb • 14 Feb 2022 at 11:30 am',
-                              style: AppTextStyles.bodySmall.copyWith(
-                                color: AppColors.textSecondary,
-                                fontSize: 10,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+          if (_hasUploadedCv) ...[
+  Container(
+    padding: const EdgeInsets.all(AppDimensions.paddingM),
+    decoration: BoxDecoration(
+      color: AppColors.purpleButton,
+      borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+      border: Border.all(color: AppColors.purpleButtonBorder),
+    ),
+    child: Row(
+      children: [
+        const Icon(
+          Icons.picture_as_pdf,
+          color: Colors.red,
+          size: 32,
+        ),
+        const SizedBox(width: AppDimensions.paddingM),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Zaid Kilany - CV - Head barista',
+                style: AppTextStyles.bodySmall.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
                 ),
+              ),
+              Text(
+                '867 Kb • 14 Feb 2022 at 11:30 am',
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
+                  fontSize: 10,
+                ),
+              ),
+            ],
+          ),
+        ),
+        // X button to remove file
+        GestureDetector(
+          onTap: () => setState(() => _hasUploadedCv = false),
+          child: const Icon(
+            Icons.close,
+            color: AppColors.textSecondary,
+            size: 20,
+          ),
+        ),
+      ],
+    ),
+  ),
                 const SizedBox(height: AppDimensions.paddingL),
               ],
 
@@ -295,8 +303,18 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
-                  onPressed: () =>
-                      context.go('/student/application-success'),
+                  onPressed: () {
+  if (!_hasUploadedCv) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Please upload your CV first!'),
+        backgroundColor: AppColors.error,
+      ),
+    );
+    return;
+  }
+  context.go('/student/application-success');
+},
                   child: Text(
                     'APPLY NOW',
                     style: AppTextStyles.buttonText,

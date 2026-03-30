@@ -35,8 +35,7 @@ import '../screens/student/internships/student_internship_list_screen.dart';
 import '../screens/student/internships/student_upload_cv_screen.dart';
 import '../screens/student/internships/student_application_success_screen.dart';
 import '../screens/student/freelancer_marketplace/student_service_providers_screen.dart';
-
-
+import 'package:go_router/go_router.dart';
 
 
 
@@ -94,6 +93,7 @@ class AppRouter {
       GoRoute(path: '/student/upload-cv', builder: (context, state) => const StudentUploadCvScreen()),
       GoRoute(path: '/student/application-success', builder: (context, state) => const StudentApplicationSuccessScreen()),
       GoRoute(path: '/student/service-providers', builder: (context, state) => const StudentServiceProvidersScreen()),
+      GoRoute(path: '/student/chat-from-providers', builder: (context, state) => const StudentChatScreen()),
     ],
 
   );

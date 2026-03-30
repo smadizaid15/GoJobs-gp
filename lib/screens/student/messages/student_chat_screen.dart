@@ -52,7 +52,7 @@ class _StudentChatScreenState extends State<StudentChatScreen> {
               child: Row(
                 children: [
                   GestureDetector(
-                    onTap: () => context.go('/student/messages'),
+                    onTap: () =>context.pop(),
                     child: const Icon(
                       Icons.arrow_back,
                       color: AppColors.textPrimary,
