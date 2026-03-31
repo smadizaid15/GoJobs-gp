@@ -67,6 +67,34 @@ import '../screens/job_seeker/messages/jobseeker_chat_screen.dart';
 import '../screens/job_seeker/notifications/jobseeker_notifications_screen.dart';
 import '../screens/job_seeker/settings/jobseeker_settings_screen.dart';
 import '../screens/job_seeker/settings/jobseeker_update_password_screen.dart';
+import '../screens/job_seeker/profile/jobseeker_profile_screen.dart';
+import '../screens/job_seeker/profile/jobseeker_edit_profile_screen.dart';
+import '../screens/job_seeker/profile/jobseeker_work_experience_screen.dart';
+import '../screens/job_seeker/profile/jobseeker_education_screen.dart';
+import '../screens/job_seeker/profile/jobseeker_skills_screen.dart';
+import '../screens/job_seeker/profile/jobseeker_language_screen.dart';
+import '../screens/job_seeker/profile/jobseeker_about_me_screen.dart';
+import '../screens/job_seeker/profile/jobseeker_resume_screen.dart';
+import '../screens/job_seeker/freelancer_marketplace/jobseeker_service_providers_screen.dart';
+import '../screens/freelancer/home/freelancer_home_screen.dart';
+import '../screens/freelancer/profile/freelancer_profile_screen.dart';
+import '../screens/freelancer/profile/freelancer_edit_profile_screen.dart';
+import '../screens/freelancer/profile/freelancer_about_me_screen.dart';
+import '../screens/freelancer/profile/freelancer_services_screen.dart';
+import '../screens/freelancer/profile/freelancer_expertise_screen.dart';
+import '../screens/freelancer/profile/freelancer_skills_screen.dart';
+import '../screens/freelancer/profile/freelancer_portfolio_screen.dart';
+import '../screens/freelancer/messages/freelancer_messages_screen.dart';
+import '../screens/freelancer/messages/freelancer_chat_screen.dart';
+import '../screens/freelancer/notifications/freelancer_notifications_screen.dart';
+import '../screens/freelancer/settings/freelancer_settings_screen.dart';
+import '../screens/freelancer/settings/freelancer_update_password_screen.dart';
+
+
+
+
+
+
 
 
 
@@ -153,23 +181,48 @@ class AppRouter {
       GoRoute(path: '/company/settings', builder: (context, state) => const CompanySettingsScreen()),
       GoRoute(path: '/company/update-password', builder: (context, state) => const CompanyUpdatePasswordScreen()),
       GoRoute(path: '/company/edit-job', builder: (context, state) => const CompanyEditJobScreen()),
-GoRoute(path: '/company/edit-profile', builder: (context, state) => const CompanyEditProfileScreen()),
+      GoRoute(path: '/company/edit-profile', builder: (context, state) => const CompanyEditProfileScreen()),
 //jobseeker
-GoRoute(path: '/jobseeker/home', builder: (context, state) => const JobseekerHomeScreen()),
-GoRoute(path: '/jobseeker/search', builder: (context, state) => const JobseekerSearchScreen()),
-GoRoute(path: '/jobseeker/filter', builder: (context, state) => const JobseekerFilterScreen()),
-GoRoute(path: '/jobseeker/job-detail', builder: (context, state) => const JobseekerJobDetailScreen()),
-GoRoute(path: '/jobseeker/company-profile', builder: (context, state) => const JobseekerCompanyProfileScreen()),
-GoRoute(path: '/jobseeker/upload-cv', builder: (context, state) => const JobseekerUploadCvScreen()),
-GoRoute(path: '/jobseeker/application-success', builder: (context, state) => const JobseekerApplicationSuccessScreen()),
-GoRoute(path: '/jobseeker/my-application', builder: (context, state) => const JobseekerMyApplicationScreen()),
-GoRoute(path: '/jobseeker/saved', builder: (context, state) => const JobseekerSavedScreen()),
-GoRoute(path: '/jobseeker/messages', builder: (context, state) => const JobseekerMessagesScreen()),
-GoRoute(path: '/jobseeker/chat', builder: (context, state) => const JobseekerChatScreen()),
-GoRoute(path: '/jobseeker/notifications', builder: (context, state) => const JobseekerNotificationsScreen()),
-GoRoute(path: '/jobseeker/settings', builder: (context, state) => const JobseekerSettingsScreen()),
-GoRoute(path: '/jobseeker/update-password', builder: (context, state) => const JobseekerUpdatePasswordScreen()),
+      GoRoute(path: '/jobseeker/home', builder: (context, state) => const JobseekerHomeScreen()),
+      GoRoute(path: '/jobseeker/search', builder: (context, state) => const JobseekerSearchScreen()),
+      GoRoute(path: '/jobseeker/filter', builder: (context, state) => const JobseekerFilterScreen()),
+      GoRoute(path: '/jobseeker/job-detail', builder: (context, state) => const JobseekerJobDetailScreen()),
+      GoRoute(path: '/jobseeker/company-profile', builder: (context, state) => const JobseekerCompanyProfileScreen()),
+      GoRoute(path: '/jobseeker/upload-cv', builder: (context, state) => const JobseekerUploadCvScreen()),
+      GoRoute(path: '/jobseeker/application-success', builder: (context, state) => const JobseekerApplicationSuccessScreen()),
+      GoRoute(path: '/jobseeker/my-application', builder: (context, state) => const JobseekerMyApplicationScreen()),
+      GoRoute(path: '/jobseeker/saved', builder: (context, state) => const JobseekerSavedScreen()),
+      GoRoute(path: '/jobseeker/messages', builder: (context, state) => const JobseekerMessagesScreen()),
+      GoRoute(path: '/jobseeker/chat', builder: (context, state) => const JobseekerChatScreen()),
+      GoRoute(path: '/jobseeker/notifications', builder: (context, state) => const JobseekerNotificationsScreen()),
+      GoRoute(path: '/jobseeker/settings', builder: (context, state) => const JobseekerSettingsScreen()),
+      GoRoute(path: '/jobseeker/update-password', builder: (context, state) => const JobseekerUpdatePasswordScreen()),
+      GoRoute(path: '/jobseeker/profile', builder: (context, state) => const JobseekerProfileScreen()),
+      GoRoute(path: '/jobseeker/edit-profile', builder: (context, state) => const JobseekerEditProfileScreen()),
+      GoRoute(path: '/jobseeker/work-experience', builder: (context, state) => const JobseekerWorkExperienceScreen()),
+      GoRoute(path: '/jobseeker/education', builder: (context, state) => const JobseekerEducationScreen()),
+      GoRoute(path: '/jobseeker/skills', builder: (context, state) => const JobseekerSkillsScreen()),
+      GoRoute(path: '/jobseeker/language', builder: (context, state) => const JobseekerLanguageScreen()),
+      GoRoute(path: '/jobseeker/about-me', builder: (context, state) => const JobseekerAboutMeScreen()),
+      GoRoute(path: '/jobseeker/resume', builder: (context, state) => const JobseekerResumeScreen()),
+      GoRoute(path: '/jobseeker/service-providers', builder: (context, state) => const JobseekerServiceProvidersScreen()),
+      GoRoute(path: '/jobseeker/chat-from-providers', builder: (context, state) => const JobseekerChatScreen()),
+//FreeLancer
+      GoRoute(path: '/freelancer/home', builder: (context, state) => const FreelancerHomeScreen()),
+      GoRoute(path: '/freelancer/profile', builder: (context, state) => const FreelancerProfileScreen()),
+      GoRoute(path: '/freelancer/edit-profile', builder: (context, state) => const FreelancerEditProfileScreen()),
+      GoRoute(path: '/freelancer/about-me', builder: (context, state) => const FreelancerAboutMeScreen()),
+      GoRoute(path: '/freelancer/services', builder: (context, state) => const FreelancerServicesScreen()),
+      GoRoute(path: '/freelancer/expertise', builder: (context, state) => const FreelancerExpertiseScreen()),
+      GoRoute(path: '/freelancer/skills', builder: (context, state) => const FreelancerSkillsScreen()),
+      GoRoute(path: '/freelancer/portfolio', builder: (context, state) => const FreelancerPortfolioScreen()),
+      GoRoute(path: '/freelancer/messages', builder: (context, state) => const FreelancerMessagesScreen()),
+      GoRoute(path: '/freelancer/chat', builder: (context, state) => const FreelancerChatScreen()),
+      GoRoute(path: '/freelancer/notifications', builder: (context, state) => const FreelancerNotificationsScreen()),
+      GoRoute(path: '/freelancer/settings', builder: (context, state) => const FreelancerSettingsScreen()),
+      GoRoute(path: '/freelancer/update-password', builder: (context, state) => const FreelancerUpdatePasswordScreen()),
     ],
+
 
   );
 }
