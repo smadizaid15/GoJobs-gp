@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
+import '../../../providers/auth_provider.dart';
 
 class CompanySignupScreen extends StatefulWidget {
   const CompanySignupScreen({super.key});
@@ -13,35 +15,62 @@ class CompanySignupScreen extends StatefulWidget {
 
 class _CompanySignupScreenState extends State<CompanySignupScreen> {
   final _companyNameController = TextEditingController();
+  final _categoryController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _licenseController = TextEditingController();
   bool _obscurePassword = true;
-  bool _rememberMe = false;
-  String? _selectedCategory;
-
-  final List<String> _categories = [
-    'Technology',
-    'Healthcare',
-    'Education',
-    'Finance',
-    'Restaurant',
-    'Retail',
-    'Construction',
-    'Other',
-  ];
 
   @override
   void dispose() {
     _companyNameController.dispose();
+    _categoryController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _licenseController.dispose();
     super.dispose();
   }
 
+  Future<void> _handleSignUp() async {
+    if (_companyNameController.text.isEmpty ||
+        _categoryController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty ||
+        _licenseController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill in all fields'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final success = await authProvider.signUpCompany(
+      companyName: _companyNameController.text.trim(),
+      category: _categoryController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+      licenseNumber: _licenseController.text.trim(),
+    );
+
+    if (success && mounted) {
+      context.go('/company/otp');
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authProvider.errorMessage ?? 'Signup failed'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
@@ -54,9 +83,8 @@ class _CompanySignupScreenState extends State<CompanySignupScreen> {
             children: [
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Title
               Text(
-                'Create an Account',
+                'Create a Company Account',
                 style: AppTextStyles.heading2.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -65,9 +93,8 @@ class _CompanySignupScreenState extends State<CompanySignupScreen> {
 
               const SizedBox(height: AppDimensions.paddingS),
 
-              // Subtitle
               Text(
-                'Set up your account to start posting jobs and hiring local talent!',
+                'Set up your company account to start posting jobs',
                 style: AppTextStyles.bodySmall.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -75,57 +102,24 @@ class _CompanySignupScreenState extends State<CompanySignupScreen> {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Company name
-              Text('Company/enterprise name', style: AppTextStyles.labelText),
+              Text('Company/Enterprise name', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(
                 controller: _companyNameController,
-                decoration: const InputDecoration(
-                  hintText: 'Calma Space',
-                ),
+                decoration: const InputDecoration(hintText: 'Calma Space'),
               ),
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Company category dropdown
-              Text('Company/enterprise category', style: AppTextStyles.labelText),
+              Text('Company/Enterprise category', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingM,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _selectedCategory,
-                    hint: Text(
-                      'Select category',
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    items: _categories.map((cat) {
-                      return DropdownMenuItem(
-                        value: cat,
-                        child: Text(cat, style: AppTextStyles.bodyMedium),
-                      );
-                    }).toList(),
-                    onChanged: (val) {
-                      setState(() {
-                        _selectedCategory = val;
-                      });
-                    },
-                  ),
-                ),
+              TextField(
+                controller: _categoryController,
+                decoration: const InputDecoration(hintText: 'Coffee house'),
               ),
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Company email
               Text('Company Email', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(
@@ -138,7 +132,6 @@ class _CompanySignupScreenState extends State<CompanySignupScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Password
               Text('Create Password', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(
@@ -147,11 +140,8 @@ class _CompanySignupScreenState extends State<CompanySignupScreen> {
                 decoration: InputDecoration(
                   hintText: '••••••••••',
                   suffixIcon: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
+                    onTap: () => setState(
+                        () => _obscurePassword = !_obscurePassword),
                     child: Icon(
                       _obscurePassword
                           ? Icons.visibility_off_outlined
@@ -164,115 +154,34 @@ class _CompanySignupScreenState extends State<CompanySignupScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // License number
               Text('License/permit number', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(
                 controller: _licenseController,
-                obscureText: true,
                 decoration: const InputDecoration(
                   hintText: '••••••••••',
                 ),
+                obscureText: true,
               ),
 
-              const SizedBox(height: AppDimensions.paddingM),
+              const SizedBox(height: AppDimensions.paddingXL),
 
-              // Remember me + Forgot Password
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: _rememberMe,
-                        activeColor: AppColors.primaryNavy,
-                        onChanged: (val) {
-                          setState(() {
-                            _rememberMe = val ?? false;
-                          });
-                        },
-                      ),
-                      Text(
-                        'Remember me',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  GestureDetector(
-                    onTap: () => context.go('/company/forgot-password'),
-                    child: Text(
-                      'Forgot Password ?',
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: AppDimensions.paddingL),
-
-              // Sign Up button
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
-                  onPressed: () => context.go('/company/otp'),
-                  child: Text('SIGN UP', style: AppTextStyles.buttonText),
+                  onPressed: authProvider.isLoading ? null : _handleSignUp,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.companyGold,
+                  ),
+                  child: authProvider.isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text('SIGN UP', style: AppTextStyles.buttonText),
                 ),
               ),
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Sign up with Google
-              SizedBox(
-                width: double.infinity,
-                height: AppDimensions.buttonHeight,
-                child: OutlinedButton(
-                  onPressed: () {},
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.purpleButtonBorder),
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusL),
-                    ),
-                    backgroundColor: AppColors.purpleButton,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      RichText(
-                        text: const TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'G',
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: AppDimensions.paddingS),
-                      Text(
-                        'SIGN UP WITH GOOGLE',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: AppDimensions.paddingL),
-
-              // Already have an account
               Center(
                 child: GestureDetector(
                   onTap: () => context.go('/company/login'),
@@ -286,7 +195,7 @@ class _CompanySignupScreenState extends State<CompanySignupScreen> {
                         TextSpan(
                           text: 'Sign in',
                           style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.primaryOrange,
+                            color: AppColors.companyGold,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -298,12 +207,11 @@ class _CompanySignupScreenState extends State<CompanySignupScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Not your role
               Center(
                 child: GestureDetector(
                   onTap: () => context.go('/welcome'),
                   child: Text(
-                    'Not your role ? Press here to go back',
+                    'Not your role? Press here to go back',
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.textSecondary,
                     ),

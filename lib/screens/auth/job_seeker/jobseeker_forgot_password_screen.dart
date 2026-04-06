@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
+import '../../../providers/auth_provider.dart';
 
 class JobseekerForgotPasswordScreen extends StatefulWidget {
   const JobseekerForgotPasswordScreen({super.key});
@@ -22,8 +24,38 @@ class _JobseekerForgotPasswordScreenState
     super.dispose();
   }
 
+  Future<void> _handleResetPassword() async {
+    if (_emailController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your email'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final success = await authProvider.resetPassword(
+      email: _emailController.text.trim(),
+    );
+
+    if (success && mounted) {
+      context.go('/jobseeker/check-email');
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authProvider.errorMessage ?? 'Failed to send reset email'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
@@ -36,7 +68,6 @@ class _JobseekerForgotPasswordScreenState
             children: [
               const SizedBox(height: 60),
 
-              // Title
               Text(
                 'Forgot Password?',
                 style: AppTextStyles.heading1.copyWith(
@@ -48,7 +79,6 @@ class _JobseekerForgotPasswordScreenState
 
               const SizedBox(height: AppDimensions.paddingS),
 
-              // Subtitle
               Text(
                 'To reset your password, you need your email or mobile number that can be authenticated',
                 style: AppTextStyles.bodySmall.copyWith(
@@ -59,15 +89,14 @@ class _JobseekerForgotPasswordScreenState
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Illustration
-             Image.asset(
-              'assets/images/Group67.png',
-               height: 180,
-               fit: BoxFit.contain,
-        ),
+              Image.asset(
+                'assets/images/Group67.png',
+                height: 180,
+                fit: BoxFit.contain,
+              ),
+
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Email label
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text('Email', style: AppTextStyles.labelText),
@@ -83,22 +112,21 @@ class _JobseekerForgotPasswordScreenState
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Reset Password button
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
-                  onPressed: () => context.go('/jobseeker/check-email'),
-                  child: Text(
-                    'RESET PASSWORD',
-                    style: AppTextStyles.buttonText,
-                  ),
+                  onPressed: authProvider.isLoading
+                      ? null
+                      : _handleResetPassword,
+                  child: authProvider.isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text('RESET PASSWORD', style: AppTextStyles.buttonText),
                 ),
               ),
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Back to login
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
@@ -122,7 +150,6 @@ class _JobseekerForgotPasswordScreenState
                 ),
               ),
 
-           
               const SizedBox(height: AppDimensions.paddingXL),
             ],
           ),

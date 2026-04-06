@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
+import '../../../providers/auth_provider.dart';
 
 class StudentLoginScreen extends StatefulWidget {
   const StudentLoginScreen({super.key});
@@ -24,8 +26,39 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
     super.dispose();
   }
 
+  Future<void> _handleLogin() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill in all fields'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final success = await authProvider.login(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
+
+    if (success && mounted) {
+      context.go('/student/home');
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authProvider.errorMessage ?? 'Login failed'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
@@ -50,7 +83,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
               const SizedBox(height: AppDimensions.paddingS),
 
               Text(
-                'Please enter your credentials so you can log in and get right back to job hunting!',
+                'Please enter your credentials to log in to your student account',
                 style: AppTextStyles.bodySmall.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -68,7 +101,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
-                  hintText: 'smadizaid1000@gmail.com',
+                  hintText: 'student@gmail.com',
                 ),
               ),
 
@@ -85,11 +118,8 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                 decoration: InputDecoration(
                   hintText: '••••••••••',
                   suffixIcon: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
+                    onTap: () => setState(
+                        () => _obscurePassword = !_obscurePassword),
                     child: Icon(
                       _obscurePassword
                           ? Icons.visibility_off_outlined
@@ -110,11 +140,8 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                       Checkbox(
                         value: _rememberMe,
                         activeColor: AppColors.primaryNavy,
-                        onChanged: (val) {
-                          setState(() {
-                            _rememberMe = val ?? false;
-                          });
-                        },
+                        onChanged: (val) =>
+                            setState(() => _rememberMe = val ?? false),
                       ),
                       Text(
                         'Remember me',
@@ -142,56 +169,14 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
-                  onPressed: () => context.go('/student/home'),
-                  child: Text('LOGIN', style: AppTextStyles.buttonText),
+                  onPressed: authProvider.isLoading ? null : _handleLogin,
+                  child: authProvider.isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text('LOGIN', style: AppTextStyles.buttonText),
                 ),
               ),
 
-              const SizedBox(height: AppDimensions.paddingM),
-
-              SizedBox(
-                width: double.infinity,
-                height: AppDimensions.buttonHeight,
-                child: OutlinedButton(
-                  onPressed: () {},
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.purpleButtonBorder),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusL),
-                    ),
-                    backgroundColor: AppColors.purpleButton,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      RichText(
-                        text: const TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'G',
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: AppDimensions.paddingS),
-                      Text(
-                        'SIGN IN WITH GOOGLE',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: AppDimensions.paddingL),
+              const SizedBox(height: AppDimensions.paddingXL),
 
               GestureDetector(
                 onTap: () => context.go('/student/signup'),
@@ -201,7 +186,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                       color: AppColors.textSecondary,
                     ),
                     children: [
-                      const TextSpan(text: "You don't have an account yet? "),
+                      const TextSpan(text: "Don't have an account? "),
                       TextSpan(
                         text: 'Sign up',
                         style: AppTextStyles.bodySmall.copyWith(
@@ -218,22 +203,11 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
 
               GestureDetector(
                 onTap: () => context.go('/welcome'),
-                child: Column(
-                  children: [
-                    Text(
-                      'Not your role ?',
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      'Press here to go back',
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  'Not your role? Press here to go back',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ),
 

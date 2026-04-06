@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
+import '../../../providers/auth_provider.dart';
 
 class JobseekerSignupScreen extends StatefulWidget {
   const JobseekerSignupScreen({super.key});
@@ -28,8 +30,44 @@ class _JobseekerSignupScreenState extends State<JobseekerSignupScreen> {
     super.dispose();
   }
 
+  Future<void> _handleSignUp() async {
+    if (_firstNameController.text.isEmpty ||
+        _lastNameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill in all fields'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final success = await authProvider.signUpJobSeeker(
+      firstName: _firstNameController.text.trim(),
+      lastName: _lastNameController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
+
+    if (success && mounted) {
+      context.go('/jobseeker/otp');
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authProvider.errorMessage ?? 'Signup failed'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
@@ -42,7 +80,6 @@ class _JobseekerSignupScreenState extends State<JobseekerSignupScreen> {
             children: [
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Title
               Text(
                 'Create an Account',
                 style: AppTextStyles.heading2.copyWith(
@@ -53,7 +90,6 @@ class _JobseekerSignupScreenState extends State<JobseekerSignupScreen> {
 
               const SizedBox(height: AppDimensions.paddingS),
 
-              // Subtitle
               Text(
                 'Set up your account to continue with your selected role',
                 style: AppTextStyles.bodySmall.copyWith(
@@ -63,31 +99,24 @@ class _JobseekerSignupScreenState extends State<JobseekerSignupScreen> {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // First Name
               Text('First Name', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(
                 controller: _firstNameController,
-                decoration: const InputDecoration(
-                  hintText: 'Zaid ALsmadi',
-                ),
+                decoration: const InputDecoration(hintText: 'Zaid ALsmadi'),
               ),
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Second Name
               Text('Second name', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(
                 controller: _lastNameController,
-                decoration: const InputDecoration(
-                  hintText: 'Zaid ALsmadi',
-                ),
+                decoration: const InputDecoration(hintText: 'Zaid ALsmadi'),
               ),
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Email
               Text('Email', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(
@@ -100,7 +129,6 @@ class _JobseekerSignupScreenState extends State<JobseekerSignupScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Password
               Text('Create Password', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(
@@ -126,7 +154,6 @@ class _JobseekerSignupScreenState extends State<JobseekerSignupScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Remember me + Forgot Password
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -168,50 +195,43 @@ class _JobseekerSignupScreenState extends State<JobseekerSignupScreen> {
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
-                  onPressed: () => context.go('/jobseeker/otp'),
-                  child: Text(
-                    'SIGN UP',
-                    style: AppTextStyles.buttonText,
-                  ),
+                  onPressed: authProvider.isLoading ? null : _handleSignUp,
+                  child: authProvider.isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text('SIGN UP', style: AppTextStyles.buttonText),
                 ),
               ),
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Sign up with Google
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: OutlinedButton(
                   onPressed: () {},
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.purpleButtonBorder),
+                    side: const BorderSide(color: AppColors.divider),
                     shape: RoundedRectangleBorder(
                       borderRadius:
                           BorderRadius.circular(AppDimensions.radiusL),
                     ),
-                    backgroundColor: AppColors.purpleButton,
+                    backgroundColor: const Color(0xFFF0EEFF),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Google G icon
-                      Container(
-                        width: 24,
-                        height: 24,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'G',
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                      RichText(
+                        text: const TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'G',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
                       const SizedBox(width: AppDimensions.paddingS),
@@ -229,7 +249,6 @@ class _JobseekerSignupScreenState extends State<JobseekerSignupScreen> {
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Already have an account
               Center(
                 child: GestureDetector(
                   onTap: () => context.go('/jobseeker/login'),
@@ -255,7 +274,6 @@ class _JobseekerSignupScreenState extends State<JobseekerSignupScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Not your role
               Center(
                 child: GestureDetector(
                   onTap: () => context.go('/welcome'),
