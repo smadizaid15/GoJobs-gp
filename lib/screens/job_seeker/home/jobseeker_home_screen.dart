@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../widgets/jobseeker_bottom_nav.dart';
+import '../../../services/job_service.dart';
+import '../../../models/job_model.dart';
+import '../../../providers/auth_provider.dart';
 
 class JobseekerHomeScreen extends StatelessWidget {
   const JobseekerHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final jobService = JobService();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
@@ -39,7 +46,7 @@ class JobseekerHomeScreen extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              'Zaid Smadi.',
+                              '${authProvider.user?.displayName ?? 'User'}.',
                               style: AppTextStyles.heading3.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
@@ -50,8 +57,7 @@ class JobseekerHomeScreen extends StatelessWidget {
                         Row(
                           children: [
                             GestureDetector(
-                              onTap: () =>
-                                  context.go('/jobseeker/settings'),
+                              onTap: () => context.go('/jobseeker/settings'),
                               child: const Icon(
                                 Icons.settings_outlined,
                                 color: AppColors.textPrimary,
@@ -59,13 +65,14 @@ class JobseekerHomeScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: AppDimensions.paddingS),
                             GestureDetector(
-                              onTap: () =>
-                                  context.go('/jobseeker/profile'),
+                              onTap: () => context.go('/jobseeker/profile'),
                               child: CircleAvatar(
                                 radius: 20,
                                 backgroundColor: AppColors.primaryNavy,
                                 child: Text(
-                                  'Z',
+                                  authProvider.user?.displayName?.isNotEmpty == true
+                                      ? authProvider.user!.displayName![0].toUpperCase()
+                                      : 'Z',
                                   style: AppTextStyles.bodyMedium.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -80,7 +87,7 @@ class JobseekerHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                      // Search bar
+                    // Search bar
                     Container(
                       height: 44,
                       padding: const EdgeInsets.symmetric(
@@ -94,10 +101,8 @@ class JobseekerHomeScreen extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          const Icon(
-                            Icons.menu,
-                            color: AppColors.textSecondary,
-                          ),
+                          const Icon(Icons.menu,
+                              color: AppColors.textSecondary),
                           const SizedBox(width: AppDimensions.paddingS),
                           Expanded(
                             child: TextField(
@@ -109,40 +114,73 @@ class JobseekerHomeScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const Icon(
-                            Icons.search,
-                            color: AppColors.textSecondary,
-                          ),
+                          const Icon(Icons.search,
+                              color: AppColors.textSecondary),
                         ],
                       ),
                     ),
 
+                    const SizedBox(height: AppDimensions.paddingL),
+
                     // Recent job list
                     Text(
-                      'Hot job listings',
+                      'Recent Job List',
                       style: AppTextStyles.bodyLarge.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
                       ),
                     ),
 
-                    const SizedBox(height: AppDimensions.paddingS),
-
-                  
-
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // Recent job card
-                    _JobCard(
-                      title: 'Barista',
-                      company: 'Calma Coffee house',
-                      location: 'Irbid, Jordan',
-                      salary: '\$350/m',
-                      type: 'On site',
-                      jobType: 'Full time',
-                      onTap: () =>
-                          context.push('/jobseeker/job-detail'),
-                      onSave: () {},
+                    // Real jobs from Firestore
+                    StreamBuilder<List<JobModel>>(
+                      stream: jobService.getActiveJobs(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        }
+
+                        final jobs = snapshot.data ?? [];
+
+                        if (jobs.isEmpty) {
+                          return Center(
+                            child: Text(
+                              'No jobs available yet',
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          );
+                        }
+
+                        return Column(
+                          children: jobs
+                              .take(3)
+                              .map((job) => Padding(
+                                    padding: const EdgeInsets.only(
+                                        bottom: AppDimensions.paddingM),
+                                    child: _JobCard(
+                                      title: job.title,
+                                      company: job.companyName,
+                                      location: job.location,
+                                      type: job.workplaceType,
+                                      jobType: job.employmentType,
+                                      onTap: () => context
+                                          .push('/jobseeker/job-detail'),
+                                      onSave: () {},
+                                    ),
+                                  ))
+                              .toList(),
+                        );
+                      },
                     ),
 
                     const SizedBox(height: AppDimensions.paddingL),
@@ -162,8 +200,7 @@ class JobseekerHomeScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: GestureDetector(
-                            onTap: () =>
-                                context.go('/jobseeker/search'),
+                            onTap: () => context.go('/jobseeker/search'),
                             child: Container(
                               padding: const EdgeInsets.all(
                                 AppDimensions.paddingM,
@@ -175,13 +212,10 @@ class JobseekerHomeScreen extends StatelessWidget {
                                 ),
                               ),
                               child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(
-                                    Icons.work_outline,
-                                    color: Colors.white,
-                                  ),
+                                  const Icon(Icons.work_outline,
+                                      color: Colors.white),
                                   const SizedBox(
                                       height: AppDimensions.paddingS),
                                   Text(
@@ -207,8 +241,7 @@ class JobseekerHomeScreen extends StatelessWidget {
 
                         Expanded(
                           child: GestureDetector(
-                            onTap: () =>
-                                context.go('/jobseeker/search'),
+                            onTap: () => context.go('/jobseeker/search'),
                             child: Container(
                               padding: const EdgeInsets.all(
                                 AppDimensions.paddingM,
@@ -220,13 +253,10 @@ class JobseekerHomeScreen extends StatelessWidget {
                                 ),
                               ),
                               child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(
-                                    Icons.school_outlined,
-                                    color: Colors.white,
-                                  ),
+                                  const Icon(Icons.school_outlined,
+                                      color: Colors.white),
                                   const SizedBox(
                                       height: AppDimensions.paddingS),
                                   Text(
@@ -258,16 +288,13 @@ class JobseekerHomeScreen extends StatelessWidget {
                           context.go('/jobseeker/service-providers'),
                       child: Container(
                         width: double.infinity,
-                        padding:
-                            const EdgeInsets.all(AppDimensions.paddingL),
+                        padding: const EdgeInsets.all(AppDimensions.paddingL),
                         decoration: BoxDecoration(
                           color: const Color(0xFFFFF3E0),
                           borderRadius: BorderRadius.circular(
                             AppDimensions.radiusL,
                           ),
-                          border: Border.all(
-                            color: AppColors.primaryOrange,
-                          ),
+                          border: Border.all(color: AppColors.primaryOrange),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,7 +308,7 @@ class JobseekerHomeScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: AppDimensions.paddingXS),
                             Text(
-                              'Press here to uncover the word of freelancers and the variety of services they have to offer',
+                              'Press here to uncover the world of freelancers and the variety of services they have to offer',
                               style: AppTextStyles.bodySmall.copyWith(
                                 color: AppColors.textSecondary,
                               ),
@@ -289,60 +316,6 @@ class JobseekerHomeScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingL),
-
-                    // Internships section
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Internships',
-                          style: AppTextStyles.bodyLarge.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => context.go('/jobseeker/search'),
-                          child: Text(
-                            'View all',
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.primaryOrange,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingM),
-
-                    _JobCard(
-                      title: 'Data scientist',
-                      company: 'Startup Company',
-                      location: 'Amman, Jordan',
-                      salary: 'Unpaid',
-                      type: 'On site',
-                      jobType: 'Full time',
-                      onTap: () =>
-                          context.push('/jobseeker/job-detail'),
-                      onSave: () {},
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingS),
-
-                    _JobCard(
-                      title: 'Sunpaid',
-                      company: 'Tech Corp',
-                      location: 'Irbid, Jordan',
-                      salary: 'Unpaid',
-                      type: 'On site',
-                      jobType: 'Full time',
-                      onTap: () =>
-                          context.push('/jobseeker/job-detail'),
-                      onSave: () {},
                     ),
 
                     const SizedBox(height: AppDimensions.paddingXL),
@@ -363,7 +336,6 @@ class _JobCard extends StatelessWidget {
   final String title;
   final String company;
   final String location;
-  final String salary;
   final String type;
   final String jobType;
   final VoidCallback onTap;
@@ -373,7 +345,6 @@ class _JobCard extends StatelessWidget {
     required this.title,
     required this.company,
     required this.location,
-    required this.salary,
     required this.type,
     required this.jobType,
     required this.onTap,
@@ -421,22 +392,10 @@ class _JobCard extends StatelessWidget {
             ),
             const SizedBox(height: AppDimensions.paddingS),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    _Tag(label: type),
-                    const SizedBox(width: AppDimensions.paddingXS),
-                    _Tag(label: jobType),
-                  ],
-                ),
-                Text(
-                  salary,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
+                _Tag(label: type),
+                const SizedBox(width: AppDimensions.paddingXS),
+                _Tag(label: jobType),
               ],
             ),
           ],

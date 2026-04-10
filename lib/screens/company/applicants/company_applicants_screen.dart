@@ -4,6 +4,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../widgets/company_bottom_nav.dart';
+import '../../../services/application_service.dart';
+import '../../../models/application_model.dart';
 
 class CompanyApplicantsScreen extends StatelessWidget {
   const CompanyApplicantsScreen({super.key});
@@ -168,40 +170,90 @@ class CompanyApplicantsScreen extends StatelessWidget {
 
             const SizedBox(height: AppDimensions.paddingM),
 
-            // Applicants grid
-            Expanded(
-              child: GridView.builder(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingL,
-                ),
-                gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: AppDimensions.paddingS,
-                  mainAxisSpacing: AppDimensions.paddingS,
-                  childAspectRatio: 0.85,
-                ),
-                itemCount: 6,
-                itemBuilder: (context, index) {
-                  final names = [
-                    'Zaid kilany',
-                    'Faris masadeh',
-                    'Ahmad khub',
-                    'Zaid smadi',
-                    'Loay ahmad',
-                    'Emran ali',
-                  ];
-                  return _ApplicantCard(
-                    name: names[index],
-                    description:
-                        '3 years experience in plumbing with excellent prices and availability skills: plumbing, safety',
-                    onViewProfile: () {},
-                    onAccept: () {},
-                    onReject: () {},
-                  );
-                },
+           // Applicants grid
+Expanded(
+  child: StreamBuilder<List<ApplicationModel>>(
+    stream: ApplicationService().getJobApplications('all'),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      final applications = snapshot.data ?? [];
+
+      if (applications.isEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.people_outline,
+                color: AppColors.textSecondary,
+                size: 60,
               ),
-            ),
+              const SizedBox(height: AppDimensions.paddingM),
+              Text(
+                'No applicants yet',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
+      return GridView.builder(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppDimensions.paddingL,
+        ),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: AppDimensions.paddingS,
+          mainAxisSpacing: AppDimensions.paddingS,
+          childAspectRatio: 0.85,
+        ),
+        itemCount: applications.length,
+        itemBuilder: (context, index) {
+          final app = applications[index];
+          return _ApplicantCard(
+            name: app.userName,
+            description: 'Applied for ${app.jobTitle}',
+            onViewProfile: () {},
+            onAccept: () async {
+              await ApplicationService().updateApplicationStatus(
+                applicationId: app.id,
+                status: 'accepted',
+              );
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Applicant accepted!'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              }
+            },
+            onReject: () async {
+              await ApplicationService().updateApplicationStatus(
+                applicationId: app.id,
+                status: 'rejected',
+              );
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Applicant rejected'),
+                    backgroundColor: AppColors.error,
+                  ),
+                );
+              }
+            },
+          );
+        },
+      );
+    },
+  ),
+),
 
             const SizedBox(height: AppDimensions.paddingM),
 

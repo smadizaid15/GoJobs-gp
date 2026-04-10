@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../services/job_service.dart';
 
 class CompanyAddJobScreen extends StatefulWidget {
   const CompanyAddJobScreen({super.key});
@@ -17,11 +20,65 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
   String? _jobLocation;
   String? _employmentType;
   final _descriptionController = TextEditingController();
+  bool _isPosting = false;
+  final JobService _jobService = JobService();
 
   @override
   void dispose() {
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  Future<void> _handlePostJob() async {
+    if (_jobPosition == null ||
+        _workplaceType == null ||
+        _jobLocation == null ||
+        _employmentType == null ||
+        _descriptionController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill in all fields'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isPosting = true);
+
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      await _jobService.postJob(
+        companyId: authProvider.user!.uid,
+        companyName: 'Calma Space',
+        title: _jobPosition!,
+        location: _jobLocation!,
+        workplaceType: _workplaceType!,
+        employmentType: _employmentType!,
+        description: _descriptionController.text.trim(),
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Job posted successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        context.go('/company/home');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to post job: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      setState(() => _isPosting = false);
+    }
   }
 
   @override
@@ -39,7 +96,8 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                 children: [
                   GestureDetector(
                     onTap: () => context.pop(),
-                    child: const Icon(Icons.close, color: AppColors.textPrimary),
+                    child: const Icon(Icons.close,
+                        color: AppColors.textPrimary),
                   ),
                   Text(
                     'Add a job',
@@ -49,14 +107,23 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => context.go('/company/home'),
-                    child: Text(
-                      'Post',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.companyGold,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    onTap: _isPosting ? null : _handlePostJob,
+                    child: _isPosting
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.companyGold,
+                            ),
+                          )
+                        : Text(
+                            'Post',
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: AppColors.companyGold,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                   ),
                 ],
               ),
@@ -69,60 +136,56 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                 ),
                 child: Column(
                   children: [
-                    // Job position
                     _JobFormItem(
                       label: 'Job position*',
                       value: _jobPosition,
                       onTap: () async {
-                        final result = await context.push<String>(
-                            '/company/job-position-picker');
+                        final result = await context
+                            .push<String>('/company/job-position-picker');
                         if (result != null) {
                           setState(() => _jobPosition = result);
                         }
                       },
                     ),
 
-                    // Type of workplace
                     _JobFormItem(
                       label: 'Type of workplace',
                       value: _workplaceType,
                       onTap: () async {
-                        final result = await context.push<String>(
-                            '/company/workplace-type');
+                        final result = await context
+                            .push<String>('/company/workplace-type');
                         if (result != null) {
                           setState(() => _workplaceType = result);
                         }
                       },
                     ),
 
-                    // Job location
                     _JobFormItem(
                       label: 'Job location',
                       value: _jobLocation,
                       onTap: () async {
-                        final result = await context.push<String>(
-                            '/company/location-picker');
+                        final result = await context
+                            .push<String>('/company/location-picker');
                         if (result != null) {
                           setState(() => _jobLocation = result);
                         }
                       },
                     ),
 
-                    // Employment type
                     _JobFormItem(
                       label: 'Employment type',
                       value: _employmentType,
                       onTap: () async {
-                        final result = await context.push<String>(
-                            '/company/job-type');
+                        final result =
+                            await context.push<String>('/company/job-type');
                         if (result != null) {
                           setState(() => _employmentType = result);
                         }
                       },
                     ),
 
-                    // Description
                     const SizedBox(height: AppDimensions.paddingM),
+
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
@@ -136,7 +199,8 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                     const SizedBox(height: AppDimensions.paddingXS),
                     Container(
                       height: 120,
-                      padding: const EdgeInsets.all(AppDimensions.paddingM),
+                      padding:
+                          const EdgeInsets.all(AppDimensions.paddingM),
                       decoration: BoxDecoration(
                         color: AppColors.inputFill,
                         borderRadius:

@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../providers/theme_provider.dart';
+import '../../../providers/auth_provider.dart';
 
 class JobseekerSettingsScreen extends StatelessWidget {
   const JobseekerSettingsScreen({super.key});
@@ -163,7 +164,11 @@ class JobseekerSettingsScreen extends StatelessWidget {
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
-                  onPressed: () => context.go('/welcome'),
+                  onPressed: () async {
+  final authProvider = Provider.of<AuthProvider>(context, listen: false);
+  await authProvider.logout();
+  if (context.mounted) context.go('/welcome');
+},
                   child:
                       Text('YES', style: AppTextStyles.buttonText),
                 ),
