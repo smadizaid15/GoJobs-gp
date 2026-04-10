@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
+import '../../../services/message_service.dart';
+import '../../../models/message_model.dart';
+import '../../../providers/auth_provider.dart';
 
 class StudentChatScreen extends StatefulWidget {
-  const StudentChatScreen({super.key});
+  final String? receiverId;
+  final String? receiverName;
+
+  const StudentChatScreen({
+    super.key,
+    this.receiverId,
+    this.receiverName,
+  });
 
   @override
   State<StudentChatScreen> createState() => _StudentChatScreenState();
@@ -13,36 +24,40 @@ class StudentChatScreen extends StatefulWidget {
 
 class _StudentChatScreenState extends State<StudentChatScreen> {
   final _messageController = TextEditingController();
-
-  final List<Map<String, dynamic>> _messages = [
-    {'text': 'Hello sir, Good Morning', 'isMe': true, 'time': '09:30 am'},
-    {'text': 'Morning, Can i help you ?', 'isMe': false, 'time': '09:31 am'},
-    {
-      'text': 'I have a few questions regarding the 2nd activity of my Ai course',
-      'isMe': true,
-      'time': '09:33 am'
-    },
-    {
-      'text': 'Oh yes, i already received your questions, will update you !',
-      'isMe': false,
-      'time': '09:35 am'
-    },
-  ];
+  final _scrollController = ScrollController();
+  final MessageService _messageService = MessageService();
 
   @override
   void dispose() {
     _messageController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final currentUserId = authProvider.user?.uid ?? '';
+    final receiverId = widget.receiverId ?? 'dummy_receiver';
+    final chatId = _messageService.getChatId(currentUserId, receiverId);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: Column(
           children: [
-            // Top bar
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
@@ -52,18 +67,18 @@ class _StudentChatScreenState extends State<StudentChatScreen> {
               child: Row(
                 children: [
                   GestureDetector(
-                    onTap: () =>context.pop(),
-                    child: const Icon(
-                      Icons.arrow_back,
-                      color: AppColors.textPrimary,
-                    ),
+                    onTap: () => context.pop(),
+                    child: const Icon(Icons.arrow_back,
+                        color: AppColors.textPrimary),
                   ),
                   const SizedBox(width: AppDimensions.paddingM),
                   CircleAvatar(
                     radius: 18,
                     backgroundColor: AppColors.inputFill,
                     child: Text(
-                      'Z',
+                      widget.receiverName?.isNotEmpty == true
+                          ? widget.receiverName![0].toUpperCase()
+                          : 'U',
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.bold,
@@ -76,7 +91,7 @@ class _StudentChatScreenState extends State<StudentChatScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Zaid smadi',
+                          widget.receiverName ?? 'Chat',
                           style: AppTextStyles.bodyMedium.copyWith(
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
@@ -92,38 +107,58 @@ class _StudentChatScreenState extends State<StudentChatScreen> {
                       ],
                     ),
                   ),
-                 
-                  const Icon(
-                    Icons.search,
-                    color: AppColors.primaryOrange,
-                  ),
-                  const SizedBox(width: AppDimensions.paddingS),
-                  const Icon(
-                    Icons.more_vert,
-                    color: AppColors.textPrimary,
-                  ),
+                  const Icon(Icons.search, color: AppColors.primaryOrange),
+                  const SizedBox(width: AppDimensions.paddingM),
+                  const Icon(Icons.more_vert, color: AppColors.textPrimary),
                 ],
               ),
             ),
 
-            // Messages
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(AppDimensions.paddingL),
-                itemCount: _messages.length,
-                itemBuilder: (context, index) {
-                  final msg = _messages[index];
-                  final isMe = msg['isMe'] as bool;
-                  return _ChatBubble(
-                    text: msg['text'] as String,
-                    time: msg['time'] as String,
-                    isMe: isMe,
+              child: StreamBuilder<List<MessageModel>>(
+                stream: _messageService.getMessages(chatId),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  final messages = snapshot.data ?? [];
+                  _scrollToBottom();
+
+                  if (messages.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No messages yet. Say hello!',
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(AppDimensions.paddingL),
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      final msg = messages[index];
+                      final isMe = msg.senderId == currentUserId;
+                      return _ChatBubble(
+                        text: msg.text,
+                        time: msg.timestamp != null
+                            ? '${msg.timestamp!.hour}:${msg.timestamp!.minute.toString().padLeft(2, '0')}'
+                            : 'Now',
+                        isMe: isMe,
+                        senderInitial: widget.receiverName?.isNotEmpty == true
+                            ? widget.receiverName![0].toUpperCase()
+                            : 'U',
+                      );
+                    },
                   );
                 },
               ),
             ),
 
-            // Input bar
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
@@ -132,16 +167,14 @@ class _StudentChatScreenState extends State<StudentChatScreen> {
               color: Colors.white,
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.attach_file_outlined,
-                    color: AppColors.textSecondary,
-                  ),
+                  const Icon(Icons.attach_file_outlined,
+                      color: AppColors.textSecondary),
                   const SizedBox(width: AppDimensions.paddingS),
                   Expanded(
                     child: TextField(
                       controller: _messageController,
                       decoration: InputDecoration(
-                        hintText: 'Write your massage',
+                        hintText: 'Write your message',
                         hintStyle: AppTextStyles.bodySmall,
                         border: InputBorder.none,
                         filled: false,
@@ -149,16 +182,16 @@ class _StudentChatScreenState extends State<StudentChatScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {
+                    onTap: () async {
                       if (_messageController.text.isNotEmpty) {
-                        setState(() {
-                          _messages.add({
-                            'text': _messageController.text,
-                            'isMe': true,
-                            'time': 'Now',
-                          });
-                          _messageController.clear();
-                        });
+                        final text = _messageController.text;
+                        _messageController.clear();
+                        await _messageService.sendMessage(
+                          chatId: chatId,
+                          senderId: currentUserId,
+                          text: text,
+                        );
+                        _scrollToBottom();
                       }
                     },
                     child: Container(
@@ -168,11 +201,8 @@ class _StudentChatScreenState extends State<StudentChatScreen> {
                         color: AppColors.primaryNavy,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
-                        Icons.send,
-                        color: Colors.white,
-                        size: 18,
-                      ),
+                      child: const Icon(Icons.send,
+                          color: Colors.white, size: 18),
                     ),
                   ),
                 ],
@@ -189,11 +219,13 @@ class _ChatBubble extends StatelessWidget {
   final String text;
   final String time;
   final bool isMe;
+  final String senderInitial;
 
   const _ChatBubble({
     required this.text,
     required this.time,
     required this.isMe,
+    required this.senderInitial,
   });
 
   @override
@@ -209,13 +241,9 @@ class _ChatBubble extends StatelessWidget {
             CircleAvatar(
               radius: 16,
               backgroundColor: AppColors.inputFill,
-              child: Text(
-                'Z',
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.textSecondary,
-                  fontSize: 10,
-                ),
-              ),
+              child: Text(senderInitial,
+                  style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textSecondary, fontSize: 10)),
             ),
             const SizedBox(width: AppDimensions.paddingS),
           ],
@@ -249,13 +277,9 @@ class _ChatBubble extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
-                time,
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.textSecondary,
-                  fontSize: 10,
-                ),
-              ),
+              Text(time,
+                  style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textSecondary, fontSize: 10)),
             ],
           ),
         ],
