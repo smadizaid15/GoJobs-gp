@@ -120,7 +120,7 @@ class _FreelancerExpertiseScreenState
                     value: _isOpen24_7,
                     onChanged: (val) =>
                         setState(() => _isOpen24_7 = val),
-                    activeColor: AppColors.primaryNavy,
+                    activeThumbColor: AppColors.primaryNavy,
                   ),
                   Text(
                     'open to work 24/7',
