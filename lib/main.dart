@@ -6,12 +6,16 @@ import 'core/theme/app_theme.dart';
 import 'providers/theme_provider.dart';
 import 'router/app_router.dart';
 import 'providers/auth_provider.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // Initialize notifications
+final notificationService = NotificationService();
+await notificationService.initialize();
   runApp(
     MultiProvider(
       providers: [
