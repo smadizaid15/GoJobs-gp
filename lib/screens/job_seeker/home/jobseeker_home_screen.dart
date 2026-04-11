@@ -19,6 +19,14 @@ class JobseekerHomeScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/ai-chat'),
+        backgroundColor: AppColors.primaryNavy,
+        child: const Icon(
+          Icons.smart_toy_outlined,
+          color: Colors.white,
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -122,7 +130,6 @@ class JobseekerHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Recent job list
                     Text(
                       'Recent Job List',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -133,7 +140,6 @@ class JobseekerHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // Real jobs from Firestore
                     StreamBuilder<List<JobModel>>(
                       stream: jobService.getActiveJobs(),
                       builder: (context, snapshot) {
@@ -185,7 +191,6 @@ class JobseekerHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Find Your Job/Course section
                     Text(
                       'Find Your Job/Course',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -282,7 +287,6 @@ class JobseekerHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Service providers banner
                     GestureDetector(
                       onTap: () =>
                           context.go('/jobseeker/service-providers'),

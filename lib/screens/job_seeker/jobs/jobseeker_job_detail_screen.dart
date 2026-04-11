@@ -138,7 +138,55 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-
+                    const SizedBox(height: AppDimensions.paddingS),
+Center(
+  child: OutlinedButton.icon(
+    onPressed: () => context.push('/ai-job-match'),
+    icon: const Icon(
+      Icons.smart_toy_outlined,
+      size: 16,
+      color: AppColors.primaryNavy,
+    ),
+    label: Text(
+      'Check Match Score',
+      style: AppTextStyles.bodySmall.copyWith(
+        color: AppColors.primaryNavy,
+      ),
+    ),
+    style: OutlinedButton.styleFrom(
+      side: const BorderSide(color: AppColors.purpleButtonBorder),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+      ),
+      backgroundColor: AppColors.purpleButton,
+    ),
+  ),
+),
+ 
+ const SizedBox(height: AppDimensions.paddingXS),
+Center(
+  child: OutlinedButton.icon(
+    onPressed: () => context.push('/ai-interview-prep'),
+    icon: const Icon(
+      Icons.record_voice_over_outlined,
+      size: 16,
+      color: AppColors.primaryNavy,
+    ),
+    label: Text(
+      'Interview Prep',
+      style: AppTextStyles.bodySmall.copyWith(
+        color: AppColors.primaryNavy,
+      ),
+    ),
+    style: OutlinedButton.styleFrom(
+      side: const BorderSide(color: AppColors.purpleButtonBorder),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+      ),
+      backgroundColor: AppColors.purpleButton,
+    ),
+  ),
+),
                     const SizedBox(height: AppDimensions.paddingL),
 
                     // Job description

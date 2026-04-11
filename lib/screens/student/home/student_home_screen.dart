@@ -12,6 +12,14 @@ class StudentHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/ai-chat'),
+        backgroundColor: AppColors.primaryNavy,
+        child: const Icon(
+          Icons.smart_toy_outlined,
+          color: Colors.white,
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -111,7 +119,8 @@ class StudentHomeScreen extends StatelessWidget {
                                       color: Colors.white70,
                                     ),
                                   ),
-                                  const SizedBox(height: AppDimensions.paddingS),
+                                  const SizedBox(
+                                      height: AppDimensions.paddingS),
                                   GestureDetector(
                                     onTap: () =>
                                         context.go('/student/courses'),
@@ -128,7 +137,8 @@ class StudentHomeScreen extends StatelessWidget {
                                       ),
                                       child: Text(
                                         'Join Now',
-                                        style: AppTextStyles.bodySmall.copyWith(
+                                        style:
+                                            AppTextStyles.bodySmall.copyWith(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
                                         ),
@@ -159,7 +169,6 @@ class StudentHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Discover section title
                     Text(
                       'Find your Job/Course',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -170,10 +179,8 @@ class StudentHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // Courses/Workshops & Internships buttons
                     Row(
                       children: [
-                        // Courses & Workshops
                         Expanded(
                           child: GestureDetector(
                             onTap: () => context.go('/student/courses'),
@@ -194,7 +201,8 @@ class StudentHomeScreen extends StatelessWidget {
                                     Icons.laptop_outlined,
                                     color: Colors.white,
                                   ),
-                                  const SizedBox(height: AppDimensions.paddingS),
+                                  const SizedBox(
+                                      height: AppDimensions.paddingS),
                                   Text(
                                     '4.5k',
                                     style: AppTextStyles.heading3.copyWith(
@@ -216,11 +224,10 @@ class StudentHomeScreen extends StatelessWidget {
 
                         const SizedBox(width: AppDimensions.paddingM),
 
-                        // Internships
                         Expanded(
                           child: GestureDetector(
-                            onTap: () =>
-                                context.go('/student/internship-categories'),
+                            onTap: () => context
+                                .go('/student/internship-categories'),
                             child: Container(
                               padding: const EdgeInsets.all(
                                 AppDimensions.paddingM,
@@ -238,7 +245,8 @@ class StudentHomeScreen extends StatelessWidget {
                                     Icons.work_outline,
                                     color: Colors.white,
                                   ),
-                                  const SizedBox(height: AppDimensions.paddingS),
+                                  const SizedBox(
+                                      height: AppDimensions.paddingS),
                                   Text(
                                     '3k+',
                                     style: AppTextStyles.heading3.copyWith(
@@ -262,7 +270,6 @@ class StudentHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Service providers banner
                     GestureDetector(
                       onTap: () =>
                           context.go('/student/service-providers'),
@@ -301,7 +308,6 @@ class StudentHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Internships section
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -313,8 +319,8 @@ class StudentHomeScreen extends StatelessWidget {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () =>
-                              context.go('/student/internship-categories'),
+                          onTap: () => context
+                              .go('/student/internship-categories'),
                           child: Text(
                             'View all',
                             style: AppTextStyles.bodySmall.copyWith(
@@ -334,7 +340,8 @@ class StudentHomeScreen extends StatelessWidget {
                       location: 'Amman, Jordan',
                       type: 'On site',
                       jobType: 'Full time',
-                      onTap: () => context.push('/student/internship-list'),
+                      onTap: () =>
+                          context.push('/student/internship-list'),
                     ),
 
                     const SizedBox(height: AppDimensions.paddingS),
@@ -345,7 +352,8 @@ class StudentHomeScreen extends StatelessWidget {
                       location: 'Irbid, Jordan',
                       type: 'On site',
                       jobType: 'Full time',
-                      onTap: () => context.push('/student/internship-list'),
+                      onTap: () =>
+                          context.push('/student/internship-list'),
                     ),
 
                     const SizedBox(height: AppDimensions.paddingXL),

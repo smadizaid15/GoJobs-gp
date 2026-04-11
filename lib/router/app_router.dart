@@ -99,6 +99,20 @@ import '../screens/student/internships/student_upload_cv_screen.dart';
 import '../screens/student/internships/student_application_success_screen.dart';
 import '../screens/student/freelancer_marketplace/student_service_providers_screen.dart';
 
+// AI 
+import '../screens/ai/ai_chat_screen.dart';
+import '../screens/ai/ai_job_match_screen.dart';
+import '../screens/ai/ai_job_description_screen.dart';
+import '../screens/ai/ai_interview_prep_screen.dart';
+
+
+
+
+
+
+
+
+
 class AppRouter {
   AppRouter._();
 
@@ -207,6 +221,13 @@ class AppRouter {
       GoRoute(path: '/student/application-success', builder: (context, state) => const StudentApplicationSuccessScreen()),
       GoRoute(path: '/student/service-providers', builder: (context, state) => const StudentServiceProvidersScreen()),
       GoRoute(path: '/student/chat-from-providers', builder: (context, state) => const StudentChatScreen()),
+
+      //AI
+      GoRoute(path: '/ai-chat', builder: (context, state) => const AIChatScreen()),
+      GoRoute(path: '/ai-job-match', builder: (context, state) => const AIJobMatchScreen()),
+      GoRoute(path: '/ai-job-description', builder: (context, state) => const AIJobDescriptionScreen()),
+      GoRoute(path: '/ai-interview-prep', builder: (context, state) => const AIInterviewPrepScreen()),
+
     ],
   );
 }

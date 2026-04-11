@@ -12,6 +12,14 @@ class CompanyHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/ai-chat'),
+        backgroundColor: AppColors.companyGold,
+        child: const Icon(
+          Icons.smart_toy_outlined,
+          color: Colors.white,
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -112,7 +120,6 @@ class CompanyHomeScreen extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                         
                         ],
                       ),
                     ],

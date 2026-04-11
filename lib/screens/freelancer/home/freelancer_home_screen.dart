@@ -12,6 +12,14 @@ class FreelancerHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/ai-chat'),
+        backgroundColor: AppColors.primaryNavy,
+        child: const Icon(
+          Icons.smart_toy_outlined,
+          color: Colors.white,
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -93,7 +101,6 @@ class FreelancerHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Pending jobs title
                     Text(
                       'Pending jobs',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -104,7 +111,6 @@ class FreelancerHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // Pending job cards
                     _PendingJobCard(
                       title: 'Kitchen leaking problem',
                       location: 'Irbid, petra st.',
@@ -189,7 +195,6 @@ class _PendingJobCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title + location + date
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -234,18 +239,16 @@ class _PendingJobCard extends StatelessWidget {
 
           const SizedBox(height: AppDimensions.paddingM),
 
-          // Action buttons
           Row(
             children: [
               Expanded(
                 child: OutlinedButton(
                   onPressed: onAccept,
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(
-                        color: AppColors.primaryNavy),
+                    side: const BorderSide(color: AppColors.primaryNavy),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          AppDimensions.radiusFull),
+                      borderRadius:
+                          BorderRadius.circular(AppDimensions.radiusFull),
                     ),
                   ),
                   child: Text(
@@ -263,8 +266,8 @@ class _PendingJobCard extends StatelessWidget {
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.divider),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          AppDimensions.radiusFull),
+                      borderRadius:
+                          BorderRadius.circular(AppDimensions.radiusFull),
                     ),
                   ),
                   child: Text(
@@ -281,8 +284,8 @@ class _PendingJobCard extends StatelessWidget {
                   onPressed: onMessage,
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          AppDimensions.radiusFull),
+                      borderRadius:
+                          BorderRadius.circular(AppDimensions.radiusFull),
                     ),
                   ),
                   child: Text(

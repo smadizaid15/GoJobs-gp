@@ -186,6 +186,47 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
+                      // AI Generate button
+Align(
+  alignment: Alignment.centerRight,
+  child: GestureDetector(
+    onTap: () => context.push('/ai-job-description'),
+    child: Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppDimensions.paddingM,
+        vertical: AppDimensions.paddingXS,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.companyGold.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+        border: Border.all(
+          color: AppColors.companyGold.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.smart_toy_outlined,
+            color: AppColors.companyGold,
+            size: 14,
+          ),
+          const SizedBox(width: AppDimensions.paddingXS),
+          Text(
+            'Generate with AI',
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.companyGold,
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    ),
+  ),
+),
+const SizedBox(height: AppDimensions.paddingXS),
+                    
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
