@@ -166,11 +166,41 @@ class AppRouter {
       GoRoute(path: '/jobseeker/home', builder: (context, state) => const JobseekerHomeScreen()),
       GoRoute(path: '/jobseeker/search', builder: (context, state) => const JobseekerSearchScreen()),
       GoRoute(path: '/jobseeker/filter', builder: (context, state) => const JobseekerFilterScreen()),
-      GoRoute(path: '/jobseeker/job-detail', builder: (context, state) => const JobseekerJobDetailScreen()),
-      GoRoute(path: '/jobseeker/company-profile', builder: (context, state) => const JobseekerCompanyProfileScreen()),
-      GoRoute(path: '/jobseeker/upload-cv', builder: (context, state) => const JobseekerUploadCvScreen()),
-      GoRoute(path: '/jobseeker/application-success', builder: (context, state) => const JobseekerApplicationSuccessScreen()),
-      GoRoute(path: '/jobseeker/my-application', builder: (context, state) => const JobseekerMyApplicationScreen()),
+      GoRoute(
+  path: '/jobseeker/job-detail',
+  builder: (context, state) {
+    final job = state.extra as Map<String, dynamic>?;
+    return JobseekerJobDetailScreen(job: job);
+  },
+),
+      GoRoute(
+  path: '/jobseeker/company-profile',
+  builder: (context, state) {
+    final job = state.extra as Map<String, dynamic>?;
+    return JobseekerCompanyProfileScreen(job: job);
+  },
+),
+      GoRoute(
+  path: '/jobseeker/upload-cv',
+  builder: (context, state) {
+    final job = state.extra as Map<String, dynamic>?;
+    return JobseekerUploadCvScreen(job: job);
+  },
+),
+      GoRoute(
+  path: '/jobseeker/application-success',
+  builder: (context, state) {
+    final job = state.extra as Map<String, dynamic>?;
+    return JobseekerApplicationSuccessScreen(job: job);
+  },
+),
+      GoRoute(
+  path: '/jobseeker/my-application',
+  builder: (context, state) {
+    final job = state.extra as Map<String, dynamic>?;
+    return JobseekerMyApplicationScreen(job: job);
+  },
+),
       GoRoute(path: '/jobseeker/saved', builder: (context, state) => const JobseekerSavedScreen()),
       GoRoute(path: '/jobseeker/messages', builder: (context, state) => const JobseekerMessagesScreen()),
       GoRoute(path: '/jobseeker/chat', builder: (context, state) => const JobseekerChatScreen()),
@@ -224,10 +254,21 @@ class AppRouter {
 
       //AI
       GoRoute(path: '/ai-chat', builder: (context, state) => const AIChatScreen()),
-      GoRoute(path: '/ai-job-match', builder: (context, state) => const AIJobMatchScreen()),
+      GoRoute(
+  path: '/ai-job-match',
+  builder: (context, state) {
+    final job = state.extra as Map<String, dynamic>?;
+    return AIJobMatchScreen(job: job);
+  },
+),GoRoute(
+  path: '/ai-interview-prep',
+  builder: (context, state) {
+    final job = state.extra as Map<String, dynamic>?;
+    return AIInterviewPrepScreen(job: job);
+  },
+),
       GoRoute(path: '/ai-job-description', builder: (context, state) => const AIJobDescriptionScreen()),
-      GoRoute(path: '/ai-interview-prep', builder: (context, state) => const AIInterviewPrepScreen()),
-
+    
     ],
   );
 }

@@ -5,10 +5,18 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 
 class JobseekerMyApplicationScreen extends StatelessWidget {
-  const JobseekerMyApplicationScreen({super.key});
+  final Map<String, dynamic>? job;
+
+  const JobseekerMyApplicationScreen({super.key, this.job});
 
   @override
   Widget build(BuildContext context) {
+    final title = job?['title'] ?? 'Head Manager';
+    final company = job?['companyName'] ?? 'Calma Space';
+    final location = job?['location'] ?? 'Irbid, Jordan';
+    final employmentType = job?['employmentType'] ?? 'Full time';
+    final workplaceType = job?['workplaceType'] ?? 'On-site';
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
@@ -21,13 +29,10 @@ class JobseekerMyApplicationScreen extends StatelessWidget {
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Back button
               GestureDetector(
                 onTap: () => context.pop(),
-                child: const Icon(
-                  Icons.arrow_back,
-                  color: AppColors.textPrimary,
-                ),
+                child: const Icon(Icons.arrow_back,
+                    color: AppColors.textPrimary),
               ),
 
               const SizedBox(height: AppDimensions.paddingL),
@@ -42,7 +47,6 @@ class JobseekerMyApplicationScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Company logo
               Center(
                 child: Container(
                   width: 60,
@@ -52,18 +56,15 @@ class JobseekerMyApplicationScreen extends StatelessWidget {
                     borderRadius:
                         BorderRadius.circular(AppDimensions.radiusM),
                   ),
-                  child: const Icon(
-                    Icons.business,
-                    color: AppColors.textSecondary,
-                    size: 30,
-                  ),
+                  child: const Icon(Icons.business,
+                      color: AppColors.textSecondary, size: 30),
                 ),
               ),
 
               const SizedBox(height: AppDimensions.paddingM),
 
               Text(
-                'Head Manager',
+                title,
                 style: AppTextStyles.heading3.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -73,7 +74,7 @@ class JobseekerMyApplicationScreen extends StatelessWidget {
               const SizedBox(height: AppDimensions.paddingXS),
 
               Text(
-                'Calma space • Irbid, Jordan',
+                '$company • $location',
                 style: AppTextStyles.bodySmall.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -82,7 +83,7 @@ class JobseekerMyApplicationScreen extends StatelessWidget {
               const SizedBox(height: AppDimensions.paddingXS),
 
               Text(
-                '• Updated by recruiter 8 hours ago',
+                '• Application submitted',
                 style: AppTextStyles.bodySmall.copyWith(
                   color: AppColors.textSecondary,
                   fontSize: 10,
@@ -91,7 +92,6 @@ class JobseekerMyApplicationScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Job details
               Text(
                 'Job details',
                 style: AppTextStyles.bodyMedium.copyWith(
@@ -102,13 +102,13 @@ class JobseekerMyApplicationScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingS),
 
-              _DetailItem(text: 'Senior designer'),
-              _DetailItem(text: 'Full time'),
-              _DetailItem(text: '1-3 Years work experience'),
+              _DetailItem(text: title),
+              _DetailItem(text: employmentType),
+              _DetailItem(text: workplaceType),
+              _DetailItem(text: location),
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Application details
               Text(
                 'Application details',
                 style: AppTextStyles.bodyMedium.copyWith(
@@ -123,37 +123,32 @@ class JobseekerMyApplicationScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // CV file
               Container(
                 padding: const EdgeInsets.all(AppDimensions.paddingM),
                 decoration: BoxDecoration(
                   color: AppColors.purpleButton,
                   borderRadius:
                       BorderRadius.circular(AppDimensions.radiusM),
-                  border:
-                      Border.all(color: AppColors.purpleButtonBorder),
+                  border: Border.all(color: AppColors.purpleButtonBorder),
                 ),
                 child: Row(
                   children: [
-                    const Icon(
-                      Icons.picture_as_pdf,
-                      color: Colors.red,
-                      size: 32,
-                    ),
+                    const Icon(Icons.picture_as_pdf,
+                        color: Colors.red, size: 32),
                     const SizedBox(width: AppDimensions.paddingM),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Zaid Kilany - CV - Head barista',
+                            'CV - $title',
                             style: AppTextStyles.bodySmall.copyWith(
                               fontWeight: FontWeight.w600,
                               color: AppColors.textPrimary,
                             ),
                           ),
                           Text(
-                            '867 Kb • 14 Feb 2022 at 11:30 am',
+                            'Submitted successfully',
                             style: AppTextStyles.bodySmall.copyWith(
                               color: AppColors.textSecondary,
                               fontSize: 10,
@@ -168,16 +163,13 @@ class JobseekerMyApplicationScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Apply for more jobs
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
                   onPressed: () => context.go('/jobseeker/search'),
-                  child: Text(
-                    'APPLY FOR MORE JOBS',
-                    style: AppTextStyles.buttonText,
-                  ),
+                  child: Text('APPLY FOR MORE JOBS',
+                      style: AppTextStyles.buttonText),
                 ),
               ),
 

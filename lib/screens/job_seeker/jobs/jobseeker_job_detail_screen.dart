@@ -5,10 +5,20 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 
 class JobseekerJobDetailScreen extends StatelessWidget {
-  const JobseekerJobDetailScreen({super.key});
+  final Map<String, dynamic>? job;
+
+  const JobseekerJobDetailScreen({super.key, this.job});
 
   @override
   Widget build(BuildContext context) {
+    final title = job?['title'] ?? 'Head Manager';
+    final company = job?['companyName'] ?? 'Calma Space';
+    final location = job?['location'] ?? 'Irbid, Jordan';
+    final workplaceType = job?['workplaceType'] ?? 'On-site';
+    final employmentType = job?['employmentType'] ?? 'Full time';
+    final description = job?['description'] ??
+        'The Head Manager oversees all daily operations of the coffee house, ensuring a smooth, efficient, and welcoming environment for both customers and staff.';
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
@@ -54,7 +64,7 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: AppDimensions.paddingS),
                     Text(
-                      'Calma Space',
+                      company,
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -75,7 +85,7 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                     // Title
                     Center(
                       child: Text(
-                        'Head Manager',
+                        title,
                         style: AppTextStyles.heading3.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
@@ -91,21 +101,14 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Irbid',
+                            location,
                             style: AppTextStyles.bodySmall.copyWith(
                               color: AppColors.textSecondary,
                             ),
                           ),
                           const Text(' • '),
                           Text(
-                            'Calma Space',
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                          const Text(' • '),
-                          Text(
-                            '1 day ago',
+                            company,
                             style: AppTextStyles.bodySmall.copyWith(
                               color: AppColors.textSecondary,
                             ),
@@ -119,8 +122,7 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                     // View company button
                     Center(
                       child: OutlinedButton(
-                        onPressed: () =>
-                            context.push('/jobseeker/company-profile'),
+                        onPressed: () => context.push('/jobseeker/company-profile', extra: job),
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(
                               color: AppColors.purpleButtonBorder),
@@ -138,55 +140,65 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+
                     const SizedBox(height: AppDimensions.paddingS),
-Center(
-  child: OutlinedButton.icon(
-    onPressed: () => context.push('/ai-job-match'),
-    icon: const Icon(
-      Icons.smart_toy_outlined,
-      size: 16,
-      color: AppColors.primaryNavy,
-    ),
-    label: Text(
-      'Check Match Score',
-      style: AppTextStyles.bodySmall.copyWith(
-        color: AppColors.primaryNavy,
-      ),
-    ),
-    style: OutlinedButton.styleFrom(
-      side: const BorderSide(color: AppColors.purpleButtonBorder),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
-      ),
-      backgroundColor: AppColors.purpleButton,
-    ),
-  ),
-),
- 
- const SizedBox(height: AppDimensions.paddingXS),
-Center(
-  child: OutlinedButton.icon(
-    onPressed: () => context.push('/ai-interview-prep'),
-    icon: const Icon(
-      Icons.record_voice_over_outlined,
-      size: 16,
-      color: AppColors.primaryNavy,
-    ),
-    label: Text(
-      'Interview Prep',
-      style: AppTextStyles.bodySmall.copyWith(
-        color: AppColors.primaryNavy,
-      ),
-    ),
-    style: OutlinedButton.styleFrom(
-      side: const BorderSide(color: AppColors.purpleButtonBorder),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
-      ),
-      backgroundColor: AppColors.purpleButton,
-    ),
-  ),
-),
+
+                    Center(
+                      child: OutlinedButton.icon(
+                        onPressed: () => context.push('/ai-job-match',
+                            extra: job),
+                        icon: const Icon(
+                          Icons.smart_toy_outlined,
+                          size: 16,
+                          color: AppColors.primaryNavy,
+                        ),
+                        label: Text(
+                          'Check Match Score',
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.primaryNavy,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(
+                              color: AppColors.purpleButtonBorder),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                AppDimensions.radiusFull),
+                          ),
+                          backgroundColor: AppColors.purpleButton,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: AppDimensions.paddingXS),
+
+                    Center(
+                      child: OutlinedButton.icon(
+                        onPressed: () => context.push('/ai-interview-prep',
+                            extra: job),
+                        icon: const Icon(
+                          Icons.record_voice_over_outlined,
+                          size: 16,
+                          color: AppColors.primaryNavy,
+                        ),
+                        label: Text(
+                          'Interview Prep',
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.primaryNavy,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(
+                              color: AppColors.purpleButtonBorder),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                AppDimensions.radiusFull),
+                          ),
+                          backgroundColor: AppColors.purpleButton,
+                        ),
+                      ),
+                    ),
+
                     const SizedBox(height: AppDimensions.paddingL),
 
                     // Job description
@@ -201,46 +213,11 @@ Center(
                     const SizedBox(height: AppDimensions.paddingS),
 
                     Text(
-                      'The Head Manager oversees all daily operations of the coffee house, ensuring a smooth, efficient, and welcoming environment for both customers and staff.',
+                      description,
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
                     ),
-
-                    const SizedBox(height: AppDimensions.paddingS),
-
-                    GestureDetector(
-                      onTap: () {},
-                      child: Text(
-                        'Read more',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.primaryNavy,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingL),
-
-                    // Requirements
-                    Text(
-                      'Requirements',
-                      style: AppTextStyles.bodyLarge.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingS),
-
-                    _BulletItem(
-                        text: 'Lead and supervise the coffee house team, fostering a positive and productive work environment.'),
-                    _BulletItem(
-                        text: 'Ensure consistent quality of coffee, food, and service'),
-                    _BulletItem(
-                        text: 'Resolve customer complaints and maintain high customer satisfaction.'),
-                    _BulletItem(
-                        text: 'Implement operational policies, health, and safety standards'),
 
                     const SizedBox(height: AppDimensions.paddingL),
 
@@ -256,7 +233,7 @@ Center(
                     const SizedBox(height: AppDimensions.paddingS),
 
                     Text(
-                      'Jordan, Irbid, behind sameh mall',
+                      location,
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -295,35 +272,10 @@ Center(
 
                     const SizedBox(height: AppDimensions.paddingS),
 
-                    _InfoRow(label: 'Position', value: 'Head Manager'),
-                    _InfoRow(
-                        label: 'Qualification',
-                        value: 'Bachelor\'s Degree'),
-                    _InfoRow(label: 'Experience', value: '3 Years'),
-                    _InfoRow(label: 'Job Type', value: 'Full-Time'),
-                    _InfoRow(
-                        label: 'Specialization', value: 'Managing'),
-
-                    const SizedBox(height: AppDimensions.paddingL),
-
-                    // Facilities
-                    Text(
-                      'Facilities and Others',
-                      style: AppTextStyles.bodyLarge.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingS),
-
-                    _BulletItem(text: 'Managing both floors'),
-                    _BulletItem(text: 'Leadership'),
-                    _BulletItem(text: 'Technical Catification'),
-                    _BulletItem(text: 'Meal Allowance'),
-                    _BulletItem(text: 'Transport Allowance'),
-                    _BulletItem(text: 'Regular Hours'),
-                    _BulletItem(text: 'Mondays-Fridays'),
+                    _InfoRow(label: 'Position', value: title),
+                    _InfoRow(label: 'Location', value: location),
+                    _InfoRow(label: 'Job Type', value: employmentType),
+                    _InfoRow(label: 'Workplace Type', value: workplaceType),
 
                     const SizedBox(height: AppDimensions.paddingXL),
 
@@ -332,8 +284,7 @@ Center(
                       width: double.infinity,
                       height: AppDimensions.buttonHeight,
                       child: ElevatedButton(
-                        onPressed: () =>
-                            context.push('/jobseeker/upload-cv'),
+                        onPressed: () => context.push('/jobseeker/upload-cv', extra: job),
                         child: Text(
                           'APPLY NOW',
                           style: AppTextStyles.buttonText,
@@ -348,33 +299,6 @@ Center(
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _BulletItem extends StatelessWidget {
-  final String text;
-  const _BulletItem({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppDimensions.paddingS),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('• ',
-              style: TextStyle(color: AppColors.textPrimary)),
-          Expanded(
-            child: Text(
-              text,
-              style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

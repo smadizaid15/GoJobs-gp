@@ -19,14 +19,7 @@ class JobseekerHomeScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/ai-chat'),
-        backgroundColor: AppColors.primaryNavy,
-        child: const Icon(
-          Icons.smart_toy_outlined,
-          color: Colors.white,
-        ),
-      ),
+      
       body: SafeArea(
         child: Column(
           children: [
@@ -72,6 +65,23 @@ class JobseekerHomeScreen extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: AppDimensions.paddingS),
+                            GestureDetector(
+  onTap: () => context.push('/ai-chat'),
+  child: Container(
+    width: 36,
+    height: 36,
+    decoration: BoxDecoration(
+      color: AppColors.primaryNavy,
+      borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+    ),
+    child: const Icon(
+      Icons.smart_toy_outlined,
+      color: Colors.white,
+      size: 18,
+    ),
+  ),
+),
+const SizedBox(width: AppDimensions.paddingS),
                             GestureDetector(
                               onTap: () => context.go('/jobseeker/profile'),
                               child: CircleAvatar(
@@ -179,8 +189,14 @@ class JobseekerHomeScreen extends StatelessWidget {
                                       location: job.location,
                                       type: job.workplaceType,
                                       jobType: job.employmentType,
-                                      onTap: () => context
-                                          .push('/jobseeker/job-detail'),
+                                      onTap: () => context.push('/jobseeker/job-detail', extra: {
+  'title': job.title,
+  'companyName': job.companyName,
+  'location': job.location,
+  'workplaceType': job.workplaceType,
+  'employmentType': job.employmentType,
+  'description': job.description,
+}),
                                       onSave: () {},
                                     ),
                                   ))

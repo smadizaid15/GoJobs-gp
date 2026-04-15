@@ -6,7 +6,9 @@ import '../../core/theme/app_dimensions.dart';
 import '../../services/ai_service.dart';
 
 class AIInterviewPrepScreen extends StatefulWidget {
-  const AIInterviewPrepScreen({super.key});
+  final Map<String, dynamic>? job;
+
+  const AIInterviewPrepScreen({super.key, this.job});
 
   @override
   State<AIInterviewPrepScreen> createState() =>
@@ -19,10 +21,6 @@ class _AIInterviewPrepScreenState extends State<AIInterviewPrepScreen> {
   List<String> _questions = [];
   int? _expandedIndex;
 
-  final String _jobTitle = 'Head Manager';
-  final String _jobDescription =
-      'The Head Manager oversees all daily operations of the coffee house, ensuring a smooth, efficient, and welcoming environment.';
-
   @override
   void initState() {
     super.initState();
@@ -30,11 +28,15 @@ class _AIInterviewPrepScreenState extends State<AIInterviewPrepScreen> {
   }
 
   Future<void> _getQuestions() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _expandedIndex = null;
+    });
     try {
       final questions = await _aiService.getInterviewQuestions(
-        jobTitle: _jobTitle,
-        jobDescription: _jobDescription,
+        jobTitle: widget.job?['title'] ?? 'Head Manager',
+        jobDescription: widget.job?['description'] ??
+            'The Head Manager oversees all daily operations of the coffee house, ensuring a smooth, efficient, and welcoming environment.',
       );
       setState(() => _questions = questions);
     } catch (e) {
@@ -53,12 +55,13 @@ class _AIInterviewPrepScreenState extends State<AIInterviewPrepScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final title = widget.job?['title'] ?? 'Head Manager';
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: Column(
           children: [
-            // Header
             Container(
               padding: const EdgeInsets.all(AppDimensions.paddingL),
               decoration: const BoxDecoration(
@@ -101,12 +104,13 @@ class _AIInterviewPrepScreenState extends State<AIInterviewPrepScreen> {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryOrange.withValues(alpha: 0.2),
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusFull),
+                      color:
+                          AppColors.primaryOrange.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusFull),
                       border: Border.all(
-                          color:
-                              AppColors.primaryOrange.withValues(alpha: 0.5)),
+                          color: AppColors.primaryOrange
+                              .withValues(alpha: 0.5)),
                     ),
                     child: Text(
                       'AI Powered',
@@ -130,7 +134,8 @@ class _AIInterviewPrepScreenState extends State<AIInterviewPrepScreen> {
                     // Job info
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(AppDimensions.paddingM),
+                      padding:
+                          const EdgeInsets.all(AppDimensions.paddingM),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius:
@@ -138,16 +143,14 @@ class _AIInterviewPrepScreenState extends State<AIInterviewPrepScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(
-                            Icons.work_outline,
-                            color: AppColors.primaryOrange,
-                          ),
+                          const Icon(Icons.work_outline,
+                              color: AppColors.primaryOrange),
                           const SizedBox(width: AppDimensions.paddingM),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                _jobTitle,
+                                title,
                                 style: AppTextStyles.bodyMedium.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.textPrimary,
@@ -189,17 +192,18 @@ class _AIInterviewPrepScreenState extends State<AIInterviewPrepScreen> {
                     if (_isLoading)
                       Container(
                         width: double.infinity,
-                        padding:
-                            const EdgeInsets.all(AppDimensions.paddingXL),
+                        padding: const EdgeInsets.all(
+                            AppDimensions.paddingXL),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius:
-                              BorderRadius.circular(AppDimensions.radiusL),
+                          borderRadius: BorderRadius.circular(
+                              AppDimensions.radiusL),
                         ),
                         child: Column(
                           children: [
                             const CircularProgressIndicator(),
-                            const SizedBox(height: AppDimensions.paddingM),
+                            const SizedBox(
+                                height: AppDimensions.paddingM),
                             Text(
                               'Generating interview questions...',
                               style: AppTextStyles.bodySmall.copyWith(
@@ -232,11 +236,13 @@ class _AIInterviewPrepScreenState extends State<AIInterviewPrepScreen> {
                                   AppDimensions.radiusL),
                               border: isExpanded
                                   ? Border.all(
-                                      color: AppColors.purpleButtonBorder)
+                                      color:
+                                          AppColors.purpleButtonBorder)
                                   : null,
                             ),
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
@@ -267,8 +273,8 @@ class _AIInterviewPrepScreenState extends State<AIInterviewPrepScreen> {
                                     Expanded(
                                       child: Text(
                                         _questions[index],
-                                        style:
-                                            AppTextStyles.bodySmall.copyWith(
+                                        style: AppTextStyles.bodySmall
+                                            .copyWith(
                                           color: AppColors.textPrimary,
                                           fontWeight: isExpanded
                                               ? FontWeight.w600
@@ -287,7 +293,8 @@ class _AIInterviewPrepScreenState extends State<AIInterviewPrepScreen> {
                                 if (isExpanded) ...[
                                   const SizedBox(
                                       height: AppDimensions.paddingM),
-                                  const Divider(color: AppColors.divider),
+                                  const Divider(
+                                      color: AppColors.divider),
                                   const SizedBox(
                                       height: AppDimensions.paddingS),
                                   Row(
@@ -298,7 +305,8 @@ class _AIInterviewPrepScreenState extends State<AIInterviewPrepScreen> {
                                         size: 16,
                                       ),
                                       const SizedBox(
-                                          width: AppDimensions.paddingXS),
+                                          width:
+                                              AppDimensions.paddingXS),
                                       Text(
                                         'Practice your answer out loud!',
                                         style: AppTextStyles.bodySmall
@@ -322,10 +330,8 @@ class _AIInterviewPrepScreenState extends State<AIInterviewPrepScreen> {
                         height: AppDimensions.buttonHeight,
                         child: OutlinedButton.icon(
                           onPressed: _getQuestions,
-                          icon: const Icon(
-                            Icons.refresh,
-                            color: AppColors.primaryNavy,
-                          ),
+                          icon: const Icon(Icons.refresh,
+                              color: AppColors.primaryNavy),
                           label: Text(
                             'REGENERATE QUESTIONS',
                             style: AppTextStyles.bodySmall.copyWith(
