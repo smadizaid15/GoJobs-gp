@@ -29,14 +29,13 @@ class JobService {
 
   // ─── GET ALL ACTIVE JOBS ──────────────────────────────
   Stream<List<JobModel>> getActiveJobs() {
-    return _firestore
-        .collection('jobs')
-        .where('isActive', isEqualTo: true)
-        .orderBy('createdAt', descending: true)
-        .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => JobModel.fromFirestore(doc)).toList());
-  }
+  return _firestore
+      .collection('jobs')
+      .where('isActive', isEqualTo: true)
+      .snapshots()
+      .map((snapshot) =>
+          snapshot.docs.map((doc) => JobModel.fromFirestore(doc)).toList());
+}
 
   // ─── GET COMPANY JOBS ─────────────────────────────────
   Stream<List<JobModel>> getCompanyJobs(String companyId) {

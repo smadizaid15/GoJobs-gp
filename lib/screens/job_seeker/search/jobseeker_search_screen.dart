@@ -188,8 +188,14 @@ class _JobseekerSearchScreenState extends State<JobseekerSearchScreen> {
                     location: 'Irbid, Jordan',
                     tags: ['Design', 'Full time', 'Senior designer'],
                     salary: 'JOD 750/Mo',
-                    onTap: () =>
-                        context.push('/jobseeker/job-detail'),
+                    onTap: () => context.push('/jobseeker/job-detail', extra: {
+  'title': 'UI/UX Designer',
+  'companyName': 'wowie inc',
+  'location': 'Irbid, Jordan',
+  'workplaceType': 'On-site',
+  'employmentType': 'Full time',
+  'description': 'Looking for a talented UI/UX Designer to join our team.',
+}),
                     onSave: () {},
                   ),
                   const SizedBox(height: AppDimensions.paddingM),

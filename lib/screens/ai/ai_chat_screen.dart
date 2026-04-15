@@ -18,6 +18,7 @@ class _AIChatScreenState extends State<AIChatScreen> {
   final List<Map<String, String>> _messages = [];
   bool _isLoading = false;
 
+
   @override
   void initState() {
     super.initState();
@@ -93,22 +94,31 @@ class _AIChatScreenState extends State<AIChatScreen> {
                   end: Alignment.bottomRight,
                 ),
               ),
+              
               child: Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryOrange,
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusM),
-                    ),
-                    child: const Icon(
-                      Icons.smart_toy_outlined,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
+  children: [
+    GestureDetector(
+      onTap: () => Navigator.of(context).pop(),
+      child: const Icon(
+        Icons.arrow_back,
+        color: Colors.white,
+      ),
+    ),
+    const SizedBox(width: AppDimensions.paddingM),
+    Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: AppColors.primaryOrange,
+        borderRadius:
+            BorderRadius.circular(AppDimensions.radiusM),
+      ),
+      child: const Icon(
+        Icons.smart_toy_outlined,
+        color: Colors.white,
+        size: 24,
+      ),
+    ),
                   const SizedBox(width: AppDimensions.paddingM),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

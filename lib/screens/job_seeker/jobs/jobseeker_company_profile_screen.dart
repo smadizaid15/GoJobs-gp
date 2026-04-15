@@ -5,10 +5,16 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 
 class JobseekerCompanyProfileScreen extends StatelessWidget {
-  const JobseekerCompanyProfileScreen({super.key});
+  final Map<String, dynamic>? job;
+
+  const JobseekerCompanyProfileScreen({super.key, this.job});
 
   @override
   Widget build(BuildContext context) {
+    final title = job?['title'] ?? 'Head Manager';
+    final company = job?['companyName'] ?? 'Calma Space';
+    final location = job?['location'] ?? 'Irbid, Jordan';
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
@@ -18,7 +24,6 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Back + more
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,
@@ -28,22 +33,17 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () => context.pop(),
-                      child: const Icon(
-                        Icons.arrow_back,
-                        color: AppColors.textPrimary,
-                      ),
+                      child: const Icon(Icons.arrow_back,
+                          color: AppColors.textPrimary),
                     ),
-                    const Icon(
-                      Icons.more_vert,
-                      color: AppColors.textPrimary,
-                    ),
+                    const Icon(Icons.more_vert,
+                        color: AppColors.textPrimary),
                   ],
                 ),
               ),
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Company logo + name
               Center(
                 child: Column(
                   children: [
@@ -55,15 +55,12 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
                         borderRadius:
                             BorderRadius.circular(AppDimensions.radiusL),
                       ),
-                      child: const Icon(
-                        Icons.business,
-                        color: AppColors.textSecondary,
-                        size: 40,
-                      ),
+                      child: const Icon(Icons.business,
+                          color: AppColors.textSecondary, size: 40),
                     ),
                     const SizedBox(height: AppDimensions.paddingS),
                     Text(
-                      'Calma Space',
+                      company,
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -81,10 +78,9 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Job title
                     Center(
                       child: Text(
-                        'Head Manager',
+                        title,
                         style: AppTextStyles.heading3.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
@@ -98,15 +94,11 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Google',
+                          Text(company,
                               style: AppTextStyles.bodySmall.copyWith(
                                   color: AppColors.textSecondary)),
                           const Text(' • '),
-                          Text('Calma Space',
-                              style: AppTextStyles.bodySmall.copyWith(
-                                  color: AppColors.textSecondary)),
-                          const Text(' • '),
-                          Text('1 day ago',
+                          Text(location,
                               style: AppTextStyles.bodySmall.copyWith(
                                   color: AppColors.textSecondary)),
                         ],
@@ -115,7 +107,6 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // About company
                     Text(
                       'About Company',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -127,7 +118,7 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
                     const SizedBox(height: AppDimensions.paddingS),
 
                     Text(
-                      'Calma Space is a thriving coffee house with three branches, dedicated to creating a warm, welcoming environment for every guest.',
+                      '$company is a company based in $location, dedicated to excellence and creating great opportunities for its employees.',
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -136,25 +127,14 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
                     const SizedBox(height: AppDimensions.paddingM),
 
                     _CompanyInfoRow(
-                        label: 'Facebook',
-                        value: 'https://www.calmaspace.com',
-                        isLink: true),
+                        label: 'Company', value: company),
                     _CompanyInfoRow(
-                        label: 'Industry', value: 'Coffee house'),
+                        label: 'Location', value: location),
                     _CompanyInfoRow(
-                        label: 'Employee size', value: '326 Employees'),
-                    _CompanyInfoRow(
-                        label: 'Head office',
-                        value: 'thaqafa roundabout, Irbid, Jordan'),
-                    _CompanyInfoRow(label: 'Type', value: 'Coffee house'),
-                    _CompanyInfoRow(label: 'Since', value: '2022'),
-                    _CompanyInfoRow(
-                        label: 'Specialization',
-                        value: 'Coffee house, people pleasing, etc'),
+                        label: 'Open Position', value: title),
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Company gallery
                     Text(
                       'Company Gallery',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -175,10 +155,8 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(
                                   AppDimensions.radiusM),
                             ),
-                            child: const Icon(
-                              Icons.image_outlined,
-                              color: AppColors.textSecondary,
-                            ),
+                            child: const Icon(Icons.image_outlined,
+                                color: AppColors.textSecondary),
                           ),
                         ),
                         const SizedBox(width: AppDimensions.paddingS),
@@ -191,12 +169,9 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
                                   AppDimensions.radiusM),
                             ),
                             child: const Center(
-                              child: Text(
-                                '15 pictures',
-                                style: TextStyle(
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
+                              child: Text('15 pictures',
+                                  style: TextStyle(
+                                      color: AppColors.textSecondary)),
                             ),
                           ),
                         ),
@@ -205,15 +180,8 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Bookmark
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.bookmark_border,
-                          color: AppColors.textSecondary,
-                        ),
-                      ],
-                    ),
+                    const Icon(Icons.bookmark_border,
+                        color: AppColors.textSecondary),
 
                     const SizedBox(height: AppDimensions.paddingXL),
                   ],
@@ -258,8 +226,9 @@ class _CompanyInfoRow extends StatelessWidget {
               color: isLink
                   ? AppColors.primaryOrange
                   : AppColors.textSecondary,
-              decoration:
-                  isLink ? TextDecoration.underline : TextDecoration.none,
+              decoration: isLink
+                  ? TextDecoration.underline
+                  : TextDecoration.none,
             ),
           ),
         ],
