@@ -24,33 +24,6 @@ Jordan has a fragmented job market with most listings scattered across social me
 
 ---
 
-## 📸 Screenshots
-
-<table>
-  <tr>
-    <td align="center"><b>Onboarding</b></td>
-    <td align="center"><b>Login</b></td>
-    <td align="center"><b>Job Seeker Home</b></td>
-  </tr>
-  <tr>
-    <td><img src="assets/screenshots/onboarding.png" width="200"/></td>
-    <td><img src="assets/screenshots/login.png" width="200"/></td>
-    <td><img src="assets/screenshots/home.png" width="200"/></td>
-  </tr>
-  <tr>
-    <td align="center"><b>Job Detail</b></td>
-    <td align="center"><b>Company Dashboard</b></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td><img src="assets/screenshots/job_detail.png" width="200"/></td>
-    <td><img src="assets/screenshots/company_dashboard.png" width="200"/></td>
-    <td></td>
-  </tr>
-</table>
-
---
-
 ## ✨ Features
 
 ### 👤 For Applicants (Job Seekers / Freelancers / Students)
