@@ -101,7 +101,7 @@ class StudentProfileScreen extends StatelessWidget {
 
                           const SizedBox(height: AppDimensions.paddingM),
 
-                          // Edit profile button
+                          // Edit profile 
                           GestureDetector(
                             onTap: () => context.go('/student/edit-profile'),
                             child: Container(
@@ -141,7 +141,7 @@ class StudentProfileScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Profile info form
+                    // Profile info 
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppDimensions.paddingL,
@@ -244,7 +244,7 @@ class StudentProfileScreen extends StatelessWidget {
 
                           const SizedBox(height: AppDimensions.paddingXL),
 
-                          // Save button
+                          // Save 
                           SizedBox(
                             width: double.infinity,
                             height: AppDimensions.buttonHeight,

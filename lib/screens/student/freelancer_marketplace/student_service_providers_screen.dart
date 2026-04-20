@@ -25,7 +25,7 @@ class StudentServiceProvidersScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Back + title
+                    // Back and title
                     Row(
                       children: [
                         GestureDetector(
@@ -49,7 +49,7 @@ class StudentServiceProvidersScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Service provider cards
+                    // Service provider 
                     _ServiceProviderCard(
                       name: 'Fares Masaadeh',
                       profession: 'Plumber',
@@ -123,7 +123,7 @@ class _ServiceProviderCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Top row - time + more
+          // Top row (time + more)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -144,7 +144,7 @@ class _ServiceProviderCard extends StatelessWidget {
 
           const SizedBox(height: AppDimensions.paddingS),
 
-          // Avatar + name + profession
+          // Avatar and name and profession
           Row(
             children: [
               CircleAvatar(

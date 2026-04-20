@@ -164,10 +164,10 @@ class FreelancerSettingsScreen extends StatelessWidget {
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
                   onPressed: () async {
-  final authProvider = Provider.of<AuthProvider>(context, listen: false);
-  await authProvider.logout();
-  if (context.mounted) context.go('/welcome');
-},
+                   final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                   await authProvider.logout();
+                   if (context.mounted) context.go('/welcome');
+                   },
                   child: Text('YES', style: AppTextStyles.buttonText),
                 ),
               ),

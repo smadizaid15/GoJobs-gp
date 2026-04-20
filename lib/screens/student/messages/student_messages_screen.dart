@@ -24,7 +24,7 @@ class StudentMessagesScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Title row
+                    // Title 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -53,7 +53,7 @@ class StudentMessagesScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // Search bar
+                    // Search 
                     Container(
                       height: 44,
                       padding: const EdgeInsets.symmetric(
@@ -191,7 +191,7 @@ class _MessageTile extends StatelessWidget {
 
             const SizedBox(width: AppDimensions.paddingM),
 
-            // Name & message
+            // Name and message
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,7 +215,7 @@ class _MessageTile extends StatelessWidget {
               ),
             ),
 
-            // Time + unread + delete
+            // Time and unread and delete
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [

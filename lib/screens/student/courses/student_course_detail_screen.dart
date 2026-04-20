@@ -18,7 +18,7 @@ class StudentCourseDetailScreen extends StatelessWidget {
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Back button
+              //go back 
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,
@@ -34,7 +34,7 @@ class StudentCourseDetailScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Company logo + name
+              // Company logo and name
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,
@@ -94,7 +94,7 @@ class StudentCourseDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingS),
 
-                    // Location + type + price row
+                    // Location and type and price 
                     Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -125,7 +125,7 @@ class StudentCourseDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // View enterprise button
+                    // View enterprise 
                     Center(
                       child: OutlinedButton(
                         onPressed: () {},
@@ -218,13 +218,13 @@ class StudentCourseDetailScreen extends StatelessWidget {
                       height: AppDimensions.buttonHeight,
                       child: ElevatedButton(
                         onPressed: () {
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(
-      content: Text('Successfully enrolled!'),
-      backgroundColor: AppColors.primaryNavy,
-    ),
-  );
-},
+                          ScaffoldMessenger.of(context).showSnackBar(
+                           const SnackBar(
+                            content: Text('Successfully enrolled!'),
+                             backgroundColor: AppColors.primaryNavy,
+                            ),
+                          );
+                        },
                         child: Text(
                           'ENROLL NOW',
                           style: AppTextStyles.buttonText,

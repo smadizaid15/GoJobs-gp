@@ -13,7 +13,7 @@ class ApplicationService {
     required String cvUrl,
     String? additionalInfo,
   }) async {
-    // Check if already applied
+    // Check if applied before
     final existing = await _firestore
         .collection('applications')
         .where('jobId', isEqualTo: jobId)

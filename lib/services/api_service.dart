@@ -8,10 +8,10 @@ class AuthService {
   // Get current user
   User? get currentUser => _auth.currentUser;
 
-  // Auth state stream
+  // Auth state 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  // ─── SIGNUP ───────────────────────────────────────────
+  // signup
 
   // JobSeeker signup
   Future<UserCredential?> signUpJobSeeker({
@@ -117,7 +117,7 @@ class AuthService {
     }
   }
 
-  // ─── LOGIN ────────────────────────────────────────────
+  // login
 
   Future<UserCredential?> login({
     required String email,
@@ -134,19 +134,19 @@ class AuthService {
     }
   }
 
-  // ─── LOGOUT ───────────────────────────────────────────
+  // logout
 
   Future<void> logout() async {
     await _auth.signOut();
   }
 
-  // ─── FORGOT PASSWORD ──────────────────────────────────
+  // forgot pass
 
   Future<void> resetPassword({required String email}) async {
     await _auth.sendPasswordResetEmail(email: email);
   }
 
-  // ─── GET USER TYPE ────────────────────────────────────
+  //get user type
 
   Future<String?> getUserType(String uid) async {
     try {
@@ -158,7 +158,7 @@ class AuthService {
     }
   }
 
-  // ─── UPDATE PASSWORD ──────────────────────────────────
+  //update pass
 
   Future<void> updatePassword({
     required String currentPassword,

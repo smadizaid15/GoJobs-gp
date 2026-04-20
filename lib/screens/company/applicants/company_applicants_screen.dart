@@ -17,7 +17,7 @@ class CompanyApplicantsScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Header
+            
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(AppDimensions.paddingL),
@@ -124,7 +124,7 @@ class CompanyApplicantsScreen extends StatelessWidget {
 
             const SizedBox(height: AppDimensions.paddingL),
 
-            // Job filter tabs
+            // Job filter tab
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
@@ -170,19 +170,19 @@ class CompanyApplicantsScreen extends StatelessWidget {
 
             const SizedBox(height: AppDimensions.paddingM),
 
-           // Applicants grid
-Expanded(
-  child: StreamBuilder<List<ApplicationModel>>(
-    stream: ApplicationService().getJobApplications('all'),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return const Center(child: CircularProgressIndicator());
-      }
+           // Applicant grid
+            Expanded(
+             child: StreamBuilder<List<ApplicationModel>>(
+             stream: ApplicationService().getJobApplications('all'),
+             builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+                  }
 
-      final applications = snapshot.data ?? [];
+                    final applications = snapshot.data ?? [];
 
-      if (applications.isEmpty) {
-        return Center(
+                     if (applications.isEmpty) {
+                      return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

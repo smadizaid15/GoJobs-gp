@@ -24,7 +24,7 @@ class JobseekerMessagesScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Title row
+                    // Title 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -53,7 +53,7 @@ class JobseekerMessagesScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // Search bar
+                    // Search 
                     Container(
                       height: 44,
                       padding: const EdgeInsets.symmetric(

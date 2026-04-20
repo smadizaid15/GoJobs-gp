@@ -56,7 +56,7 @@ class _JobseekerAboutMeScreenState
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // About me text area
+              // About me text 
               Container(
                 width: double.infinity,
                 height: 200,

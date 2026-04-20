@@ -59,22 +59,22 @@ class StudentHomeScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: AppDimensions.paddingS),
                             GestureDetector(
-  onTap: () => context.push('/ai-chat'),
-  child: Container(
-    width: 36,
-    height: 36,
-    decoration: BoxDecoration(
-      color: AppColors.primaryNavy,
-      borderRadius: BorderRadius.circular(AppDimensions.radiusS),
-    ),
-    child: const Icon(
-      Icons.smart_toy_outlined,
-      color: Colors.white,
-      size: 18,
-    ),
-  ),
-),
-const SizedBox(width: AppDimensions.paddingS),
+                             onTap: () => context.push('/ai-chat'),
+                              child: Container(
+                               width: 36,
+                               height: 36,
+                               decoration: BoxDecoration(
+                                color: AppColors.primaryNavy,
+                                borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                              ),
+                               child: const Icon(
+                                 Icons.smart_toy_outlined,
+                                  color: Colors.white,
+                                  size: 18,
+                               ),
+                             ),
+                          ),
+                          const SizedBox(width: AppDimensions.paddingS),
                             GestureDetector(
                               onTap: () => context.go('/student/profile'),
                               child: CircleAvatar(

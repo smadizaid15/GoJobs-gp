@@ -16,7 +16,7 @@ class StudentInternshipListScreen extends StatelessWidget {
           children: [
             const SizedBox(height: AppDimensions.paddingL),
 
-            // Back + Search
+            // Back and Search
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
@@ -74,7 +74,7 @@ class StudentInternshipListScreen extends StatelessWidget {
 
             const SizedBox(height: AppDimensions.paddingL),
 
-            // Title
+            // title
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,

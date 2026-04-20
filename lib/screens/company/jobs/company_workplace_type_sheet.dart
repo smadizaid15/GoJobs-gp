@@ -31,7 +31,7 @@ class _CompanyWorkplaceTypeSheetState
           children: [
             const SizedBox(height: AppDimensions.paddingL),
 
-            // Header
+            
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,

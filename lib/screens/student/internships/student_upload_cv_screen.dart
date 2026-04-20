@@ -28,7 +28,7 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Back button
+              //go back 
               GestureDetector(
                 onTap: () => context.go('/student/internship-detail'),
                 child: const Icon(
@@ -113,7 +113,7 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Upload CV section
+              // Upload CV 
               Text(
                 'Upload CV',
                 style: AppTextStyles.bodyLarge.copyWith(
@@ -304,17 +304,17 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
                   onPressed: () {
-  if (!_hasUploadedCv) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Please upload your CV first!'),
-        backgroundColor: AppColors.error,
-      ),
-    );
-    return;
-  }
-  context.go('/student/application-success');
-},
+                   if (!_hasUploadedCv) {
+                     ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please upload your CV first!'),
+                          backgroundColor: AppColors.error,
+                         ),
+                       );
+                        return;
+                    }
+                  context.go('/student/application-success');
+               },
                   child: Text(
                     'APPLY NOW',
                     style: AppTextStyles.buttonText,

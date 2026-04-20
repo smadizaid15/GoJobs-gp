@@ -75,7 +75,7 @@ class _CompanyLocationPickerState extends State<CompanyLocationPicker> {
 
             const SizedBox(height: AppDimensions.paddingL),
 
-            // Search bar
+            // Search 
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,

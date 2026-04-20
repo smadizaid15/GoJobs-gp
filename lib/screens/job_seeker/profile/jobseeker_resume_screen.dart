@@ -50,7 +50,7 @@ class _JobseekerResumeScreenState
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Upload area
+              // Upload 
               GestureDetector(
                 onTap: () => setState(() => _hasResume = true),
                 child: Container(
@@ -94,7 +94,7 @@ class _JobseekerResumeScreenState
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Uploaded resume preview
+              // Uploaded resume 
               if (_hasResume) ...[
                 Container(
                   padding:

@@ -19,7 +19,7 @@ class JobseekerProfileScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    // Header
+                    
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(AppDimensions.paddingL),
@@ -93,7 +93,7 @@ class JobseekerProfileScreen extends StatelessWidget {
 
                           const SizedBox(height: AppDimensions.paddingM),
 
-                          // Edit profile button
+                          // Edit profile 
                           GestureDetector(
                            onTap: () => context.push('/jobseeker/edit-profile'),
                             child: Container(
@@ -134,7 +134,7 @@ class JobseekerProfileScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Profile sections
+                    // Profile section
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppDimensions.paddingL,

@@ -50,7 +50,7 @@ class _JobseekerEditProfileScreenState
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Back button
+              //go Back 
               GestureDetector(
                 onTap: () => context.go('/jobseeker/profile'),
                 child: const Icon(
@@ -61,7 +61,7 @@ class _JobseekerEditProfileScreenState
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Fullname
+              // Full name
               Text('Fullname', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(controller: _nameController),
@@ -151,7 +151,7 @@ class _JobseekerEditProfileScreenState
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Save button
+              // Save 
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,

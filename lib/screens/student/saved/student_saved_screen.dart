@@ -48,7 +48,7 @@ class StudentSavedScreen extends StatelessWidget {
 
                   const SizedBox(height: AppDimensions.paddingXL),
 
-                  // Find a job button
+                  // Find a job 
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppDimensions.paddingXL,

@@ -132,7 +132,7 @@ class _FreelancerSkillsScreenState
               ),
             ),
 
-            // Skills list
+            // Skills 
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(

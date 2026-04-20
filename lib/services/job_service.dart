@@ -4,7 +4,7 @@ import '../models/job_model.dart';
 class JobService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // ─── POST A JOB ───────────────────────────────────────
+  // post job
   Future<void> postJob({
     required String companyId,
     required String companyName,
@@ -27,7 +27,7 @@ class JobService {
     });
   }
 
-  // ─── GET ALL ACTIVE JOBS ──────────────────────────────
+  // get active jobs
   Stream<List<JobModel>> getActiveJobs() {
   return _firestore
       .collection('jobs')
@@ -37,7 +37,7 @@ class JobService {
           snapshot.docs.map((doc) => JobModel.fromFirestore(doc)).toList());
 }
 
-  // ─── GET COMPANY JOBS ─────────────────────────────────
+  //get company jobs
   Stream<List<JobModel>> getCompanyJobs(String companyId) {
     return _firestore
         .collection('jobs')
@@ -48,14 +48,14 @@ class JobService {
             snapshot.docs.map((doc) => JobModel.fromFirestore(doc)).toList());
   }
 
-  // ─── DELETE JOB ───────────────────────────────────────
+  //delete job
   Future<void> deleteJob(String jobId) async {
     await _firestore.collection('jobs').doc(jobId).update({
       'isActive': false,
     });
   }
 
-  // ─── UPDATE JOB ───────────────────────────────────────
+  // update job
   Future<void> updateJob({
     required String jobId,
     required String title,
@@ -73,7 +73,7 @@ class JobService {
     });
   }
 
-  // ─── SEARCH JOBS ──────────────────────────────────────
+  // search jobs
   Future<List<JobModel>> searchJobs(String query) async {
     final snapshot = await _firestore
         .collection('jobs')

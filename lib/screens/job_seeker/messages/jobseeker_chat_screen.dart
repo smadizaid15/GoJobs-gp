@@ -163,7 +163,7 @@ class _JobseekerChatScreenState extends State<JobseekerChatScreen> {
               ),
             ),
 
-            // Input bar
+            // Input 
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,

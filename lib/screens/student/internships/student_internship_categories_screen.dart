@@ -34,7 +34,7 @@ class StudentInternshipCategoriesScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Back + Search row
+                    // Back and Search row
                     Row(
                       children: [
                         GestureDetector(
