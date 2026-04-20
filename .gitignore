@@ -45,3 +45,7 @@ app.*.map.json
 /android/app/release
 
 lib/config/api_config.dart
+# Firebase secrets - DO NOT COMMIT
+google-services.json
+GoogleService-Info.plist
+lib/firebase_options.dart
