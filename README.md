@@ -1,28 +1,134 @@
-# 📍 GRADUATION PROJECT 1
+<div align="center">
 
-A cross-platform mobile application for job finding regulated to the jordanian job market.
+# 🚀 GoJobs
 
-![CI/CD Status](https://github.com/smadizaid15/gp1_mvp/actions/workflows/main.yml/badge.svg)
+### A Flutter job-finding platform built for the Jordanian market
 
-## 📂 Project Documentation
-Beyond the code, detailed documentation regarding the project research and specifications can be found in the `docs` folder:
-* [📄 View Project Documents](./docs)
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
+[![Firebase](https://img.shields.io/badge/Firebase-Firestore%20%7C%20Auth%20%7C%20Storage-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com)
+[![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart&logoColor=white)](https://dart.dev)
+[![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS-lightgrey?logo=android)](https://flutter.dev)
+[![License](https://img.shields.io/badge/License-MIT-brightgreen)](LICENSE)
 
-## 🚀 About the Project
-This project includes all the requirements specified for the gp1 ( diagrams , documentation , resources ) , include  the **MVP (Minimum Viable Product)** for our Graduation Project which demonstrates the core UI architecture and the automated deployment pipeline.
+*Graduation Project — Computer Science, Jordan University of Science and Technology, 2025–2026*
 
-**Tech Stack:**
-* **Framework:** Flutter (Dart)
-* **Design:** Figma
-* **Containerization:** Docker & Nginx
-* **CI/CD:** GitHub Actions -> Docker Hub
+</div>
 
-## 🛠 How to Run (The "Magic" Command)
-You do not need to install Flutter to run this app , The latest version is automatically containerized and hosted on Docker Hub
+---
 
-**Prerequisites:** Docker Desktop installed
+## 📖 About
 
-Run this single command in your terminal:
-``` using bash
-docker run -p 8080:80 zaidsmadii/gp1-app:latest
-then open up http://localhost:8080 
+GoJobs is a mobile job marketplace targeting the Jordanian employment market. The app connects **three types of applicants** (Job Seekers, Freelancers, and Students) with **hiring companies** — each user type getting a fully tailored experience, dedicated screens, and role-specific features.
+
+Jordan has a fragmented job market with most listings scattered across social media or outdated portals. GoJobs aims to fix that with a clean, modern mobile-first experience built entirely in Flutter and powered by Firebase.
+
+---
+
+## ✨ Features
+
+### 👤 For Applicants (Job Seekers / Freelancers / Students)
+- Browse and search job listings with real-time Firestore updates
+- Build a profile with skills, experience, and education
+- Apply to jobs directly through the app
+- In-app chat with companies
+- Real-time notifications via FCM
+- Role-specific home screens and navigation flows
+
+### 🏢 For Companies
+- Distinct branded dashboard (dark navy gradient, gold accents)
+- Post, edit, and manage job listings
+- Review applicant profiles and manage applications
+- In-app chat with candidates
+- Company logo and profile management via Firebase Storage
+
+### 🔐 Auth & Routing
+- Firebase Email/Password authentication
+- Role-based routing on login via Firestore `userType` field
+- Persistent auth state — splash screen checks session on cold start
+- Forgot password flow with Firebase email reset
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Tech |
+|---|---|
+| Framework | Flutter 3.x |
+| Language | Dart |
+| State Management | Provider |
+| Navigation | go_router |
+| Backend | Firebase (Auth, Firestore, Storage, FCM) |
+| Fonts | Google Fonts — Poppins |
+
+---
+
+## 🗂️ Project Structure
+## 🗂️ Project Structure
+lib/
+├── main.dart
+├── app_router.dart
+├── theme/
+│   └── app_colors.dart
+├── providers/
+│   └── auth_provider.dart
+├── services/
+│   └── auth_service.dart
+└── screens/
+├── shared/        # Splash, onboarding, auth screens
+├── jobseeker/     # Job seeker flow (~30 screens)
+├── freelancer/    # Freelancer-specific screens
+├── student/       # Student-specific screens
+
+---
+
+## 🚀 Getting Started
+
+```bash
+git clone https://github.com/smadizaid15/GoJobs-gp.git
+cd GoJobs-gp
+flutter pub get
+flutter run
+```
+
+### Firebase Setup
+1. Create a project at [Firebase Console](https://console.firebase.google.com)
+2. Enable **Email/Password** Authentication
+3. Set up **Firestore** and **Storage**
+4. Run `flutterfire configure` to generate `firebase_options.dart`
+
+> ⚠️ `firebase_options.dart` and `google-services.json` are gitignored. You must connect your own Firebase project.
+
+---
+
+## 👥 User Roles
+
+| `userType` | Destination |
+|---|---|
+| `jobSeeker` | Job Seeker Home |
+| `freelancer` | Freelancer Home |
+| `student` | Student Home |
+| `company` | Company Dashboard |
+
+---
+
+## 🎨 Design Tokens
+
+| Token | Value |
+|---|---|
+| Primary Navy | `#2D2B6B` |
+| Primary Orange | `#F5A623` |
+| Company Gold | `#E6A817` |
+| Background | `#F0F0F5` |
+| Font | Poppins |
+
+---
+
+## 🔮 Roadmap
+- [ ] AI-powered job recommendations
+- [ ] Arabic / RTL support
+- [ ] Resume upload and parsing
+- [ ] Advanced search filters
+
+---
+
+<div align="center">Made with ❤️ in Jordan 🇯🇴</div>
