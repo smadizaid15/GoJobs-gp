@@ -43,7 +43,7 @@ class _StudentUpdatePasswordScreenState
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Back button + title
+              // Back button and title
               Row(
                 children: [
                   GestureDetector(
@@ -66,7 +66,7 @@ class _StudentUpdatePasswordScreenState
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Old password
+              // Old pass
               Text('Old Password', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(
@@ -88,7 +88,7 @@ class _StudentUpdatePasswordScreenState
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // New password
+              // New pass
               Text('New Password', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(
@@ -110,7 +110,7 @@ class _StudentUpdatePasswordScreenState
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Confirm password
+              // Confirm pass
               Text('Confirm Password', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(
@@ -133,7 +133,7 @@ class _StudentUpdatePasswordScreenState
 
               const Spacer(),
 
-              // Update button
+              // Update 
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,

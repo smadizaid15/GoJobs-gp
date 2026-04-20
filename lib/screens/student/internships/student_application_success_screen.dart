@@ -114,7 +114,7 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // CV file
+              // CV 
               Container(
                 padding: const EdgeInsets.all(AppDimensions.paddingM),
                 decoration: BoxDecoration(
@@ -157,7 +157,7 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
 
               const Spacer(),
 
-              // Success illustration
+              // Success 
               const Icon(
                 Icons.check_circle_outline,
                 color: AppColors.primaryOrange,
@@ -186,7 +186,7 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
 
               const Spacer(),
 
-              // View application button
+              // View application 
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
@@ -212,7 +212,7 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Back to home button
+              // Back to home 
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,

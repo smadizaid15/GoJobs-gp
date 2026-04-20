@@ -15,7 +15,7 @@ class CompanyHomeScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Company header banner
+            // Company header 
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(AppDimensions.paddingL),
@@ -36,7 +36,7 @@ class CompanyHomeScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Company label
+                      // label
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppDimensions.paddingM,
@@ -72,18 +72,18 @@ class CompanyHomeScreen extends StatelessWidget {
 
                           const SizedBox(width: AppDimensions.paddingM),
                           GestureDetector(
-  onTap: () => context.push('/ai-chat'),
-  child: Container(
-    width: 36,
-    height: 36,
-    decoration: BoxDecoration(
-      color: AppColors.primaryNavy,
-      borderRadius: BorderRadius.circular(AppDimensions.radiusS),
-    ),
-    child: const Icon(
-      Icons.smart_toy_outlined,
-      color: Colors.white,
-      size: 18,
+               onTap: () => context.push('/ai-chat'),
+               child: Container(
+               width: 36,
+               height: 36,
+               decoration: BoxDecoration(
+                 color: AppColors.primaryNavy,
+                 borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                  ),
+                 child: const Icon(
+                     Icons.smart_toy_outlined,
+                      color: Colors.white,
+                       size: 18,
     ),
   ),
 ),
@@ -117,7 +117,7 @@ const SizedBox(width: AppDimensions.paddingS),
 
                   const SizedBox(height: AppDimensions.paddingL),
 
-                  // Company name + location
+                  // Company name and location
                   Row(
                     children: [
                       Column(
@@ -137,7 +137,7 @@ const SizedBox(width: AppDimensions.paddingS),
 
                   const SizedBox(height: AppDimensions.paddingL),
 
-                  // Search bar
+                  // Search 
                   Container(
                     height: 48,
                     padding: const EdgeInsets.symmetric(
@@ -218,7 +218,7 @@ const SizedBox(width: AppDimensions.paddingS),
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // Stats row 1
+                    // Stats 1
                     Row(
                       children: [
                         Expanded(
@@ -252,7 +252,7 @@ const SizedBox(width: AppDimensions.paddingS),
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // Stats row 2
+                    // Stats 2
                     Row(
                       children: [
                         Expanded(

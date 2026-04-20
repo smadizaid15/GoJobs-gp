@@ -18,7 +18,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Back button
+              //go back 
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,
@@ -34,7 +34,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Company logo + name
+              // Company logo and name
               Center(
                 child: Column(
                   children: [
@@ -86,7 +86,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingS),
 
-                    // Location + type + duration
+                    // Location and type and duration
                     Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -117,7 +117,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // View company button
+                    // View company 
                     Center(
                       child: OutlinedButton(
                         onPressed: () {},
@@ -232,7 +232,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Informations
+                    // Information
                     Text(
                       'Informations',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -272,7 +272,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingXL),
 
-                    // Apply button
+                    // Apply 
                     SizedBox(
                       width: double.infinity,
                       height: AppDimensions.buttonHeight,

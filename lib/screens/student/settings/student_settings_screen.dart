@@ -26,7 +26,7 @@ class StudentSettingsScreen extends StatelessWidget {
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Back button + title
+              // Back button and title
               Row(
                 children: [
                   GestureDetector(
@@ -57,7 +57,7 @@ class StudentSettingsScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    // Notifications toggle
+                    // Notifications 
                     _SettingsToggle(
                       icon: Icons.notifications_outlined,
                       label: 'Notifications',
@@ -67,7 +67,7 @@ class StudentSettingsScreen extends StatelessWidget {
 
                     const Divider(height: 1, color: AppColors.divider),
 
-                    // Dark mode toggle
+                    // Dark mode 
                     _SettingsToggle(
                       icon: Icons.dark_mode_outlined,
                       label: 'Dark mode',
@@ -77,7 +77,7 @@ class StudentSettingsScreen extends StatelessWidget {
 
                     const Divider(height: 1, color: AppColors.divider),
 
-                    // Password
+                    // Pass
                     _SettingsItem(
                       icon: Icons.lock_outline,
                       label: 'Password',
@@ -98,7 +98,7 @@ class StudentSettingsScreen extends StatelessWidget {
 
               const Spacer(),
 
-              // Save button
+              // Save 
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
@@ -158,10 +158,10 @@ class StudentSettingsScreen extends StatelessWidget {
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
                   onPressed: () async {
-  final authProvider = Provider.of<AuthProvider>(context, listen: false);
-  await authProvider.logout();
-  if (context.mounted) context.go('/welcome');
-},
+                    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                    await authProvider.logout();
+                    if (context.mounted) context.go('/welcome');
+                   },
                   child: Text('YES', style: AppTextStyles.buttonText),
                 ),
               ),

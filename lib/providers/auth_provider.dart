@@ -20,7 +20,6 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoggedIn => _user != null;
 
   AuthProvider() {
-    // Listen to auth state changes
     _authService.authStateChanges.listen((user) async {
       _user = user;
       if (user != null) {
@@ -32,7 +31,7 @@ class AuthProvider extends ChangeNotifier {
     });
   }
 
-  // ─── JOBSEEKER SIGNUP ─────────────────────────────────
+  //Jobseeker
   Future<bool> signUpJobSeeker({
     required String firstName,
     required String lastName,
@@ -55,7 +54,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // ─── COMPANY SIGNUP ───────────────────────────────────
+  // company
   Future<bool> signUpCompany({
     required String companyName,
     required String category,
@@ -80,7 +79,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // ─── STUDENT SIGNUP ───────────────────────────────────
+  // student
   Future<bool> signUpStudent({
     required String firstName,
     required String lastName,
@@ -103,7 +102,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // ─── LOGIN ────────────────────────────────────────────
+  // login
   Future<bool> login({
     required String email,
     required String password,
@@ -119,7 +118,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // ─── LOGOUT ───────────────────────────────────────────
+  // logout
   Future<void> logout() async {
     await _authService.logout();
     _user = null;
@@ -127,7 +126,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ─── FORGOT PASSWORD ──────────────────────────────────
+  // forgot pass
   Future<bool> resetPassword({required String email}) async {
     _setLoading();
     try {
@@ -140,7 +139,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // ─── UPDATE PASSWORD ──────────────────────────────────
+  // update pass
   Future<bool> updatePassword({
     required String currentPassword,
     required String newPassword,
@@ -159,7 +158,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // ─── HELPERS ──────────────────────────────────────────
+  // helper methods
   void _setLoading() {
     _status = AuthStatus.loading;
     _errorMessage = null;

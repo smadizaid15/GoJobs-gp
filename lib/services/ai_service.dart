@@ -40,7 +40,7 @@ class AIService {
     rethrow;
   }
 }
-  // ─── CHAT SUPPORT ─────────────────────────────────────
+  // chat support
   Future<String> getChatResponse({
     required String userMessage,
     required List<Map<String, String>> conversationHistory,
@@ -73,7 +73,7 @@ Assistant:''';
     }
   }
 
-  // ─── JOB MATCH SCORE ──────────────────────────────────
+  // job match score
   Future<Map<String, dynamic>> getJobMatchScore({
     required String jobTitle,
     required String jobDescription,
@@ -125,7 +125,7 @@ Return ONLY the JSON object, no markdown, no extra text.''';
     }
   }
 
-  // ─── JOB DESCRIPTION GENERATOR ────────────────────────
+  // job desc generator
   Future<String> generateJobDescription({
     required String jobTitle,
     required String companyName,
@@ -150,7 +150,7 @@ Keep it under 150 words. Include: brief role overview, 3-4 key responsibilities,
     }
   }
 
-  // ─── INTERVIEW PREP ───────────────────────────────────
+  // interview questions prep
   // Generates 25 questions and returns a random selection of 7
   Future<List<String>> getInterviewQuestions({
     required String jobTitle,

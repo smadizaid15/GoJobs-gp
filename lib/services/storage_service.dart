@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 class StorageService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  // ─── PICK AND UPLOAD CV ───────────────────────────────
+  // pick and upload cv
   Future<String?> pickAndUploadCV(String userId) async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -29,7 +29,7 @@ class StorageService {
     }
   }
 
-  // ─── PICK AND UPLOAD PROFILE PICTURE ─────────────────
+  // pick and upload pp
   Future<String?> pickAndUploadProfilePic(String userId) async {
     try {
       final picker = ImagePicker();
@@ -53,7 +53,7 @@ class StorageService {
     }
   }
 
-  // ─── PICK AND UPLOAD PORTFOLIO PHOTO ─────────────────
+  // pick and upload portfolio pic
   Future<String?> pickAndUploadPortfolioPhoto(String userId) async {
     try {
       final picker = ImagePicker();
@@ -80,7 +80,7 @@ class StorageService {
     }
   }
 
-  // ─── DELETE FILE ──────────────────────────────────────
+  //delete file
   Future<void> deleteFile(String url) async {
     try {
       final ref = _storage.refFromURL(url);

@@ -22,7 +22,6 @@ class _AIChatScreenState extends State<AIChatScreen> {
   @override
   void initState() {
     super.initState();
-    // Add welcome message
     _messages.add({
       'role': 'assistant',
       'content':
@@ -93,7 +92,7 @@ class _AIChatScreenState extends State<AIChatScreen> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-              ),
+              ), 
               
               child: Row(
   children: [
@@ -165,7 +164,7 @@ class _AIChatScreenState extends State<AIChatScreen> {
               ),
             ),
 
-            // Messages
+            // Message
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
@@ -185,7 +184,7 @@ class _AIChatScreenState extends State<AIChatScreen> {
               ),
             ),
 
-            // Quick suggestions
+            //suggestions
             if (_messages.length == 1) ...[
               SizedBox(
                 height: 40,
@@ -225,7 +224,7 @@ class _AIChatScreenState extends State<AIChatScreen> {
               const SizedBox(height: AppDimensions.paddingS),
             ],
 
-            // Input bar
+            // Input 
             Container(
               padding: const EdgeInsets.all(AppDimensions.paddingM),
               color: Colors.white,

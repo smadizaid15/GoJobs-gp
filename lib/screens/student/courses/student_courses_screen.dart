@@ -32,7 +32,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Search header
+            // Search 
             Container(
               padding: const EdgeInsets.all(AppDimensions.paddingL),
               decoration: const BoxDecoration(
@@ -44,7 +44,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
               ),
               child: Column(
                 children: [
-                  // Back + title
+                  // Back and title
                   Row(
                     children: [
                       GestureDetector(
@@ -67,7 +67,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                  // Search bar
+                  // Search 
                   Container(
                     height: 48,
                     padding: const EdgeInsets.symmetric(
@@ -99,7 +99,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
 
                   const SizedBox(height: AppDimensions.paddingS),
 
-                  // Location bar
+                  // Location 
                   Container(
                     height: 48,
                     padding: const EdgeInsets.symmetric(

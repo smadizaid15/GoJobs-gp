@@ -62,7 +62,7 @@ class _JobseekerLanguageScreenState
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Back button
+              //go back 
               GestureDetector(
                 onTap: () => context.go('/jobseeker/profile'),
                 child: const Icon(
@@ -73,7 +73,7 @@ class _JobseekerLanguageScreenState
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Title + Add button
+              // Title and Add button
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -110,7 +110,7 @@ class _JobseekerLanguageScreenState
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Language list
+              // Languages
               ..._languages.map((lang) {
                 return Container(
                   margin: const EdgeInsets.only(
@@ -275,7 +275,7 @@ class _JobseekerLanguageScreenState
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Save button
+              // Save 
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,

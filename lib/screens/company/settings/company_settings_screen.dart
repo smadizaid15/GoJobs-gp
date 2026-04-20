@@ -158,10 +158,10 @@ class CompanySettingsScreen extends StatelessWidget {
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
                   onPressed: () async {
-  final authProvider = Provider.of<AuthProvider>(context, listen: false);
-  await authProvider.logout();
-  if (context.mounted) context.go('/welcome');
-},
+                   final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                   await authProvider.logout();
+                   if (context.mounted) context.go('/welcome');
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.companyGold,
                   ),

@@ -40,7 +40,7 @@ class _JobseekerCheckEmailScreenState
             children: [
               const SizedBox(height: 60),
 
-              // Title
+              // title
               Text(
                 'Check Your Email',
                 style: AppTextStyles.heading1.copyWith(
@@ -52,7 +52,7 @@ class _JobseekerCheckEmailScreenState
 
               const SizedBox(height: AppDimensions.paddingS),
 
-              // Subtitle
+              // sub
               Text(
                 'We have sent the reset password to the email address smadizaid@gmail.com',
                 style: AppTextStyles.bodySmall.copyWith(
@@ -63,7 +63,7 @@ class _JobseekerCheckEmailScreenState
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Illustration
+              
               Image.asset(
                 'assets/images/undraw_messagelogo.png',
                 height: 180,
@@ -72,7 +72,7 @@ class _JobseekerCheckEmailScreenState
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Enter new password
+              //  new password
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text('Enter new password', style: AppTextStyles.labelText),

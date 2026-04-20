@@ -70,7 +70,7 @@ class _JobseekerSkillsScreenState extends State<JobseekerSkillsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Back button
+                  //go back 
                   GestureDetector(
                     onTap: () => context.go('/jobseeker/profile'),
                     child: const Icon(
@@ -91,7 +91,7 @@ class _JobseekerSkillsScreenState extends State<JobseekerSkillsScreen> {
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                  // Search bar
+                  // Search 
                   Container(
                     height: 48,
                     padding: const EdgeInsets.symmetric(
@@ -137,7 +137,7 @@ class _JobseekerSkillsScreenState extends State<JobseekerSkillsScreen> {
               ),
             ),
 
-            // Skills list
+            // Skills 
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(
@@ -191,7 +191,7 @@ class _JobseekerSkillsScreenState extends State<JobseekerSkillsScreen> {
               ),
             ),
 
-            // Selected skills tags
+            // Selected skills 
             if (_selectedSkills.isNotEmpty) ...[
               Container(
                 width: double.infinity,

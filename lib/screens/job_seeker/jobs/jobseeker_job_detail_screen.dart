@@ -28,7 +28,7 @@ class JobseekerJobDetailScreen extends StatelessWidget {
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Back button
+              //go Back 
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,
@@ -119,7 +119,7 @@ class JobseekerJobDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // View company button
+                    // View company 
                     Center(
                       child: OutlinedButton(
                         onPressed: () => context.push('/jobseeker/company-profile', extra: job),
@@ -261,7 +261,7 @@ class JobseekerJobDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Informations
+                    // Information
                     Text(
                       'Informations',
                       style: AppTextStyles.bodyLarge.copyWith(

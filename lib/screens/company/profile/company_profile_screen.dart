@@ -62,7 +62,7 @@ class CompanyProfileScreen extends StatelessWidget {
 
                           const SizedBox(height: AppDimensions.paddingM),
 
-                          // Company logo
+                          //  logo
                           Container(
                             width: 80,
                             height: 80,
@@ -102,7 +102,7 @@ class CompanyProfileScreen extends StatelessWidget {
 
                           const SizedBox(height: AppDimensions.paddingM),
 
-                          // Edit profile button
+                          // Edit profile 
                           GestureDetector(
                             onTap: () =>
                                 context.go('/company/edit-profile'),
@@ -144,7 +144,7 @@ class CompanyProfileScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Profile tabs
+                    // Profile tab
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppDimensions.paddingL,

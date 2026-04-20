@@ -50,7 +50,7 @@ class _FreelancerPortfolioScreenState
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Upload area
+              // Upload pic
               GestureDetector(
                 onTap: () => setState(() => _hasPhotos = true),
                 child: Container(
@@ -135,7 +135,7 @@ class _FreelancerPortfolioScreenState
               const Spacer(),
 
               if (_hasPhotos) ...[
-                // Save changes bottom sheet trigger
+                // Save changes 
                 SizedBox(
                   width: double.infinity,
                   height: AppDimensions.buttonHeight,

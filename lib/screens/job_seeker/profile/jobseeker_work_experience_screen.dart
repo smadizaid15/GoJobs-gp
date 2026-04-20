@@ -45,7 +45,7 @@ class _JobseekerWorkExperienceScreenState
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Back button
+              //go back 
               GestureDetector(
                 onTap: () => context.go('/jobseeker/profile'),
                 child: const Icon(
@@ -80,7 +80,7 @@ class _JobseekerWorkExperienceScreenState
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Start & End date
+              // Start and End date
               Row(
                 children: [
                   Expanded(
@@ -114,7 +114,7 @@ class _JobseekerWorkExperienceScreenState
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Current position checkbox
+              // Current position 
               Row(
                 children: [
                   Checkbox(
@@ -161,7 +161,7 @@ class _JobseekerWorkExperienceScreenState
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Save button
+              // Save 
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
@@ -175,7 +175,7 @@ class _JobseekerWorkExperienceScreenState
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Remove button
+              // Remove 
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
