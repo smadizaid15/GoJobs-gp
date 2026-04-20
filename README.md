@@ -62,7 +62,7 @@ Jordan has a fragmented job market with most listings scattered across social me
 
 ---
 
-## 🗂️ Project Structure
+
 ## 🗂️ Project Structure
 lib/
 ├── main.dart
@@ -131,4 +131,4 @@ flutter run
 
 ---
 
-<div align="center">Made with ❤️ in Jordan 🇯🇴</div>
+<div align="center">Made with ❤️ in Jordan </div>
