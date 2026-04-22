@@ -13,7 +13,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // Initialize notifications
+  // Initialize notification
 try {
   final notificationService = NotificationService();
   await notificationService.initialize();

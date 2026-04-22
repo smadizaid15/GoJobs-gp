@@ -53,7 +53,7 @@ class CompanyMessagesScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // Search bar
+                    // Search 
                     Container(
                       height: 44,
                       padding: const EdgeInsets.symmetric(
