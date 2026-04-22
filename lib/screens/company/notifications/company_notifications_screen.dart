@@ -95,7 +95,7 @@ class CompanyNotificationsScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // Filter tabs
+                    // Filter tab
                     Row(
                       children: [
                         _FilterTab(label: 'All', isSelected: true),

@@ -124,7 +124,7 @@ class FreelancerProfileScreen extends StatelessWidget {
 
                           const SizedBox(height: AppDimensions.paddingM),
 
-                          // Edit profile button
+                          // Edit profile 
                           GestureDetector(
                             onTap: () => context
                                 .go('/freelancer/edit-profile'),
@@ -175,7 +175,7 @@ class FreelancerProfileScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Profile sections
+                    // Profile section
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppDimensions.paddingL,
