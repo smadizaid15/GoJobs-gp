@@ -16,7 +16,8 @@ WORKDIR /app
 RUN flutter pub get
 
 ARG API_CONFIG_DART
-RUN mkdir -p lib/config && printf '%s' "$API_CONFIG_DART" > lib/config/api_config.dart
+RUN mkdir -p lib/config && echo "$API_CONFIG_DART" | base64 -d > lib/config/api_config.dart
+
 
 RUN flutter build web --release --verbose
 
