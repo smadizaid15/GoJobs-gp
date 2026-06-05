@@ -49,3 +49,10 @@ lib/config/api_config.dart
 google-services.json
 GoogleService-Info.plist
 lib/firebase_options.dart
+
+- name: Build Docker image
+  run: |
+    docker build \
+      --build-arg GROQ_API_KEY=${{ secrets.GROQ_API_KEY }} \
+      --build-arg FIREBASE_OPTIONS_DART="${{ secrets.FIREBASE_OPTIONS_DART }}" \
+      .

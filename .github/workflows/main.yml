@@ -10,7 +10,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build Docker Image
-        run: docker build -t my-app .
+        run: |
+          docker build \
+            --build-arg FIREBASE_OPTIONS_DART="${{ secrets.FIREBASE_OPTIONS_DART }}" \
+            --build-arg API_CONFIG_DART="${{ secrets.API_CONFIG_DART }}" \
+            -t my-app .
       
   docker-push:
     needs: test-and-build  
@@ -27,3 +31,6 @@ jobs:
         with:
           push: true
           tags: zaidsmadii/gp1-app:latest
+          build-args: |
+            FIREBASE_OPTIONS_DART=${{ secrets.FIREBASE_OPTIONS_DART }}
+            API_CONFIG_DART=${{ secrets.API_CONFIG_DART }}
