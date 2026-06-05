@@ -13,7 +13,7 @@ COPY . /app
 WORKDIR /app
 
 RUN flutter pub get
-RUN flutter build web
+RUN flutter build web --verbose
 
 
 FROM nginx:1.21.1-alpine
