@@ -15,12 +15,7 @@ WORKDIR /app
 
 RUN flutter pub get
 
-ARG FIREBASE_OPTIONS_DART
-ARG API_CONFIG_DART
 
-RUN echo "$FIREBASE_OPTIONS_DART" > lib/firebase_options.dart && \
-    mkdir -p lib/config && \
-    echo "$API_CONFIG_DART" > lib/config/api_config.dart
 
 RUN flutter build web --release --verbose
 
