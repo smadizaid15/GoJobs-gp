@@ -85,7 +85,7 @@ class JobseekerNotificationsScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // Filter tabs
+                    // Filter 
                     Row(
                       children: [
                         _FilterTab(label: 'All', isSelected: true),
