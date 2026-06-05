@@ -15,7 +15,7 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
     final company = job?['companyName'] ?? 'Calma Space';
     final location = job?['location'] ?? 'Irbid, Jordan';
 
-    return Scaffold(
+    return Scaffold( 
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: SingleChildScrollView(
