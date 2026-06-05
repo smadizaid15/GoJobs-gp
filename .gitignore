@@ -45,14 +45,5 @@ app.*.map.json
 /android/app/release
 
 lib/config/api_config.dart
-# Firebase secrets - DO NOT COMMIT
-google-services.json
-GoogleService-Info.plist
-lib/firebase_options.dart
 
-- name: Build Docker image
-  run: |
-    docker build \
-      --build-arg GROQ_API_KEY=${{ secrets.GROQ_API_KEY }} \
-      --build-arg FIREBASE_OPTIONS_DART="${{ secrets.FIREBASE_OPTIONS_DART }}" \
-      .
+
