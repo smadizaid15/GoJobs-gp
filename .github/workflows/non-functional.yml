@@ -1,4 +1,4 @@
-name: Non-Functional - Security & Code Quality
+name: Non-Functional - Flutter Static Analysis
 
 on:
   push:
@@ -7,24 +7,22 @@ on:
     branches: [ "main" ]
 
 jobs:
-  audit-and-lint:
+  analyze:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
-          node-version: '18'
+          flutter-version: '3.x'
 
       - name: Install Dependencies
-        run: npm install
+        run: flutter pub get
 
-      - name: Run Code Linter (Quality Check)
-        # runs linter if available
-        run: npm run lint --if-present
+      - name: Check Formatting (Non-functional)
+        run: dart format --output=none --set-exit-if-changed .
 
-      - name: Run Security Audit (Vulnerability Check)
-        # scans and fails if high risk
-        run: npm audit --audit-level=high
+      - name: Analyze Code Quality (Non-functional)
+        run: flutter analyze
