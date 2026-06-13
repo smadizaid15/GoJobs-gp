@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🚀 GoJobs
+#  GoJobs
 
 ### A Flutter job-finding platform built for the Jordanian market
 
@@ -53,9 +53,9 @@ Jordan has a fragmented job market with most listings scattered across social me
 
 ---
 
-## ✨ Features
+## Features
 
-### 👤 For Applicants (Job Seekers / Freelancers / Students)
+###  For Applicants (Job Seekers / Freelancers / Students)
 - Browse and search job listings with real-time Firestore updates
 - Build a profile with skills, experience, and education
 - Apply to jobs directly through the app
@@ -63,14 +63,14 @@ Jordan has a fragmented job market with most listings scattered across social me
 - Real-time notifications via FCM
 - Role-specific home screens and navigation flows
 
-### 🏢 For Companies
+###  For Companies
 - Distinct branded dashboard (dark navy gradient, gold accents)
 - Post, edit, and manage job listings
 - Review applicant profiles and manage applications
 - In-app chat with candidates
 - Company logo and profile management via Firebase Storage
 
-### 🔐 Auth & Routing
+###  Auth & Routing
 - Firebase Email/Password authentication
 - Role-based routing on login via Firestore `userType` field
 - Persistent auth state — splash screen checks session on cold start
@@ -78,7 +78,7 @@ Jordan has a fragmented job market with most listings scattered across social me
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Layer | Tech |
 |---|---|
@@ -92,7 +92,7 @@ Jordan has a fragmented job market with most listings scattered across social me
 ---
 
 
-## 🗂️ Project Structure
+##  Project Structure
 lib/
 ├── main.dart
 ├── app_router.dart
@@ -110,7 +110,7 @@ lib/
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ```bash
 git clone https://github.com/smadizaid15/GoJobs-gp.git
@@ -129,7 +129,7 @@ flutter run
 
 ---
 
-## 👥 User Roles
+##  User Roles
 
 | `userType` | Destination |
 |---|---|
@@ -140,7 +140,7 @@ flutter run
 
 ---
 
-## 🎨 Design Tokens
+##  Design Tokens
 
 | Token | Value |
 |---|---|
@@ -152,7 +152,7 @@ flutter run
 
 ---
 
-## 🔮 Roadmap
+##  Roadmap
 - [ ] AI-powered job recommendations
 - [ ] Arabic / RTL support
 - [ ] Resume upload and parsing
