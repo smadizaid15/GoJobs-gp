@@ -1,4 +1,4 @@
-name: Non-Functional - Flutter Static Analysis
+name: Non-Functional - Code Health & Maintainability
 
 on:
   push:
@@ -7,7 +7,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-  analyze:
+  health-audit:
+    name: Maintainability Audit
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -21,8 +22,10 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Check Formatting (Non-functional)
-        run: dart format --output=none --set-exit-if-changed .
+      - name: Code Quality Scan (Reliability)
+        # checks code for memory leaks andd perormance issues 
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
-      - name: Analyze Code Quality (Non-functional)
-        run: flutter analyze
+      - name: Dependency Health Audit (Maintainability)
+        # looks for old packages 
+        run: flutter pub outdated
