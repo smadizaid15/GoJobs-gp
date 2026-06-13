@@ -23,7 +23,7 @@ class StudentMyApplicationScreen extends StatelessWidget {
           children: [
             const SizedBox(height: AppDimensions.paddingL),
 
-            // Header
+           
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
               child: Row(
@@ -49,7 +49,7 @@ class StudentMyApplicationScreen extends StatelessWidget {
 
             const SizedBox(height: AppDimensions.paddingL),
 
-            // Applications List
+            
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -76,7 +76,7 @@ class StudentMyApplicationScreen extends StatelessWidget {
                     );
                   }
 
-                  // Sort locally to avoid needing a composite index in Firestore right away
+                  
                   docs.sort((a, b) {
                     final aTime = (a.data() as Map<String, dynamic>)['appliedAt'] as Timestamp?;
                     final bTime = (b.data() as Map<String, dynamic>)['appliedAt'] as Timestamp?;

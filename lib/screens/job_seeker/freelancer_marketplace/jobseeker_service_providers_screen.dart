@@ -27,7 +27,7 @@ class JobseekerServiceProvidersScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Back + title
+                    
                     Row(
                       children: [
                         GestureDetector(
@@ -50,7 +50,7 @@ class JobseekerServiceProvidersScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // LIVE FREELANCER DIRECTORY
+                  
                     StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection('users')
@@ -98,9 +98,9 @@ class JobseekerServiceProvidersScreen extends StatelessWidget {
                                 profession: profession,
                                 description: description,
                                 imageUrl: profileImageUrl,
-                                time: 'Available now', // Replace with dynamic logic if you build availability status
+                                time: 'Available now', 
                                 onViewProfile: () {
-                                  // Pass provider ID if you build a public profile view
+                                  
                                 },
                                 onMessage: () => context.push('/jobseeker/chat-from-providers'),
                               ),

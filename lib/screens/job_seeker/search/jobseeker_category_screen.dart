@@ -9,7 +9,6 @@ class JobseekerCategoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Basic categories to display in the grid
     final List<Map<String, dynamic>> categories = [
       {'icon': Icons.brush, 'name': 'Design', 'color': Colors.purple.shade100},
       {'icon': Icons.computer, 'name': 'Technology', 'color': Colors.blue.shade100},
@@ -27,7 +26,7 @@ class JobseekerCategoryScreen extends StatelessWidget {
           children: [
             const SizedBox(height: AppDimensions.paddingL),
             
-            // Header
+          
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
               child: Row(
@@ -50,12 +49,12 @@ class JobseekerCategoryScreen extends StatelessWidget {
 
             const SizedBox(height: AppDimensions.paddingXL),
 
-            // Grid View
+           
             Expanded(
               child: GridView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // 2 columns
+                  crossAxisCount: 2, 
                   crossAxisSpacing: AppDimensions.paddingM,
                   mainAxisSpacing: AppDimensions.paddingM,
                   childAspectRatio: 1.1,
@@ -65,7 +64,7 @@ class JobseekerCategoryScreen extends StatelessWidget {
                   final cat = categories[index];
                   return GestureDetector(
                     onTap: () {
-                      // We push back to search but set the text field to filter by this category
+                     
                       context.push('/jobseeker/search', extra: 'Jobs');
                     },
                     child: Container(

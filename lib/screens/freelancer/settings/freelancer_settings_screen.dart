@@ -86,7 +86,7 @@ class FreelancerSettingsScreen extends StatelessWidget {
 
                     const Divider(height: 1, color: AppColors.divider),
 
-                    // Switch to JobSeeker mode
+                    
                     _SettingsItem(
                       icon: Icons.swap_horiz,
                       label: 'Switch to JobSeeker mode',

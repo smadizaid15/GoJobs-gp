@@ -29,11 +29,11 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
     setState(() => _isApplying = true);
 
     try {
-      // 1. Fetch user data to attach to the application
+      
       final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
       final userName = userDoc.data()?['fullName'] ?? userDoc.data()?['displayName'] ?? 'Student';
 
-      // 2. Create the application document
+      
       await FirebaseFirestore.instance.collection('applications').add({
         'userId': user.uid,
         'userName': userName,
@@ -47,7 +47,7 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
       });
 
       if (mounted) {
-        // Pass the job data forward to the success screen
+        
         context.pushReplacement('/student/application-success', extra: widget.jobData);
       }
     } catch (e) {
@@ -88,7 +88,7 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Company logo
+           
               Center(
                 child: Column(
                   children: [
@@ -119,7 +119,7 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Job title
+             
               Center(
                 child: Text(
                   title,
@@ -182,7 +182,7 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Upload options
+             
               Row(
                 children: [
                   Expanded(
@@ -256,7 +256,6 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Uploaded CV preview
               if (_hasUploadedCv) ...[
                 Container(
                   padding: const EdgeInsets.all(AppDimensions.paddingM),
@@ -341,7 +340,7 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Apply button
+              
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,

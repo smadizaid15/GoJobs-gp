@@ -18,7 +18,7 @@ class StudentNotificationsScreen extends StatefulWidget {
 class _StudentNotificationsScreenState extends State<StudentNotificationsScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  int _selectedFilter = 0; // 0: All, 1: Jobs, 2: Messages
+  int _selectedFilter = 0; 
   String? _profileImageUrl;
 
   @override
@@ -57,7 +57,6 @@ class _StudentNotificationsScreenState extends State<StudentNotificationsScreen>
                 children: [
                   const SizedBox(height: AppDimensions.paddingL),
 
-                  // Top bar
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
                     child: Row(
@@ -95,7 +94,6 @@ class _StudentNotificationsScreenState extends State<StudentNotificationsScreen>
                           ),
                         ),
                         const SizedBox(width: AppDimensions.paddingM),
-                        // Tappable profile pic
                         GestureDetector(
                           onTap: () => context.go('/student/profile'),
                           child: CircleAvatar(
@@ -119,7 +117,6 @@ class _StudentNotificationsScreenState extends State<StudentNotificationsScreen>
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                  // Filter tabs
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
                     child: Row(
@@ -154,7 +151,6 @@ class _StudentNotificationsScreenState extends State<StudentNotificationsScreen>
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                  // LIVE NOTIFICATIONS FEED
                   Expanded(
                     child: StreamBuilder<QuerySnapshot>(
                       stream: _firestore
@@ -173,7 +169,6 @@ class _StudentNotificationsScreenState extends State<StudentNotificationsScreen>
 
                         final docs = snapshot.data?.docs ?? [];
 
-                        // Apply filters
                         final filteredDocs = docs.where((doc) {
                           final type = (doc.data() as Map<String, dynamic>)['type'] ?? 'general';
                           if (_selectedFilter == 1 && type != 'job') return false;

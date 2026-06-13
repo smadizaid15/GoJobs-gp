@@ -58,7 +58,7 @@ class _CompanyJobPositionPickerState extends State<CompanyJobPositionPicker> {
           children: [
             const SizedBox(height: AppDimensions.paddingL),
 
-            // Back + title
+         
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
@@ -86,7 +86,7 @@ class _CompanyJobPositionPickerState extends State<CompanyJobPositionPicker> {
 
             const SizedBox(height: AppDimensions.paddingL),
 
-            // Search bar
+           
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
@@ -135,7 +135,7 @@ class _CompanyJobPositionPickerState extends State<CompanyJobPositionPicker> {
 
             const SizedBox(height: AppDimensions.paddingM),
 
-            // Position list
+          
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(

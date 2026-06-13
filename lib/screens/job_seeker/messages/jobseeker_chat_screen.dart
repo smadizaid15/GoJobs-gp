@@ -92,7 +92,7 @@ class _JobseekerChatScreenState extends State<JobseekerChatScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Top bar
+            
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
@@ -149,7 +149,7 @@ class _JobseekerChatScreenState extends State<JobseekerChatScreen> {
               ),
             ),
 
-            // Messages Stream
+           
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -204,7 +204,7 @@ class _JobseekerChatScreenState extends State<JobseekerChatScreen> {
               ),
             ),
 
-            // Input bar
+           
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,

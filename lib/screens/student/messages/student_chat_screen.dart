@@ -92,7 +92,7 @@ class _StudentChatScreenState extends State<StudentChatScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Top bar
+           
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
@@ -149,7 +149,7 @@ class _StudentChatScreenState extends State<StudentChatScreen> {
               ),
             ),
 
-            // Messages Stream
+           
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -204,7 +204,7 @@ class _StudentChatScreenState extends State<StudentChatScreen> {
               ),
             ),
 
-            // Input bar
+          
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,

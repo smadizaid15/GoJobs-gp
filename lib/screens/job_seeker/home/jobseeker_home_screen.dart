@@ -32,7 +32,7 @@ class JobseekerHomeScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Top bar
+                  
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -97,7 +97,7 @@ class JobseekerHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Search 
+                    
                     Container(
                       height: 44,
                       padding: const EdgeInsets.symmetric(
@@ -132,7 +132,7 @@ class JobseekerHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Recent Job List Section
+                    
                     Text(
                       'Recent Job List',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -210,13 +210,13 @@ class JobseekerHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // Dynamic Counters Section
+                  
                     StreamBuilder<List<JobModel>>(
                       stream: jobService.getActiveJobs(),
                       builder: (context, snapshot) {
                         final allJobs = snapshot.data ?? [];
                         
-                        // Count general full-time/part-time jobs vs specific internships
+                        
                         final jobCount = allJobs.where((j) => j.employmentType.toLowerCase() != 'internship').length;
                         final internshipCount = allJobs.where((j) => j.employmentType.toLowerCase() == 'internship').length;
 

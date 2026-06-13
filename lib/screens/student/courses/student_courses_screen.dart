@@ -35,7 +35,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header & Search Box
+          
             Container(
               padding: const EdgeInsets.all(AppDimensions.paddingL),
               decoration: const BoxDecoration(
@@ -101,7 +101,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
 
             const SizedBox(height: AppDimensions.paddingM),
 
-            // Filter chips
+            
             SizedBox(
               height: 40,
               child: ListView.builder(
@@ -145,7 +145,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
 
             const SizedBox(height: AppDimensions.paddingM),
 
-            // Live Course List from Firebase
+            
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance.collection('courses').snapshots(),
@@ -169,17 +169,17 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                     );
                   }
 
-                  // Apply search and filter logic
+                 
                   final filteredCourses = docs.where((doc) {
                     final data = doc.data() as Map<String, dynamic>;
                     final title = data['title']?.toString().toLowerCase() ?? '';
                     final isFree = data['isFree'] as bool? ?? false;
                     final isOnline = data['isOnline'] as bool? ?? false;
 
-                    // Search query match
+                    
                     bool matchesSearch = title.contains(_searchQuery);
 
-                    // Filter match
+                   
                     bool matchesFilter = true;
                     if (_filters[_selectedFilter] == 'Free') matchesFilter = isFree;
                     if (_filters[_selectedFilter] == 'Online') matchesFilter = isOnline;

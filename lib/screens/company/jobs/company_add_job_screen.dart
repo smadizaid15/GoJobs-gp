@@ -18,7 +18,7 @@ class CompanyAddJobScreen extends StatefulWidget {
 }
 
 class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
-  String? _jobCategory; // 'Job', 'Internship', or 'Course'
+  String? _jobCategory; 
   String? _jobPosition;
   String? _workplaceType;
   String? _jobLocation;
@@ -52,7 +52,7 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
     });
   }
 
-  // Sleek bottom sheet to pick category without needing a new route
+ 
   void _showCategoryPicker() {
     showModalBottomSheet(
       context: context,
@@ -99,7 +99,7 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
     try {
       final currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
-      // 1. Fetch Company details
+     
       String realCompanyName = 'Unknown Company';
       String? realCompanyLogo; 
       
@@ -109,7 +109,7 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
         realCompanyLogo = userDoc.data()!['logoUrl']?.toString(); 
       }
 
-      // 2. Upload images to Firebase Storage
+      
       List<String> uploadedImageUrls = [];
       if (_selectedImages.isNotEmpty) {
         for (var image in _selectedImages) {
@@ -123,12 +123,12 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
         }
       }
 
-      // 3. Post the job directly to Firestore to guarantee schema
+      
       await FirebaseFirestore.instance.collection('jobs').add({
         'companyId': currentUserId,
         'companyName': realCompanyName,
         'logoUrl': realCompanyLogo,
-        'jobType': _jobCategory, // "Job", "Internship", or "Course"
+        'jobType': _jobCategory, 
         'title': _jobPosition,
         'location': _jobLocation,
         'workplaceType': _workplaceType,
@@ -140,9 +140,9 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      // 4. Send Notification
+     
       await FirebaseFirestore.instance.collection('notifications').add({
-        'userId': currentUserId, // Changed to userId for consistency
+        'userId': currentUserId, 
         'type': 'job',
         'title': '$_jobCategory Posted',
         'message': 'Your $_jobPosition post is now live.',

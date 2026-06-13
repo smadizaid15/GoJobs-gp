@@ -26,7 +26,6 @@ class StudentSettingsScreen extends StatelessWidget {
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Back button and title
               Row(
                 children: [
                   GestureDetector(
@@ -49,7 +48,7 @@ class StudentSettingsScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Settings items
+              
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -57,7 +56,6 @@ class StudentSettingsScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    // Notifications 
                     _SettingsToggle(
                       icon: Icons.notifications_outlined,
                       label: 'Notifications',
@@ -67,7 +65,6 @@ class StudentSettingsScreen extends StatelessWidget {
 
                     const Divider(height: 1, color: AppColors.divider),
 
-                    // Dark mode 
                     _SettingsToggle(
                       icon: Icons.dark_mode_outlined,
                       label: 'Dark mode',
@@ -77,7 +74,6 @@ class StudentSettingsScreen extends StatelessWidget {
 
                     const Divider(height: 1, color: AppColors.divider),
 
-                    // Pass
                     _SettingsItem(
                       icon: Icons.lock_outline,
                       label: 'Password',
@@ -86,7 +82,6 @@ class StudentSettingsScreen extends StatelessWidget {
 
                     const Divider(height: 1, color: AppColors.divider),
 
-                    // Logout
                     _SettingsItem(
                       icon: Icons.logout,
                       label: 'Logout',
@@ -98,7 +93,6 @@ class StudentSettingsScreen extends StatelessWidget {
 
               const Spacer(),
 
-              // Save 
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,

@@ -27,7 +27,7 @@ class CompanyJobsScreen extends StatelessWidget {
                 children: [
                   const SizedBox(height: AppDimensions.paddingL),
 
-                  // Top bar
+                 
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppDimensions.paddingL,
@@ -62,7 +62,7 @@ class CompanyJobsScreen extends StatelessWidget {
 
                   const SizedBox(height: AppDimensions.paddingL),
 
-                  // Real jobs from Firestore
+                 
                   Expanded(
                     child: StreamBuilder<List<JobModel>>(
                       stream: jobService.getCompanyJobs(

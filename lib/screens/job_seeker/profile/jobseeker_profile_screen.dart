@@ -30,7 +30,7 @@ class JobseekerProfileScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    // LIVE HEADER DATA
+                    
                     StreamBuilder<DocumentSnapshot>(
                       stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
                       builder: (context, snapshot) {
@@ -61,7 +61,7 @@ class JobseekerProfileScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Top icons
+                         
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
@@ -84,7 +84,7 @@ class JobseekerProfileScreen extends StatelessWidget {
 
                               const SizedBox(height: AppDimensions.paddingM),
 
-                              // Profile pic
+                             
                               CircleAvatar(
                                 radius: 40,
                                 backgroundColor: AppColors.inputFill,
@@ -121,7 +121,7 @@ class JobseekerProfileScreen extends StatelessWidget {
 
                               const SizedBox(height: AppDimensions.paddingM),
 
-                              // Edit profile 
+                           
                               GestureDetector(
                                 onTap: () => context.push('/jobseeker/edit-profile'),
                                 child: Container(
@@ -161,7 +161,7 @@ class JobseekerProfileScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Profile section menu
+                  
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppDimensions.paddingL,

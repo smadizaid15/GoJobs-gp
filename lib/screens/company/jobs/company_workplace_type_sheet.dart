@@ -59,7 +59,7 @@ class _CompanyWorkplaceTypeSheetState
 
             const SizedBox(height: AppDimensions.paddingXL),
 
-            // Title
+           
             Text(
               'Choose the type of workplace',
               style: AppTextStyles.heading3.copyWith(
@@ -81,7 +81,7 @@ class _CompanyWorkplaceTypeSheetState
 
             const SizedBox(height: AppDimensions.paddingXL),
 
-            // Options
+           
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(

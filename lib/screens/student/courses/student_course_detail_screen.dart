@@ -8,7 +8,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 
 class StudentCourseDetailScreen extends StatefulWidget {
-  final Map<String, dynamic>? courseData; // Accept data from the router
+  final Map<String, dynamic>? courseData; 
 
   const StudentCourseDetailScreen({super.key, this.courseData});
 
@@ -28,7 +28,7 @@ class _StudentCourseDetailScreenState extends State<StudentCourseDetailScreen> {
     setState(() => _isEnrolling = true);
 
     try {
-      // Create an enrollment record in Firestore
+     
       await FirebaseFirestore.instance.collection('course_enrollments').add({
         'studentId': user.uid,
         'courseId': courseId,
@@ -62,7 +62,7 @@ class _StudentCourseDetailScreenState extends State<StudentCourseDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Safely extract all dynamic data
+    
     final data = widget.courseData ?? {};
     final title = data['title']?.toString() ?? 'Course Details';
     final company = data['companyName']?.toString() ?? 'Institution';
@@ -86,7 +86,7 @@ class _StudentCourseDetailScreenState extends State<StudentCourseDetailScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
                 child: GestureDetector(
-                  onTap: () => context.pop(), // Returns safely without hardcoding route
+                  onTap: () => context.pop(), 
                   child: const Icon(
                     Icons.arrow_back,
                     color: AppColors.textPrimary,
@@ -96,7 +96,7 @@ class _StudentCourseDetailScreenState extends State<StudentCourseDetailScreen> {
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Company logo and name
+              
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
                 child: Column(
@@ -133,7 +133,7 @@ class _StudentCourseDetailScreenState extends State<StudentCourseDetailScreen> {
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Course title and Meta
+             
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
                 child: Column(
@@ -170,7 +170,7 @@ class _StudentCourseDetailScreenState extends State<StudentCourseDetailScreen> {
                     Center(
                       child: OutlinedButton(
                         onPressed: () {
-                          // Could push to an institution profile screen if you have one
+                          
                         },
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(color: AppColors.purpleButtonBorder),

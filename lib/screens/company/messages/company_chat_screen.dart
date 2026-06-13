@@ -30,7 +30,7 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
   @override
   void initState() {
     super.initState();
-    // Extract data passed from Inbox
+    
     _chatId = widget.chatData?['chatId'] ?? '';
     _receiverId = widget.chatData?['receiverId'] ?? '';
     _receiverName = widget.chatData?['receiverName'] ?? 'Applicant';
@@ -66,7 +66,7 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
 
     final timestamp = FieldValue.serverTimestamp();
 
-    // 1. Add message to the subcollection
+    
     await FirebaseFirestore.instance
         .collection('chats')
         .doc(_chatId)
@@ -77,11 +77,11 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
       'timestamp': timestamp,
     });
 
-    // 2. Update the parent chat document for the inbox preview
+    
     await FirebaseFirestore.instance.collection('chats').doc(_chatId).update({
       'lastMessage': text,
       'updatedAt': timestamp,
-      'unread_$_receiverId': FieldValue.increment(1), // Adds an unread dot for the receiver
+      'unread_$_receiverId': FieldValue.increment(1), 
     });
 
     _scrollToBottom();
@@ -96,7 +96,7 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Top bar
+            
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
@@ -137,7 +137,7 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
                           ),
                         ),
                         Text(
-                          '● Online', // You can make this dynamic later
+                          '● Online',
                           style: AppTextStyles.bodySmall.copyWith(
                             color: Colors.green,
                             fontSize: 10,
@@ -153,7 +153,7 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
               ),
             ),
 
-            // Messages Stream
+            
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -169,7 +169,7 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
 
                   final messageDocs = snapshot.data?.docs ?? [];
                   
-                  // Auto scroll when new messages arrive
+                  
                   _scrollToBottom();
 
                   if (messageDocs.isEmpty) {
@@ -191,7 +191,7 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
                       final data = messageDocs[index].data() as Map<String, dynamic>;
                       final isMe = data['senderId'] == currentUserId;
                       
-                      // Format time safely
+                     
                       final timestamp = data['timestamp'] as Timestamp?;
                       String timeString = 'Now';
                       if (timestamp != null) {
@@ -211,7 +211,7 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
               ),
             ),
 
-            // Input bar
+            
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,

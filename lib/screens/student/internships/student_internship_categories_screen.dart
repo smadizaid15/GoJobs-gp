@@ -36,7 +36,7 @@ class StudentInternshipCategoriesScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Back and Search row
+                   
                     Row(
                       children: [
                         GestureDetector(
@@ -99,7 +99,7 @@ class StudentInternshipCategoriesScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // Dynamic Categories Grid
+                   
                     StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection('jobs')
@@ -107,19 +107,19 @@ class StudentInternshipCategoriesScreen extends StatelessWidget {
                           .where('isActive', isEqualTo: true)
                           .snapshots(),
                       builder: (context, snapshot) {
-                        // Set up default counter map
+                       
                         Map<String, int> categoryCounts = {};
                         for (var cat in _categories) {
                           categoryCounts[cat['title']] = 0;
                         }
 
-                        // Tally live jobs from Firebase
+                     
                         if (snapshot.hasData) {
                           for (var doc in snapshot.data!.docs) {
                             final data = doc.data() as Map<String, dynamic>;
                             final category = data['category']?.toString() ?? '';
                             
-                            // Map job to category (case-insensitive)
+                         
                             for (var cat in _categories) {
                               if (cat['title'].toString().toLowerCase() == category.toLowerCase()) {
                                 categoryCounts[cat['title']] = (categoryCounts[cat['title']] ?? 0) + 1;
@@ -145,7 +145,7 @@ class StudentInternshipCategoriesScreen extends StatelessWidget {
                             final title = cat['title'] as String;
                             final isFirst = index == 0;
                             
-                            // Pull the live count for this specific category
+                   
                             final jobCount = categoryCounts[title] ?? 0;
 
                             return GestureDetector(

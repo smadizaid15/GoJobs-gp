@@ -43,7 +43,7 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
         
         if (doc.exists && doc.data() != null) {
           final data = doc.data()!;
-          // Safety check: if they have a URL, they have a resume
+          
           if (data['hasResume'] == true || data['resumeUrl'] != null) {
             setState(() {
               _resumeName = data['resumeName']?.toString();
@@ -86,7 +86,7 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
     if (currentUserId == null) return;
 
-    // SCENARIO 0: They didn't change anything, just exit
+    
     if (_resumeBytes == null && _resumeName != null && _existingResumeUrl != null) {
       context.go('/jobseeker/profile');
       return;
@@ -96,7 +96,7 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
 
     try {
       if (_resumeBytes != null) {
-        // SCENARIO 1: Uploading a NEW file
+      
         final String uniqueFileName = '${DateTime.now().millisecondsSinceEpoch}_$_resumeName';
         final storageRef = FirebaseStorage.instance.ref().child('user_resumes/$currentUserId/$uniqueFileName');
 
@@ -111,9 +111,7 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
         }, SetOptions(merge: true));
 
       } else if (_resumeName == null) {
-        // SCENARIO 2: They hit the trash can and want to DELETE the file
         
-        // Step 1: Actually delete the physical file from Firebase Storage so it doesn't take up space
         if (_existingResumeUrl != null) {
           try {
             await FirebaseStorage.instance.refFromURL(_existingResumeUrl!).delete();
@@ -122,7 +120,7 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
           }
         }
 
-        // Step 2: Bulletproof deletion from Firestore using SetOptions(merge: true) instead of update()
+        
         await FirebaseFirestore.instance.collection('users').doc(currentUserId).set({
           'hasResume': false,
           'resumeName': FieldValue.delete(),
@@ -130,7 +128,7 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
           'resumeLastUpdated': FieldValue.delete(),
         }, SetOptions(merge: true));
 
-        _existingResumeUrl = null; // Clear local reference
+        _existingResumeUrl = null;
       }
 
       if (mounted) {
@@ -192,7 +190,7 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Upload Box
+             
               GestureDetector(
                 onTap: _pickResume, 
                 child: Container(

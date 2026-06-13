@@ -1,10 +1,10 @@
-import 'dart:typed_data'; // Web and Mobile safe!
+import 'dart:typed_data'; 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:file_picker/file_picker.dart' as fp;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart'; // The hero package
+import 'package:firebase_storage/firebase_storage.dart'; 
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -20,7 +20,7 @@ class JobseekerUploadCvScreen extends StatefulWidget {
 }
 
 class _JobseekerUploadCvScreenState extends State<JobseekerUploadCvScreen> {
-  // Using pure bytes means ZERO dart:io web crashes!
+
   Uint8List? _cvBytes;
   String? _cvFileName;
   bool _isSubmitting = false;
@@ -32,7 +32,7 @@ class _JobseekerUploadCvScreenState extends State<JobseekerUploadCvScreen> {
       fp.FilePickerResult? result = await fp.FilePicker.pickFiles(
         type: fp.FileType.custom,
         allowedExtensions: ['pdf', 'doc', 'docx'],
-        withData: true, // Forces picker to grab raw bytes
+        withData: true, 
       );
 
       if (result != null && result.files.single.bytes != null) {
@@ -63,31 +63,29 @@ class _JobseekerUploadCvScreenState extends State<JobseekerUploadCvScreen> {
     setState(() => _isSubmitting = true);
 
     try {
-      // --- 1. FIREBASE STORAGE UPLOAD (NATIVE & WEB SAFE) ---
-      // We add a timestamp to the filename so they don't overwrite their old CVs by accident!
+     
       final String uniqueFileName = '${DateTime.now().millisecondsSinceEpoch}_$_cvFileName';
       
-      // Point exactly to where we want the file in the bucket
+     
       final storageRef = FirebaseStorage.instance.ref().child('cvs/$currentUserId/$uniqueFileName');
 
-      // putData() is the magic command that accepts bytes directly, bypassing dart:io
+     
       final uploadTask = await storageRef.putData(_cvBytes!);
       final secureUrl = await uploadTask.ref.getDownloadURL();
 
-      // --- 2. FIRESTORE SAVE ---
+      
       await FirebaseFirestore.instance.collection('applications').add({
         'jobId': widget.job?['id'] ?? 'unknown_job',
         'companyId': widget.job?['companyId'] ?? 'unknown_company',
         'applicantId': currentUserId,
         'message': _infoController.text,
         'cvFileName': _cvFileName, 
-        'cvUrl': secureUrl, // The real Firebase bucket link!
+        'cvUrl': secureUrl, 
         'hasCv': true,                
         'appliedAt': FieldValue.serverTimestamp(),
         'status': 'pending',
       });
-       // Send a notification to the Company
-// Send a notification to the Company
+  
 await FirebaseFirestore.instance.collection('notifications').add({
   'recipientId': widget.job?['companyId'] ?? 'unknown_company', 
   'type': 'application',

@@ -22,7 +22,7 @@ class JobseekerJobDetailScreen extends StatelessWidget {
     final description = job?['description'] ?? 'No description provided.';
     final companyLogo = job?['companyLogo']?.toString();
     
-    // ---> NEW: Safely extract the photos array <---
+  
     final List<String> jobImages = [];
     if (job?['jobImages'] != null) {
       jobImages.addAll(List<String>.from(job!['jobImages']));
@@ -254,7 +254,7 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                       ),
                     ),
 
-                    // ---> NEW: PHOTO GALLERY UI <---
+                  
                     if (jobImages.isNotEmpty) ...[
                       const SizedBox(height: AppDimensions.paddingL),
                       Text(

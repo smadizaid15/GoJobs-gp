@@ -14,7 +14,7 @@ class JobService {
     required String description,
     String? salary,
     String? companyLogo, 
-    List<String>? jobImages, // <-- NEW: Accepts the list of photo URLs
+    List<String>? jobImages, 
   }) async {
     try {
       await _firestore.collection('jobs').add({
@@ -27,7 +27,7 @@ class JobService {
         'description': description,
         'salary': salary, 
         'companyLogo': companyLogo, 
-        'jobImages': jobImages ?? [], // <-- NEW: Saves them to Firebase
+        'jobImages': jobImages ?? [], 
         'isActive': true,
         'createdAt': FieldValue.serverTimestamp(),
       });
@@ -80,7 +80,7 @@ class JobService {
     return _firestore.collection('jobs').doc(jobId).snapshots();
     
   }
-  // Get all jobs for a specific company
+ 
   Stream<List<JobModel>> getCompanyJobs(String companyId) {
     return _firestore
         .collection('jobs')
@@ -93,7 +93,7 @@ class JobService {
     });
   }
 
-  // Delete a job from the database
+  
   Future<void> deleteJob(String jobId) async {
     try {
       await _firestore.collection('jobs').doc(jobId).delete();

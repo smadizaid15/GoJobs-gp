@@ -226,7 +226,6 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Action Buttons Section (Languages, Education, Experience, CV)
               Text('Profile Additions', style: AppTextStyles.heading3.copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: AppDimensions.paddingM),
               
@@ -234,7 +233,6 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
                 icon: Icons.language,
                 title: 'Add Languages',
                 onTap: () {
-                  // Connect this to a dedicated Student Language Screen if you build one
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Language route needed')));
                 },
               ),
@@ -242,7 +240,6 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
                 icon: Icons.school_outlined,
                 title: 'Add Education',
                 onTap: () {
-                  // Connect this to a dedicated Student Education Screen if you build one
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Education route needed')));
                 },
               ),
@@ -250,7 +247,7 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
                 icon: Icons.work_outline,
                 title: 'Add Experience (Optional)',
                 onTap: () {
-                  // Connect this to a dedicated Student Experience Screen if you build one
+                 
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Experience route needed')));
                 },
               ),
@@ -258,7 +255,7 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
                 icon: Icons.description_outlined,
                 title: 'Upload CV (Optional)',
                 onTap: () {
-                  // Route to a general CV upload manager if you build one
+                 
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('CV Upload manager route needed')));
                 },
               ),

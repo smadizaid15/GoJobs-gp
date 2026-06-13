@@ -48,7 +48,7 @@ class _JobseekerSearchScreenState extends State<JobseekerSearchScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Search header
+          
             Container(
               padding: const EdgeInsets.all(AppDimensions.paddingL),
               decoration: const BoxDecoration(
@@ -79,7 +79,7 @@ class _JobseekerSearchScreenState extends State<JobseekerSearchScreen> {
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                  // Search bar
+                
                   Container(
                     height: 48,
                     padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingM),
@@ -107,7 +107,7 @@ class _JobseekerSearchScreenState extends State<JobseekerSearchScreen> {
 
                   const SizedBox(height: AppDimensions.paddingS),
 
-                  // Location bar & Filter Button
+                 
                   Container(
                     height: 48,
                     padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingM),
@@ -160,7 +160,6 @@ class _JobseekerSearchScreenState extends State<JobseekerSearchScreen> {
 
             const SizedBox(height: AppDimensions.paddingM),
 
-            // Main Filter chips
             SizedBox(
               height: 40,
               child: ListView(
@@ -198,7 +197,7 @@ class _JobseekerSearchScreenState extends State<JobseekerSearchScreen> {
 
             const SizedBox(height: AppDimensions.paddingM),
 
-            // Job results
+           
             Expanded(
               child: StreamBuilder<List<JobModel>>(
                 stream: _jobService.getActiveJobs(),
