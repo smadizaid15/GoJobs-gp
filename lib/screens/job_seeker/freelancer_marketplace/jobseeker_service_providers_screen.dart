@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
@@ -29,8 +31,7 @@ class JobseekerServiceProvidersScreen extends StatelessWidget {
                     Row(
                       children: [
                         GestureDetector(
-                          onTap: () =>
-                              context.go('/jobseeker/home'),
+                          onTap: () => context.go('/jobseeker/home'),
                           child: const Icon(
                             Icons.arrow_back,
                             color: AppColors.textPrimary,
@@ -49,41 +50,64 @@ class JobseekerServiceProvidersScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    _ServiceProviderCard(
-                      name: 'Fares Masaadeh',
-                      profession: 'Plumber',
-                      description:
-                          '24/7 available round clock plumber, bathrooms, kitchens and more!',
-                      time: '25 minutes',
-                      onViewProfile: () {},
-                      onMessage: () =>
-                          context.push('/jobseeker/chat-from-providers'),
-                    ),
+                    // LIVE FREELANCER DIRECTORY
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('users')
+                          .where('userType', isEqualTo: 'freelancer')
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
 
-                    const SizedBox(height: AppDimensions.paddingM),
+                        if (snapshot.hasError) {
+                          return const Center(child: Text('Error loading providers.'));
+                        }
 
-                    _ServiceProviderCard(
-                      name: 'Zaid Kilany',
-                      profession: 'Electronics repair',
-                      description:
-                          'Repairing refrigerator, Washers, Dryers, Dishwashers, Available round Clock.',
-                      time: '25 minutes',
-                      onViewProfile: () {},
-                      onMessage: () =>
-                          context.push('/jobseeker/chat-from-providers'),
-                    ),
+                        final providers = snapshot.data?.docs ?? [];
 
-                    const SizedBox(height: AppDimensions.paddingM),
+                        if (providers.isEmpty) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingXL),
+                            child: Center(
+                              child: Text(
+                                'No service providers available yet.',
+                                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                              ),
+                            ),
+                          );
+                        }
 
-                    _ServiceProviderCard(
-                      name: 'Zaid Smadi',
-                      profession: 'Carpenter',
-                      description:
-                          'Working on doors, living rooms, full kitchen makeovers',
-                      time: '25 minutes',
-                      onViewProfile: () {},
-                      onMessage: () =>
-                          context.push('/jobseeker/chat-from-providers'),
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: providers.length,
+                          itemBuilder: (context, index) {
+                            final data = providers[index].data() as Map<String, dynamic>;
+                            
+                            final name = data['fullName']?.toString() ?? data['displayName']?.toString() ?? 'Freelancer';
+                            final profession = data['category']?.toString() ?? data['profession']?.toString() ?? 'Service Provider';
+                            final description = data['aboutMe']?.toString() ?? data['description']?.toString() ?? 'Available for hire.';
+                            final profileImageUrl = data['profileImageUrl']?.toString() ?? data['logoUrl']?.toString();
+
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: AppDimensions.paddingM),
+                              child: _ServiceProviderCard(
+                                name: name,
+                                profession: profession,
+                                description: description,
+                                imageUrl: profileImageUrl,
+                                time: 'Available now', // Replace with dynamic logic if you build availability status
+                                onViewProfile: () {
+                                  // Pass provider ID if you build a public profile view
+                                },
+                                onMessage: () => context.push('/jobseeker/chat-from-providers'),
+                              ),
+                            );
+                          },
+                        );
+                      },
                     ),
 
                     const SizedBox(height: AppDimensions.paddingXL),
@@ -105,6 +129,7 @@ class _ServiceProviderCard extends StatelessWidget {
   final String profession;
   final String description;
   final String time;
+  final String? imageUrl;
   final VoidCallback onViewProfile;
   final VoidCallback onMessage;
 
@@ -113,6 +138,7 @@ class _ServiceProviderCard extends StatelessWidget {
     required this.profession,
     required this.description,
     required this.time,
+    this.imageUrl,
     required this.onViewProfile,
     required this.onMessage,
   });
@@ -153,32 +179,43 @@ class _ServiceProviderCard extends StatelessWidget {
               CircleAvatar(
                 radius: 24,
                 backgroundColor: AppColors.inputFill,
-                child: Text(
-                  name[0],
-                  style: AppTextStyles.bodyLarge.copyWith(
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                backgroundImage: imageUrl != null && imageUrl!.isNotEmpty 
+                    ? NetworkImage(imageUrl!) 
+                    : null,
+                child: imageUrl == null || imageUrl!.isEmpty
+                    ? Text(
+                        name.isNotEmpty ? name[0].toUpperCase() : 'U',
+                        style: AppTextStyles.bodyLarge.copyWith(
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    : null,
               ),
               const SizedBox(width: AppDimensions.paddingM),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  Text(
-                    profession,
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                    Text(
+                      profession,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
@@ -190,6 +227,8 @@ class _ServiceProviderCard extends StatelessWidget {
             style: AppTextStyles.bodySmall.copyWith(
               color: AppColors.textSecondary,
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
 
           const SizedBox(height: AppDimensions.paddingM),
@@ -200,11 +239,9 @@ class _ServiceProviderCard extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: onViewProfile,
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(
-                        color: AppColors.primaryNavy),
+                    side: const BorderSide(color: AppColors.primaryNavy),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          AppDimensions.radiusFull),
+                      borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                     ),
                   ),
                   child: Text(
@@ -222,8 +259,7 @@ class _ServiceProviderCard extends StatelessWidget {
                   onPressed: onMessage,
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          AppDimensions.radiusFull),
+                      borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                     ),
                   ),
                   child: Text(

@@ -5,10 +5,25 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 
 class StudentInternshipDetailScreen extends StatelessWidget {
-  const StudentInternshipDetailScreen({super.key});
+  final Map<String, dynamic>? jobData;
+
+  const StudentInternshipDetailScreen({super.key, this.jobData});
 
   @override
   Widget build(BuildContext context) {
+    // Safely extract data
+    final data = jobData ?? {};
+    final title = data['title']?.toString() ?? 'Internship';
+    final company = data['companyName']?.toString() ?? 'Company';
+    final location = data['location']?.toString() ?? 'Location';
+    final type = data['workplaceType']?.toString() ?? 'On-site';
+    final duration = data['duration']?.toString() ?? 'Duration unlisted';
+    final description = data['description']?.toString() ?? 'No description available.';
+    final requirements = List<String>.from(data['requirements'] ?? []);
+    final qualifications = data['qualifications']?.toString() ?? 'None listed';
+    final experienceLevel = data['experienceLevel']?.toString() ?? 'Entry Level';
+    final logoUrl = data['logoUrl']?.toString();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
@@ -24,7 +39,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
                   horizontal: AppDimensions.paddingL,
                 ),
                 child: GestureDetector(
-                  onTap: () => context.go('/student/internship-categories'),
+                  onTap: () => context.pop(),
                   child: const Icon(
                     Icons.arrow_back,
                     color: AppColors.textPrimary,
@@ -45,16 +60,17 @@ class StudentInternshipDetailScreen extends StatelessWidget {
                         color: AppColors.inputFill,
                         borderRadius:
                             BorderRadius.circular(AppDimensions.radiusL),
+                        image: logoUrl != null 
+                            ? DecorationImage(image: NetworkImage(logoUrl), fit: BoxFit.cover)
+                            : null,
                       ),
-                      child: const Icon(
-                        Icons.business,
-                        color: AppColors.textSecondary,
-                        size: 40,
-                      ),
+                      child: logoUrl == null 
+                          ? const Icon(Icons.business, color: AppColors.textSecondary, size: 40)
+                          : null,
                     ),
                     const SizedBox(height: AppDimensions.paddingS),
                     Text(
-                      'Calma Space',
+                      company,
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -75,7 +91,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
                     // Title
                     Center(
                       child: Text(
-                        'AI & Data Science Intern',
+                        title,
                         style: AppTextStyles.heading3.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
@@ -92,21 +108,21 @@ class StudentInternshipDetailScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Amman',
+                            location,
                             style: AppTextStyles.bodySmall.copyWith(
                               color: AppColors.textSecondary,
                             ),
                           ),
                           const Text(' • '),
                           Text(
-                            'On site',
+                            type,
                             style: AppTextStyles.bodySmall.copyWith(
                               color: AppColors.textSecondary,
                             ),
                           ),
                           const Text(' • '),
                           Text(
-                            '3 month internship',
+                            duration,
                             style: AppTextStyles.bodySmall.copyWith(
                               color: AppColors.textSecondary,
                             ),
@@ -153,46 +169,28 @@ class StudentInternshipDetailScreen extends StatelessWidget {
                     const SizedBox(height: AppDimensions.paddingS),
 
                     Text(
-                      'Kickstart your career in Artificial Intelligence! Join our core engineering team to help train predictive models, clean large datasets, and work on real-world pattern recognition algorithms. Perfect for current CS undergrads looking for hands-on industry experience',
+                      description,
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
                     ),
 
-                    const SizedBox(height: AppDimensions.paddingS),
+                    const SizedBox(height: AppDimensions.paddingL),
 
-                    GestureDetector(
-                      onTap: () {},
-                      child: Text(
-                        'Read more',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.primaryNavy,
-                          fontWeight: FontWeight.w600,
+                    if (requirements.isNotEmpty) ...[
+                      Text(
+                        'What you will do:',
+                        style: AppTextStyles.bodyLarge.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
                         ),
                       ),
-                    ),
+                      const SizedBox(height: AppDimensions.paddingS),
+                      ...requirements.map((req) => _BulletItem(text: req)).toList(),
+                      const SizedBox(height: AppDimensions.paddingL),
+                    ],
 
-                    const SizedBox(height: AppDimensions.paddingL),
-
-                    // What you will do
-                    Text(
-                      'What you will do:',
-                      style: AppTextStyles.bodyLarge.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingS),
-
-                    _BulletItem(text: 'Assist in preprocessing, cleaning, and structuring large datasets.'),
-                    _BulletItem(text: 'Work alongside senior developers to train and test machine learning models using Python, scikit-learn, and pandas.'),
-                    _BulletItem(text: 'Help optimize algorithms for pattern recognition and sequence analysis.'),
-                    _BulletItem(text: 'Participate in weekly code reviews and architecture brainstorming sessions'),
-
-                    const SizedBox(height: AppDimensions.paddingL),
-
-                    // Location
+                    // Location Map Placeholder
                     Text(
                       'Location',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -204,7 +202,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
                     const SizedBox(height: AppDimensions.paddingS),
 
                     Text(
-                      'Jordan, Amman, Business park',
+                      location,
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -212,7 +210,6 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingS),
 
-                    // Map placeholder
                     Container(
                       width: double.infinity,
                       height: 150,
@@ -244,40 +241,18 @@ class StudentInternshipDetailScreen extends StatelessWidget {
                     const SizedBox(height: AppDimensions.paddingS),
 
                     _InfoRow(label: 'Position', value: 'Intern'),
-                    _InfoRow(label: 'Qualification', value: 'Under-Graduate'),
-                    _InfoRow(label: 'Experience', value: 'none'),
-                    _InfoRow(label: 'Job Type', value: 'Hybrid'),
-                    _InfoRow(label: 'Specialization', value: 'AI and Data Science'),
-
-                    const SizedBox(height: AppDimensions.paddingL),
-
-                    // Facilities
-                    Text(
-                      'Facilities and Others',
-                      style: AppTextStyles.bodyLarge.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingS),
-
-                    _BulletItem(text: 'Managing Data Sets'),
-                    _BulletItem(text: 'Ability to understand'),
-                    _BulletItem(text: 'Technical Catification'),
-                    _BulletItem(text: 'Feedback'),
-                    _BulletItem(text: 'Transport Allowance'),
-                    _BulletItem(text: 'Regular Hours'),
-                    _BulletItem(text: 'Mondays-Fridays'),
+                    _InfoRow(label: 'Qualification', value: qualifications),
+                    _InfoRow(label: 'Experience', value: experienceLevel),
+                    _InfoRow(label: 'Job Type', value: type),
 
                     const SizedBox(height: AppDimensions.paddingXL),
 
-                    // Apply 
+                    // Apply - Pass the dynamic job info to the CV upload screen
                     SizedBox(
                       width: double.infinity,
                       height: AppDimensions.buttonHeight,
                       child: ElevatedButton(
-                        onPressed: () => context.go('/student/upload-cv'),
+                        onPressed: () => context.push('/student/upload-cv', extra: data),
                         child: Text(
                           'APPLY NOW',
                           style: AppTextStyles.buttonText,

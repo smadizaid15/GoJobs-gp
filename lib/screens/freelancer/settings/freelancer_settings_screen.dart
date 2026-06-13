@@ -75,13 +75,7 @@ class FreelancerSettingsScreen extends StatelessWidget {
 
                     const Divider(height: 1, color: AppColors.divider),
 
-                    _SettingsItem(
-                      icon: Icons.lock_outline,
-                      label: 'Password',
-                      onTap: () => context
-                          .go('/freelancer/update-password'),
-                    ),
-
+                   
                     const Divider(height: 1, color: AppColors.divider),
 
                     _SettingsItem(

@@ -19,6 +19,16 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
   String _selectedJobType = 'Full time';
 
   final List<String> _jobTypes = ['Full time', 'Part time', 'Remote'];
+  
+  // Basic lists for the dropdown menus
+  final List<String> _categories = ['Design', 'Technology', 'Business', 'Marketing'];
+  final Map<String, List<String>> _subCategories = {
+    'Design': ['UI/UX Design', 'Graphic Design', 'Motion Graphics'],
+    'Technology': ['Frontend Dev', 'Backend Dev', 'Mobile App', 'Data Science'],
+    'Business': ['Management', 'HR', 'Finance'],
+    'Marketing': ['Social Media', 'SEO', 'Content Creation'],
+  };
+  final List<String> _locations = ['Irbid', 'Amman', 'Zarqa', 'Aqaba', 'Remote'];
 
   @override
   Widget build(BuildContext context) {
@@ -57,37 +67,81 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Category
+              // Category Dropdown
               _FilterSection(
                 title: 'Category',
                 isExpanded: true,
-                child: Text(
-                  _selectedCategory,
-                  style: AppTextStyles.bodyMedium,
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _categories.contains(_selectedCategory) ? _selectedCategory : _categories.first,
+                    isExpanded: true,
+                    icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
+                    items: _categories.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value, style: AppTextStyles.bodyMedium),
+                      );
+                    }).toList(),
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedCategory = newValue!;
+                        // Reset subcategory when category changes
+                        _selectedSubCategory = _subCategories[_selectedCategory]!.first;
+                      });
+                    },
+                  ),
                 ),
               ),
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Sub Category
+              // Sub Category Dropdown
               _FilterSection(
                 title: 'Sub Category',
                 isExpanded: false,
-                child: Text(
-                  _selectedSubCategory,
-                  style: AppTextStyles.bodyMedium,
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _selectedSubCategory,
+                    isExpanded: true,
+                    icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
+                    items: _subCategories[_selectedCategory]!.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value, style: AppTextStyles.bodyMedium),
+                      );
+                    }).toList(),
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedSubCategory = newValue!;
+                      });
+                    },
+                  ),
                 ),
               ),
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Location
+              // Location Dropdown
               _FilterSection(
                 title: 'Location',
                 isExpanded: false,
-                child: Text(
-                  _selectedLocation,
-                  style: AppTextStyles.bodyMedium,
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _selectedLocation,
+                    isExpanded: true,
+                    icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
+                    items: _locations.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value, style: AppTextStyles.bodyMedium),
+                      );
+                    }).toList(),
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedLocation = newValue!;
+                      });
+                    },
+                  ),
                 ),
               ),
 
@@ -98,13 +152,13 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Minimum Salary',
+                    'Salary Range',
                     style: AppTextStyles.bodyMedium.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   Text(
-                    'Minimum Salary',
+                    'JOD/Mo',
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -121,6 +175,7 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
                       values: _salaryRange,
                       min: 0,
                       max: 2000,
+                      divisions: 40,
                       activeColor: AppColors.primaryOrange,
                       inactiveColor: AppColors.divider,
                       onChanged: (values) {
@@ -131,11 +186,11 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '\$${_salaryRange.start.toInt()}',
+                          '${_salaryRange.start.toInt()}',
                           style: AppTextStyles.bodySmall,
                         ),
                         Text(
-                          '\$${_salaryRange.end.toInt()}',
+                          '${_salaryRange.end.toInt()}',
                           style: AppTextStyles.bodySmall,
                         ),
                       ],
@@ -160,35 +215,25 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
                 children: _jobTypes.map((type) {
                   final isSelected = _selectedJobType == type;
                   return Padding(
-                    padding: const EdgeInsets.only(
-                        right: AppDimensions.paddingS),
+                    padding: const EdgeInsets.only(right: AppDimensions.paddingS),
                     child: GestureDetector(
-                      onTap: () =>
-                          setState(() => _selectedJobType = type),
+                      onTap: () => setState(() => _selectedJobType = type),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppDimensions.paddingM,
                           vertical: AppDimensions.paddingXS,
                         ),
                         decoration: BoxDecoration(
-                          color: isSelected
-                              ? AppColors.primaryNavy
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(
-                            AppDimensions.radiusFull,
-                          ),
+                          color: isSelected ? AppColors.primaryNavy : Colors.white,
+                          borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                           border: Border.all(
-                            color: isSelected
-                                ? AppColors.primaryNavy
-                                : AppColors.divider,
+                            color: isSelected ? AppColors.primaryNavy : AppColors.divider,
                           ),
                         ),
                         child: Text(
                           type,
                           style: AppTextStyles.bodySmall.copyWith(
-                            color: isSelected
-                                ? Colors.white
-                                : AppColors.textSecondary,
+                            color: isSelected ? Colors.white : AppColors.textSecondary,
                           ),
                         ),
                       ),
@@ -204,8 +249,16 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
-                  onPressed: () => context.pop(),
-                  child: Text('SEARCH', style: AppTextStyles.buttonText),
+                  onPressed: () {
+                    // Send the selected data back to the search screen!
+                    context.pop({
+                      'category': _selectedCategory,
+                      'subCategory': _selectedSubCategory,
+                      'location': _selectedLocation,
+                      'jobType': _selectedJobType,
+                    });
+                  },
+                  child: Text('APPLY FILTERS', style: AppTextStyles.buttonText),
                 ),
               ),
 
@@ -234,24 +287,15 @@ class _FilterSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: AppTextStyles.bodyMedium.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+        if (title != 'Salary') ...[
+          Text(
+            title,
+            style: AppTextStyles.bodyMedium.copyWith(
+              fontWeight: FontWeight.w600,
             ),
-            Icon(
-              isExpanded
-                  ? Icons.keyboard_arrow_up
-                  : Icons.keyboard_arrow_down,
-              color: AppColors.textSecondary,
-            ),
-          ],
-        ),
-        const SizedBox(height: AppDimensions.paddingS),
+          ),
+          const SizedBox(height: AppDimensions.paddingS),
+        ],
         child,
         const Divider(color: AppColors.divider),
       ],

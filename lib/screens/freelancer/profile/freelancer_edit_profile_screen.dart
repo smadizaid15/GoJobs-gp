@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
@@ -12,19 +15,78 @@ class FreelancerEditProfileScreen extends StatefulWidget {
       _FreelancerEditProfileScreenState();
 }
 
-class _FreelancerEditProfileScreenState
-    extends State<FreelancerEditProfileScreen> {
-  final _nameController =
-      TextEditingController(text: 'Zaid smadi');
-  final _dobController =
-      TextEditingController(text: '24 October 2004');
-  final _emailController =
-      TextEditingController(text: 'smadizaid15@gmail.com');
-  final _phoneController =
-      TextEditingController(text: '798350308');
-  final _locationController =
-      TextEditingController(text: 'Irbid, Jordan');
+class _FreelancerEditProfileScreenState extends State<FreelancerEditProfileScreen> {
+  final _nameController = TextEditingController();
+  final _dobController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _locationController = TextEditingController();
   bool _isMale = true;
+
+  bool _isLoading = true;
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+  }
+
+  Future<void> _loadProfileData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        if (doc.exists && doc.data() != null) {
+          final data = doc.data()!;
+          setState(() {
+            _nameController.text = data['fullName'] ?? data['displayName'] ?? '';
+            _dobController.text = data['dob'] ?? '';
+            _emailController.text = data['email'] ?? user.email ?? '';
+            _phoneController.text = data['phone'] ?? '';
+            _locationController.text = data['location'] ?? '';
+            _isMale = data['gender'] == 'Female' ? false : true;
+          });
+        }
+      } catch (e) {
+        debugPrint("Error loading profile: $e");
+      }
+    }
+    setState(() => _isLoading = false);
+  }
+
+  Future<void> _saveProfileData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    setState(() => _isSaving = true);
+
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        'fullName': _nameController.text.trim(),
+        'dob': _dobController.text.trim(),
+        'email': _emailController.text.trim(),
+        'phone': _phoneController.text.trim(),
+        'location': _locationController.text.trim(),
+        'gender': _isMale ? 'Male' : 'Female',
+      });
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile updated!'), backgroundColor: Colors.green),
+        );
+        context.go('/freelancer/profile');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update: $e'), backgroundColor: AppColors.error),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -41,10 +103,10 @@ class _FreelancerEditProfileScreenState
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppDimensions.paddingL,
-          ),
+        child: _isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -52,10 +114,7 @@ class _FreelancerEditProfileScreenState
 
               GestureDetector(
                 onTap: () => context.go('/freelancer/profile'),
-                child: const Icon(
-                  Icons.arrow_back,
-                  color: AppColors.textPrimary,
-                ),
+                child: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
               ),
 
               const SizedBox(height: AppDimensions.paddingL),
@@ -71,10 +130,7 @@ class _FreelancerEditProfileScreenState
               TextField(
                 controller: _dobController,
                 decoration: const InputDecoration(
-                  suffixIcon: Icon(
-                    Icons.calendar_today_outlined,
-                    color: AppColors.textSecondary,
-                  ),
+                  suffixIcon: Icon(Icons.calendar_today_outlined, color: AppColors.textSecondary),
                 ),
               ),
 
@@ -117,22 +173,18 @@ class _FreelancerEditProfileScreenState
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(
-                          AppDimensions.radiusM),
+                      borderRadius: BorderRadius.circular(AppDimensions.radiusM),
                     ),
                     child: Row(
                       children: [
-                        Text('962+',
-                            style: AppTextStyles.bodySmall),
-                        const Icon(
-                            Icons.keyboard_arrow_down, size: 16),
+                        Text('962+', style: AppTextStyles.bodySmall),
+                        const Icon(Icons.keyboard_arrow_down, size: 16),
                       ],
                     ),
                   ),
                   const SizedBox(width: AppDimensions.paddingS),
                   Expanded(
-                    child:
-                        TextField(controller: _phoneController),
+                    child: TextField(controller: _phoneController),
                   ),
                 ],
               ),
@@ -149,10 +201,10 @@ class _FreelancerEditProfileScreenState
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
-                  onPressed: () =>
-                      context.go('/freelancer/profile'),
-                  child: Text('SAVE',
-                      style: AppTextStyles.buttonText),
+                  onPressed: _isSaving ? null : _saveProfileData,
+                  child: _isSaving 
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text('SAVE', style: AppTextStyles.buttonText),
                 ),
               ),
 
@@ -188,9 +240,7 @@ class _GenderOption extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: isSelected
-                    ? AppColors.primaryOrange
-                    : AppColors.textSecondary,
+                color: isSelected ? AppColors.primaryOrange : AppColors.textSecondary,
                 width: 2,
               ),
             ),
@@ -199,10 +249,7 @@ class _GenderOption extends StatelessWidget {
                     child: Container(
                       width: 10,
                       height: 10,
-                      decoration: const BoxDecoration(
-                        color: AppColors.primaryOrange,
-                        shape: BoxShape.circle,
-                      ),
+                      decoration: const BoxDecoration(color: AppColors.primaryOrange, shape: BoxShape.circle),
                     ),
                   )
                 : null,

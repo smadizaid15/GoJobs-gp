@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
@@ -9,12 +11,12 @@ class StudentInternshipCategoriesScreen extends StatelessWidget {
   const StudentInternshipCategoriesScreen({super.key});
 
   final List<Map<String, dynamic>> _categories = const [
-    {'title': 'UI/UX Design', 'jobs': '140 Jobs', 'icon': Icons.design_services_outlined},
-    {'title': 'Finance', 'jobs': '250 Jobs', 'icon': Icons.attach_money_outlined},
-    {'title': 'lab assistant', 'jobs': '120 Jobs', 'icon': Icons.science_outlined},
-    {'title': 'Cyber security', 'jobs': '89 Jobs', 'icon': Icons.security_outlined},
-    {'title': 'Artificial intelligence', 'jobs': '235 Jobs', 'icon': Icons.psychology_outlined},
-    {'title': 'Programmer', 'jobs': '412 Jobs', 'icon': Icons.code_outlined},
+    {'title': 'UI/UX Design', 'icon': Icons.design_services_outlined},
+    {'title': 'Finance', 'icon': Icons.attach_money_outlined},
+    {'title': 'Lab assistant', 'icon': Icons.science_outlined},
+    {'title': 'Cyber security', 'icon': Icons.security_outlined},
+    {'title': 'Artificial intelligence', 'icon': Icons.psychology_outlined},
+    {'title': 'Programmer', 'icon': Icons.code_outlined},
   ];
 
   @override
@@ -97,69 +99,107 @@ class StudentInternshipCategoriesScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // Categories grid
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: AppDimensions.paddingM,
-                        mainAxisSpacing: AppDimensions.paddingM,
-                        childAspectRatio: 1.3,
-                      ),
-                      itemCount: _categories.length,
-                      itemBuilder: (context, index) {
-                        final cat = _categories[index];
-                        final isFirst = index == 0;
-                        return GestureDetector(
-                          onTap: () => context.push('/student/internship-list'),
-                          child: Container(
-                            padding: const EdgeInsets.all(
-                              AppDimensions.paddingM,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isFirst
-                                  ? AppColors.primaryNavy
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(
-                                AppDimensions.radiusL,
-                              ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  cat['icon'] as IconData,
-                                  color: isFirst
-                                      ? Colors.white
-                                      : AppColors.primaryOrange,
-                                  size: 32,
-                                ),
-                                const SizedBox(height: AppDimensions.paddingS),
-                                Text(
-                                  cat['title'] as String,
-                                  style: AppTextStyles.bodyMedium.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: isFirst
-                                        ? Colors.white
-                                        : AppColors.textPrimary,
-                                  ),
-                                ),
-                                Text(
-                                  cat['jobs'] as String,
-                                  style: AppTextStyles.bodySmall.copyWith(
-                                    color: isFirst
-                                        ? Colors.white70
-                                        : AppColors.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ),
+                    // Dynamic Categories Grid
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('jobs')
+                          .where('jobType', isEqualTo: 'Internship')
+                          .where('isActive', isEqualTo: true)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        // Set up default counter map
+                        Map<String, int> categoryCounts = {};
+                        for (var cat in _categories) {
+                          categoryCounts[cat['title']] = 0;
+                        }
+
+                        // Tally live jobs from Firebase
+                        if (snapshot.hasData) {
+                          for (var doc in snapshot.data!.docs) {
+                            final data = doc.data() as Map<String, dynamic>;
+                            final category = data['category']?.toString() ?? '';
+                            
+                            // Map job to category (case-insensitive)
+                            for (var cat in _categories) {
+                              if (cat['title'].toString().toLowerCase() == category.toLowerCase()) {
+                                categoryCounts[cat['title']] = (categoryCounts[cat['title']] ?? 0) + 1;
+                                break;
+                              }
+                            }
+                          }
+                        }
+
+                        return GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: AppDimensions.paddingM,
+                            mainAxisSpacing: AppDimensions.paddingM,
+                            childAspectRatio: 1.3,
                           ),
+                          itemCount: _categories.length,
+                          itemBuilder: (context, index) {
+                            final cat = _categories[index];
+                            final title = cat['title'] as String;
+                            final isFirst = index == 0;
+                            
+                            // Pull the live count for this specific category
+                            final jobCount = categoryCounts[title] ?? 0;
+
+                            return GestureDetector(
+                              onTap: () => context.push('/student/internship-list', extra: title),
+                              child: Container(
+                                padding: const EdgeInsets.all(
+                                  AppDimensions.paddingM,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isFirst
+                                      ? AppColors.primaryNavy
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(
+                                    AppDimensions.radiusL,
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      cat['icon'] as IconData,
+                                      color: isFirst
+                                          ? Colors.white
+                                          : AppColors.primaryOrange,
+                                      size: 32,
+                                    ),
+                                    const SizedBox(height: AppDimensions.paddingS),
+                                    Text(
+                                      title,
+                                      style: AppTextStyles.bodyMedium.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: isFirst
+                                            ? Colors.white
+                                            : AppColors.textPrimary,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      '$jobCount Jobs',
+                                      style: AppTextStyles.bodySmall.copyWith(
+                                        color: isFirst
+                                            ? Colors.white70
+                                            : AppColors.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
                         );
-                      },
+                      }
                     ),
 
                     const SizedBox(height: AppDimensions.paddingXL),

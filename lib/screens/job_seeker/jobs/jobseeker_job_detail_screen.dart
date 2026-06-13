@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
+import '../../../services/job_service.dart';
 
 class JobseekerJobDetailScreen extends StatelessWidget {
   final Map<String, dynamic>? job;
@@ -11,13 +13,20 @@ class JobseekerJobDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final jobId = job?['id'] ?? '';
     final title = job?['title'] ?? 'Head Manager';
     final company = job?['companyName'] ?? 'Calma Space';
     final location = job?['location'] ?? 'Irbid, Jordan';
     final workplaceType = job?['workplaceType'] ?? 'On-site';
     final employmentType = job?['employmentType'] ?? 'Full time';
-    final description = job?['description'] ??
-        'The Head Manager oversees all daily operations of the coffee house, ensuring a smooth, efficient, and welcoming environment for both customers and staff.';
+    final description = job?['description'] ?? 'No description provided.';
+    final companyLogo = job?['companyLogo']?.toString();
+    
+    // ---> NEW: Safely extract the photos array <---
+    final List<String> jobImages = [];
+    if (job?['jobImages'] != null) {
+      jobImages.addAll(List<String>.from(job!['jobImages']));
+    }
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
@@ -28,23 +37,47 @@ class JobseekerJobDetailScreen extends StatelessWidget {
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              //go Back 
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,
                 ),
-                child: GestureDetector(
-                  onTap: () => context.pop(),
-                  child: const Icon(
-                    Icons.arrow_back,
-                    color: AppColors.textPrimary,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () => context.pop(),
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        if (jobId.isEmpty) return; 
+                        final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
+                        await JobService().toggleSavedJob(currentUserId, jobId);
+                        
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Saved to your profile!'),
+                              duration: Duration(seconds: 2),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        }
+                      },
+                      child: const Icon(
+                        Icons.bookmark_border,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Company logo
               Center(
                 child: Column(
                   children: [
@@ -52,15 +85,22 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: AppColors.inputFill,
-                        borderRadius:
-                            BorderRadius.circular(AppDimensions.radiusL),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                        image: companyLogo != null && companyLogo.isNotEmpty
+                            ? DecorationImage(
+                                image: NetworkImage(companyLogo),
+                                fit: BoxFit.cover,
+                              )
+                            : null,
                       ),
-                      child: const Icon(
-                        Icons.business,
-                        color: AppColors.textSecondary,
-                        size: 40,
-                      ),
+                      child: companyLogo == null || companyLogo.isEmpty
+                          ? const Icon(
+                              Icons.business,
+                              color: AppColors.textSecondary,
+                              size: 40,
+                            )
+                          : null,
                     ),
                     const SizedBox(height: AppDimensions.paddingS),
                     Text(
@@ -82,7 +122,6 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Title
                     Center(
                       child: Text(
                         title,
@@ -119,7 +158,6 @@ class JobseekerJobDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // View company 
                     Center(
                       child: OutlinedButton(
                         onPressed: () => context.push('/jobseeker/company-profile', extra: job),
@@ -145,8 +183,7 @@ class JobseekerJobDetailScreen extends StatelessWidget {
 
                     Center(
                       child: OutlinedButton.icon(
-                        onPressed: () => context.push('/ai-job-match',
-                            extra: job),
+                        onPressed: () => context.push('/ai-job-match', extra: job),
                         icon: const Icon(
                           Icons.smart_toy_outlined,
                           size: 16,
@@ -174,8 +211,7 @@ class JobseekerJobDetailScreen extends StatelessWidget {
 
                     Center(
                       child: OutlinedButton.icon(
-                        onPressed: () => context.push('/ai-interview-prep',
-                            extra: job),
+                        onPressed: () => context.push('/ai-interview-prep', extra: job),
                         icon: const Icon(
                           Icons.record_voice_over_outlined,
                           size: 16,
@@ -201,7 +237,6 @@ class JobseekerJobDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Job description
                     Text(
                       'Job Description',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -219,9 +254,41 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                       ),
                     ),
 
+                    // ---> NEW: PHOTO GALLERY UI <---
+                    if (jobImages.isNotEmpty) ...[
+                      const SizedBox(height: AppDimensions.paddingL),
+                      Text(
+                        'Workplace Photos',
+                        style: AppTextStyles.bodyLarge.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: AppDimensions.paddingS),
+                      SizedBox(
+                        height: 140,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: jobImages.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              width: 200,
+                              margin: const EdgeInsets.only(right: AppDimensions.paddingM),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                                image: DecorationImage(
+                                  image: NetworkImage(jobImages[index]),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Location
                     Text(
                       'Location',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -241,7 +308,6 @@ class JobseekerJobDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingS),
 
-                    // Map placeholder
                     Container(
                       width: double.infinity,
                       height: 150,
@@ -261,7 +327,6 @@ class JobseekerJobDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Information
                     Text(
                       'Informations',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -279,7 +344,6 @@ class JobseekerJobDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingXL),
 
-                    // Apply button
                     SizedBox(
                       width: double.infinity,
                       height: AppDimensions.buttonHeight,
@@ -291,8 +355,7 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-
-                    const SizedBox(height: AppDimensions.paddingXL),
+                    const SizedBox(height: AppDimensions.paddingL),
                   ],
                 ),
               ),
@@ -307,29 +370,27 @@ class JobseekerJobDetailScreen extends StatelessWidget {
 class _InfoRow extends StatelessWidget {
   final String label;
   final String value;
+
   const _InfoRow({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppDimensions.paddingS),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingXS),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
-            style: AppTextStyles.bodySmall.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
           ),
           Text(
             value,
             style: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.textSecondary,
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w600,
             ),
           ),
-          const Divider(color: AppColors.divider),
         ],
       ),
     );

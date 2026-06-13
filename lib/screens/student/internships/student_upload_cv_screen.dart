@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 
 class StudentUploadCvScreen extends StatefulWidget {
-  const StudentUploadCvScreen({super.key});
+  final Map<String, dynamic>? jobData;
+
+  const StudentUploadCvScreen({super.key, this.jobData});
 
   @override
   State<StudentUploadCvScreen> createState() => _StudentUploadCvScreenState();
@@ -13,9 +18,57 @@ class StudentUploadCvScreen extends StatefulWidget {
 
 class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
   bool _hasUploadedCv = false;
+  bool _isApplying = false;
+
+  Future<void> _submitApplication() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final jobId = widget.jobData?['id'];
+
+    if (user == null || jobId == null) return;
+
+    setState(() => _isApplying = true);
+
+    try {
+      // 1. Fetch user data to attach to the application
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      final userName = userDoc.data()?['fullName'] ?? userDoc.data()?['displayName'] ?? 'Student';
+
+      // 2. Create the application document
+      await FirebaseFirestore.instance.collection('applications').add({
+        'userId': user.uid,
+        'userName': userName,
+        'jobId': jobId,
+        'jobTitle': widget.jobData?['title'] ?? 'Internship',
+        'companyName': widget.jobData?['companyName'] ?? 'Company',
+        'location': widget.jobData?['location'] ?? 'Location',
+        'logoUrl': widget.jobData?['logoUrl'],
+        'status': 'Pending',
+        'appliedAt': FieldValue.serverTimestamp(),
+      });
+
+      if (mounted) {
+        // Pass the job data forward to the success screen
+        context.pushReplacement('/student/application-success', extra: widget.jobData);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to apply: $e'), backgroundColor: AppColors.error),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isApplying = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final data = widget.jobData ?? {};
+    final title = data['title']?.toString() ?? 'Internship';
+    final company = data['companyName']?.toString() ?? 'Company';
+    final location = data['location']?.toString() ?? 'Location';
+    final logoUrl = data['logoUrl']?.toString();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
@@ -28,13 +81,9 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              //go back 
               GestureDetector(
-                onTap: () => context.go('/student/internship-detail'),
-                child: const Icon(
-                  Icons.arrow_back,
-                  color: AppColors.textPrimary,
-                ),
+                onTap: () => context.pop(),
+                child: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
               ),
 
               const SizedBox(height: AppDimensions.paddingL),
@@ -48,18 +97,18 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
                       height: 80,
                       decoration: BoxDecoration(
                         color: AppColors.inputFill,
-                        borderRadius:
-                            BorderRadius.circular(AppDimensions.radiusL),
+                        borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                        image: logoUrl != null 
+                            ? DecorationImage(image: NetworkImage(logoUrl), fit: BoxFit.cover)
+                            : null,
                       ),
-                      child: const Icon(
-                        Icons.business,
-                        color: AppColors.textSecondary,
-                        size: 40,
-                      ),
+                      child: logoUrl == null 
+                          ? const Icon(Icons.business, color: AppColors.textSecondary, size: 40)
+                          : null,
                     ),
                     const SizedBox(height: AppDimensions.paddingS),
                     Text(
-                      'Calma Space',
+                      company,
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -73,11 +122,12 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
               // Job title
               Center(
                 child: Text(
-                  'AI & Data Science Intern',
+                  title,
                   style: AppTextStyles.heading3.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ),
 
@@ -88,21 +138,21 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Irbid',
+                      location,
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
                     ),
                     const Text(' • '),
                     Text(
-                      'Calma Space',
+                      company,
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
                     ),
                     const Text(' • '),
                     Text(
-                      '1 day ago',
+                      'Just now',
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -113,7 +163,6 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Upload CV 
               Text(
                 'Upload CV',
                 style: AppTextStyles.bodyLarge.copyWith(
@@ -136,7 +185,6 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
               // Upload options
               Row(
                 children: [
-                  // Upload new CV
                   Expanded(
                     child: GestureDetector(
                       onTap: () => setState(() => _hasUploadedCv = true),
@@ -144,8 +192,7 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
                         padding: const EdgeInsets.all(AppDimensions.paddingM),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius:
-                              BorderRadius.circular(AppDimensions.radiusM),
+                          borderRadius: BorderRadius.circular(AppDimensions.radiusM),
                           border: Border.all(
                             color: AppColors.divider,
                             style: BorderStyle.solid,
@@ -173,7 +220,6 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
 
                   const SizedBox(width: AppDimensions.paddingM),
 
-                  // Use existing CV
                   Expanded(
                     child: GestureDetector(
                       onTap: () => setState(() => _hasUploadedCv = true),
@@ -181,8 +227,7 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
                         padding: const EdgeInsets.all(AppDimensions.paddingM),
                         decoration: BoxDecoration(
                           color: AppColors.purpleButton,
-                          borderRadius:
-                              BorderRadius.circular(AppDimensions.radiusM),
+                          borderRadius: BorderRadius.circular(AppDimensions.radiusM),
                           border: Border.all(
                             color: AppColors.purpleButtonBorder,
                           ),
@@ -212,61 +257,59 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
               const SizedBox(height: AppDimensions.paddingL),
 
               // Uploaded CV preview
-          if (_hasUploadedCv) ...[
-  Container(
-    padding: const EdgeInsets.all(AppDimensions.paddingM),
-    decoration: BoxDecoration(
-      color: AppColors.purpleButton,
-      borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-      border: Border.all(color: AppColors.purpleButtonBorder),
-    ),
-    child: Row(
-      children: [
-        const Icon(
-          Icons.picture_as_pdf,
-          color: Colors.red,
-          size: 32,
-        ),
-        const SizedBox(width: AppDimensions.paddingM),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Zaid Kilany - CV - Head barista',
-                style: AppTextStyles.bodySmall.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+              if (_hasUploadedCv) ...[
+                Container(
+                  padding: const EdgeInsets.all(AppDimensions.paddingM),
+                  decoration: BoxDecoration(
+                    color: AppColors.purpleButton,
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                    border: Border.all(color: AppColors.purpleButtonBorder),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.picture_as_pdf,
+                        color: Colors.red,
+                        size: 32,
+                      ),
+                      const SizedBox(width: AppDimensions.paddingM),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'My_Resume.pdf',
+                              style: AppTextStyles.bodySmall.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            Text(
+                              'Ready to submit',
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.textSecondary,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => setState(() => _hasUploadedCv = false),
+                        child: const Icon(
+                          Icons.close,
+                          color: AppColors.textSecondary,
+                          size: 20,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Text(
-                '867 Kb • 14 Feb 2022 at 11:30 am',
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.textSecondary,
-                  fontSize: 10,
-                ),
-              ),
-            ],
-          ),
-        ),
-        // X button to remove file
-        GestureDetector(
-          onTap: () => setState(() => _hasUploadedCv = false),
-          child: const Icon(
-            Icons.close,
-            color: AppColors.textSecondary,
-            size: 20,
-          ),
-        ),
-      ],
-    ),
-  ),
                 const SizedBox(height: AppDimensions.paddingL),
               ],
 
-              // Information optional
               Text(
-                'Information(optional)',
+                'Information (optional)',
                 style: AppTextStyles.bodyLarge.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -304,21 +347,20 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
                   onPressed: () {
-                   if (!_hasUploadedCv) {
-                     ScaffoldMessenger.of(context).showSnackBar(
+                    if (!_hasUploadedCv) {
+                      ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Please upload your CV first!'),
                           backgroundColor: AppColors.error,
-                         ),
-                       );
-                        return;
+                        ),
+                      );
+                      return;
                     }
-                  context.go('/student/application-success');
-               },
-                  child: Text(
-                    'APPLY NOW',
-                    style: AppTextStyles.buttonText,
-                  ),
+                    _submitApplication();
+                  },
+                  child: _isApplying 
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text('APPLY NOW', style: AppTextStyles.buttonText),
                 ),
               ),
 

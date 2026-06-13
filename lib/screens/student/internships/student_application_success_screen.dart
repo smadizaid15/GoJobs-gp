@@ -5,10 +5,17 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 
 class StudentApplicationSuccessScreen extends StatelessWidget {
-  const StudentApplicationSuccessScreen({super.key});
+  final Map<String, dynamic>? jobData;
+
+  const StudentApplicationSuccessScreen({super.key, this.jobData});
 
   @override
   Widget build(BuildContext context) {
+    final company = jobData?['companyName']?.toString() ?? 'Company';
+    final title = jobData?['title']?.toString() ?? 'Position';
+    final location = jobData?['location']?.toString() ?? 'Location';
+    final logoUrl = jobData?['logoUrl']?.toString();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
@@ -20,21 +27,14 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Back + more options
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: () => context.go('/student/internship-detail'),
-                    child: const Icon(
-                      Icons.arrow_back,
-                      color: AppColors.textPrimary,
-                    ),
+                    onTap: () => context.go('/student/home'), // Prevent infinite loop
+                    child: const Icon(Icons.close, color: AppColors.textPrimary),
                   ),
-                  const Icon(
-                    Icons.more_vert,
-                    color: AppColors.textPrimary,
-                  ),
+                  const Icon(Icons.more_vert, color: AppColors.textPrimary),
                 ],
               ),
 
@@ -49,18 +49,18 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
                       height: 80,
                       decoration: BoxDecoration(
                         color: AppColors.inputFill,
-                        borderRadius:
-                            BorderRadius.circular(AppDimensions.radiusL),
+                        borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                        image: logoUrl != null 
+                            ? DecorationImage(image: NetworkImage(logoUrl), fit: BoxFit.cover)
+                            : null,
                       ),
-                      child: const Icon(
-                        Icons.business,
-                        color: AppColors.textSecondary,
-                        size: 40,
-                      ),
+                      child: logoUrl == null 
+                          ? const Icon(Icons.business, color: AppColors.textSecondary, size: 40)
+                          : null,
                     ),
                     const SizedBox(height: AppDimensions.paddingS),
                     Text(
-                      'Calma Space',
+                      company,
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -74,11 +74,12 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
               // Job title
               Center(
                 child: Text(
-                  'Head Manager',
+                  title,
                   style: AppTextStyles.heading3.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ),
 
@@ -88,69 +89,9 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      'Irbid',
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
+                    Text(location, style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
                     const Text(' • '),
-                    Text(
-                      'Calma Space',
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    const Text(' • '),
-                    Text(
-                      '1 day ago',
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: AppDimensions.paddingL),
-
-              // CV 
-              Container(
-                padding: const EdgeInsets.all(AppDimensions.paddingM),
-                decoration: BoxDecoration(
-                  color: AppColors.purpleButton,
-                  borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-                  border: Border.all(color: AppColors.purpleButtonBorder),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.picture_as_pdf,
-                      color: Colors.red,
-                      size: 32,
-                    ),
-                    const SizedBox(width: AppDimensions.paddingM),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Zaid Kilany - CV - Head barista',
-                            style: AppTextStyles.bodySmall.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          Text(
-                            '867 Kb • 14 Feb 2022 at 11:30 am',
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.textSecondary,
-                              fontSize: 10,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    Text(company, style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
                   ],
                 ),
               ),
@@ -195,8 +136,7 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.purpleButtonBorder),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusL),
+                      borderRadius: BorderRadius.circular(AppDimensions.radiusL),
                     ),
                     backgroundColor: AppColors.purpleButton,
                   ),

@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class JobModel {
   final String id;
   final String companyId;
@@ -10,7 +8,7 @@ class JobModel {
   final String employmentType;
   final String description;
   final bool isActive;
-  final DateTime? createdAt;
+  final String? salary; 
 
   JobModel({
     required this.id,
@@ -21,37 +19,22 @@ class JobModel {
     required this.workplaceType,
     required this.employmentType,
     required this.description,
-    this.isActive = true,
-    this.createdAt,
+    this.isActive = true, 
+    this.salary,          
   });
 
-  factory JobModel.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+  factory JobModel.fromMap(Map<String, dynamic> data, String documentId) {
     return JobModel(
-      id: doc.id,
+      id: documentId,
       companyId: data['companyId'] ?? '',
-      companyName: data['companyName'] ?? '',
+      companyName: data['companyName'] ?? 'Unknown Company',
       title: data['title'] ?? '',
       location: data['location'] ?? '',
       workplaceType: data['workplaceType'] ?? '',
       employmentType: data['employmentType'] ?? '',
       description: data['description'] ?? '',
       isActive: data['isActive'] ?? true,
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
+      salary: data['salary']?.toString(), 
     );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'companyId': companyId,
-      'companyName': companyName,
-      'title': title,
-      'location': location,
-      'workplaceType': workplaceType,
-      'employmentType': employmentType,
-      'description': description,
-      'isActive': isActive,
-      'createdAt': FieldValue.serverTimestamp(),
-    };
   }
 }

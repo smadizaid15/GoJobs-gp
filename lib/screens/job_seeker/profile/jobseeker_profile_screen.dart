@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
@@ -10,6 +13,14 @@ class JobseekerProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      return const Scaffold(
+        body: Center(child: Text('User not logged in.')),
+      );
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
@@ -19,122 +30,138 @@ class JobseekerProfileScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(AppDimensions.paddingL),
-                      decoration: const BoxDecoration(
-                        color: AppColors.primaryNavy,
-                        borderRadius: BorderRadius.only(
-                          bottomLeft:
-                              Radius.circular(AppDimensions.radiusXL),
-                          bottomRight:
-                              Radius.circular(AppDimensions.radiusXL),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Top icons
-                          Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                    // LIVE HEADER DATA
+                    StreamBuilder<DocumentSnapshot>(
+                      stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Container(
+                            width: double.infinity,
+                            height: 250,
+                            color: AppColors.primaryNavy,
+                            child: const Center(child: CircularProgressIndicator(color: Colors.white)),
+                          );
+                        }
+
+                        final data = snapshot.data?.data() as Map<String, dynamic>? ?? {};
+                        final fullName = data['fullName']?.toString() ?? data['displayName']?.toString() ?? 'Job Seeker';
+                        final location = data['location']?.toString() ?? 'Location not set';
+                        final profileImageUrl = data['profileImageUrl']?.toString();
+
+                        return Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(AppDimensions.paddingL),
+                          decoration: const BoxDecoration(
+                            color: AppColors.primaryNavy,
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(AppDimensions.radiusXL),
+                              bottomRight: Radius.circular(AppDimensions.radiusXL),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              GestureDetector(
-                                onTap: () =>
-                                    context.go('/jobseeker/home'),
-                                child: const Icon(
-                                  Icons.share_outlined,
+                              // Top icons
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () => context.go('/jobseeker/home'),
+                                    child: const Icon(
+                                      Icons.share_outlined,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () => context.go('/jobseeker/settings'),
+                                    child: const Icon(
+                                      Icons.settings_outlined,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(height: AppDimensions.paddingM),
+
+                              // Profile pic
+                              CircleAvatar(
+                                radius: 40,
+                                backgroundColor: AppColors.inputFill,
+                                backgroundImage: profileImageUrl != null && profileImageUrl.isNotEmpty
+                                    ? NetworkImage(profileImageUrl)
+                                    : null,
+                                child: profileImageUrl == null || profileImageUrl.isEmpty
+                                    ? Text(
+                                        fullName.isNotEmpty ? fullName[0].toUpperCase() : 'J',
+                                        style: AppTextStyles.heading2.copyWith(
+                                          color: AppColors.textSecondary,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      )
+                                    : null,
+                              ),
+
+                              const SizedBox(height: AppDimensions.paddingM),
+
+                              Text(
+                                '$fullName.',
+                                style: AppTextStyles.heading3.copyWith(
                                   color: Colors.white,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
+
+                              Text(
+                                location,
+                                style: AppTextStyles.bodySmall.copyWith(
+                                  color: Colors.white70,
+                                ),
+                              ),
+
+                              const SizedBox(height: AppDimensions.paddingM),
+
+                              // Edit profile 
                               GestureDetector(
-                                onTap: () =>
-                                    context.go('/jobseeker/settings'),
-                                child: const Icon(
-                                  Icons.settings_outlined,
-                                  color: Colors.white,
+                                onTap: () => context.push('/jobseeker/edit-profile'),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: AppDimensions.paddingL,
+                                    vertical: AppDimensions.paddingXS,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white24,
+                                    borderRadius: BorderRadius.circular(
+                                      AppDimensions.radiusFull,
+                                    ),
+                                    border: Border.all(color: Colors.white54),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'Edit profile',
+                                        style: AppTextStyles.bodySmall.copyWith(color: Colors.white),
+                                      ),
+                                      const SizedBox(width: AppDimensions.paddingXS),
+                                      const Icon(
+                                        Icons.edit_outlined,
+                                        color: Colors.white,
+                                        size: 16,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-
-                          const SizedBox(height: AppDimensions.paddingM),
-
-                          // Profile pic
-                          CircleAvatar(
-                            radius: 40,
-                            backgroundColor: AppColors.inputFill,
-                            child: Text(
-                              'Z',
-                              style: AppTextStyles.heading2.copyWith(
-                                color: AppColors.textSecondary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: AppDimensions.paddingM),
-
-                          Text(
-                            'Zaid Smadi.',
-                            style: AppTextStyles.heading3.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-
-                          Text(
-                            'Irbid, Jordan',
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: Colors.white70,
-                            ),
-                          ),
-
-                          const SizedBox(height: AppDimensions.paddingM),
-
-                          // Edit profile 
-                          GestureDetector(
-                           onTap: () => context.push('/jobseeker/edit-profile'),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: AppDimensions.paddingL,
-                                vertical: AppDimensions.paddingXS,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white24,
-                                borderRadius: BorderRadius.circular(
-                                  AppDimensions.radiusFull,
-                                ),
-                                border:
-                                    Border.all(color: Colors.white54),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'Edit profile',
-                                    style: AppTextStyles.bodySmall
-                                        .copyWith(color: Colors.white),
-                                  ),
-                                  const SizedBox(
-                                      width: AppDimensions.paddingXS),
-                                  const Icon(
-                                    Icons.edit_outlined,
-                                    color: Colors.white,
-                                    size: 16,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                        );
+                      }
                     ),
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Profile section
+                    // Profile section menu
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppDimensions.paddingL,
@@ -144,41 +171,34 @@ class JobseekerProfileScreen extends StatelessWidget {
                           _ProfileSection(
                             icon: Icons.person_outline,
                             label: 'About me',
-                            onTap: () => context
-                                .push('/jobseeker/about-me'),
+                            onTap: () => context.push('/jobseeker/about-me'),
                           ),
                           _ProfileSection(
                             icon: Icons.work_outline,
                             label: 'Work experience',
-                            onTap: () => context
-                                .push('/jobseeker/work-experience'),
+                            onTap: () => context.push('/jobseeker/work-experience'),
                           ),
                           _ProfileSection(
                             icon: Icons.school_outlined,
                             label: 'Education',
-                            onTap: () => context
-                                .push('/jobseeker/education'),
+                            onTap: () => context.push('/jobseeker/education'),
                           ),
                           _ProfileSection(
                             icon: Icons.star_outline,
                             label: 'Skill',
-                            onTap: () =>
-                                context.push('/jobseeker/skills'),
+                            onTap: () => context.push('/jobseeker/skills'),
                           ),
                           _ProfileSection(
                             icon: Icons.language_outlined,
                             label: 'Language',
-                            onTap: () =>
-                                context.push('/jobseeker/language'),
+                            onTap: () => context.push('/jobseeker/language'),
                           ),
                           _ProfileSection(
                             icon: Icons.description_outlined,
                             label: 'Resume',
-                            onTap: () =>
-                                context.push('/jobseeker/resume'),
+                            onTap: () => context.push('/jobseeker/resume'),
                           ),
-                          const SizedBox(
-                              height: AppDimensions.paddingXL),
+                          const SizedBox(height: AppDimensions.paddingXL),
                         ],
                       ),
                     ),

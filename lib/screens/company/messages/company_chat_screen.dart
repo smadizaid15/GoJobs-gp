@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
-import '../../../services/message_service.dart';
-import '../../../models/message_model.dart';
-import '../../../providers/auth_provider.dart';
 
 class CompanyChatScreen extends StatefulWidget {
-  final String? receiverId;
-  final String? receiverName;
+  final Map<String, dynamic>? chatData;
 
   const CompanyChatScreen({
     super.key,
-    this.receiverId,
-    this.receiverName,
+    this.chatData,
   });
 
   @override
@@ -25,7 +22,19 @@ class CompanyChatScreen extends StatefulWidget {
 class _CompanyChatScreenState extends State<CompanyChatScreen> {
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
-  final MessageService _messageService = MessageService();
+  
+  late String _chatId;
+  late String _receiverId;
+  late String _receiverName;
+
+  @override
+  void initState() {
+    super.initState();
+    // Extract data passed from Inbox
+    _chatId = widget.chatData?['chatId'] ?? '';
+    _receiverId = widget.chatData?['receiverId'] ?? '';
+    _receiverName = widget.chatData?['receiverName'] ?? 'Applicant';
+  }
 
   @override
   void dispose() {
@@ -46,12 +55,41 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
     });
   }
 
+  Future<void> _sendMessage() async {
+    final text = _messageController.text.trim();
+    if (text.isEmpty) return;
+
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    if (currentUserId == null || _chatId.isEmpty) return;
+
+    _messageController.clear();
+
+    final timestamp = FieldValue.serverTimestamp();
+
+    // 1. Add message to the subcollection
+    await FirebaseFirestore.instance
+        .collection('chats')
+        .doc(_chatId)
+        .collection('messages')
+        .add({
+      'senderId': currentUserId,
+      'text': text,
+      'timestamp': timestamp,
+    });
+
+    // 2. Update the parent chat document for the inbox preview
+    await FirebaseFirestore.instance.collection('chats').doc(_chatId).update({
+      'lastMessage': text,
+      'updatedAt': timestamp,
+      'unread_$_receiverId': FieldValue.increment(1), // Adds an unread dot for the receiver
+    });
+
+    _scrollToBottom();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-    final currentUserId = authProvider.user?.uid ?? '';
-    final receiverId = widget.receiverId ?? 'dummy_receiver';
-    final chatId = _messageService.getChatId(currentUserId, receiverId);
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
@@ -79,9 +117,7 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
                     radius: 18,
                     backgroundColor: AppColors.inputFill,
                     child: Text(
-                      widget.receiverName?.isNotEmpty == true
-                          ? widget.receiverName![0].toUpperCase()
-                          : 'U',
+                      _receiverName.isNotEmpty ? _receiverName[0].toUpperCase() : 'U',
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.bold,
@@ -94,14 +130,14 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.receiverName ?? 'Chat',
+                          _receiverName,
                           style: AppTextStyles.bodyMedium.copyWith(
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
                           ),
                         ),
                         Text(
-                          '● Online',
+                          '● Online', // You can make this dynamic later
                           style: AppTextStyles.bodySmall.copyWith(
                             color: Colors.green,
                             fontSize: 10,
@@ -117,19 +153,26 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
               ),
             ),
 
-            // Messages
+            // Messages Stream
             Expanded(
-              child: StreamBuilder<List<MessageModel>>(
-                stream: _messageService.getMessages(chatId),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('chats')
+                    .doc(_chatId)
+                    .collection('messages')
+                    .orderBy('timestamp', descending: false)
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator(color: AppColors.companyGold));
                   }
 
-                  final messages = snapshot.data ?? [];
+                  final messageDocs = snapshot.data?.docs ?? [];
+                  
+                  // Auto scroll when new messages arrive
                   _scrollToBottom();
 
-                  if (messages.isEmpty) {
+                  if (messageDocs.isEmpty) {
                     return Center(
                       child: Text(
                         'No messages yet. Say hello!',
@@ -143,19 +186,24 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
                   return ListView.builder(
                     controller: _scrollController,
                     padding: const EdgeInsets.all(AppDimensions.paddingL),
-                    itemCount: messages.length,
+                    itemCount: messageDocs.length,
                     itemBuilder: (context, index) {
-                      final msg = messages[index];
-                      final isMe = msg.senderId == currentUserId;
+                      final data = messageDocs[index].data() as Map<String, dynamic>;
+                      final isMe = data['senderId'] == currentUserId;
+                      
+                      // Format time safely
+                      final timestamp = data['timestamp'] as Timestamp?;
+                      String timeString = 'Now';
+                      if (timestamp != null) {
+                        final date = timestamp.toDate();
+                        timeString = '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+                      }
+
                       return _ChatBubble(
-                        text: msg.text,
-                        time: msg.timestamp != null
-                            ? '${msg.timestamp!.hour}:${msg.timestamp!.minute.toString().padLeft(2, '0')}'
-                            : 'Now',
+                        text: data['text'] ?? '',
+                        time: timeString,
                         isMe: isMe,
-                        senderInitial: widget.receiverName?.isNotEmpty == true
-                            ? widget.receiverName![0].toUpperCase()
-                            : 'U',
+                        senderInitial: isMe ? 'M' : (_receiverName.isNotEmpty ? _receiverName[0].toUpperCase() : 'U'),
                       );
                     },
                   );
@@ -172,8 +220,7 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
               color: Colors.white,
               child: Row(
                 children: [
-                  const Icon(Icons.attach_file_outlined,
-                      color: AppColors.textSecondary),
+                  const Icon(Icons.attach_file_outlined, color: AppColors.textSecondary),
                   const SizedBox(width: AppDimensions.paddingS),
                   Expanded(
                     child: TextField(
@@ -184,21 +231,11 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
                         border: InputBorder.none,
                         filled: false,
                       ),
+                      onSubmitted: (_) => _sendMessage(),
                     ),
                   ),
                   GestureDetector(
-                    onTap: () async {
-                      if (_messageController.text.isNotEmpty) {
-                        final text = _messageController.text;
-                        _messageController.clear();
-                        await _messageService.sendMessage(
-                          chatId: chatId,
-                          senderId: currentUserId,
-                          text: text,
-                        );
-                        _scrollToBottom();
-                      }
-                    },
+                    onTap: _sendMessage,
                     child: Container(
                       width: 40,
                       height: 40,
@@ -206,8 +243,7 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
                         color: AppColors.companyGold,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.send,
-                          color: Colors.white, size: 18),
+                      child: const Icon(Icons.send, color: Colors.white, size: 18),
                     ),
                   ),
                 ],
@@ -251,6 +287,7 @@ class _ChatBubble extends StatelessWidget {
                 style: AppTextStyles.bodySmall.copyWith(
                   color: AppColors.textSecondary,
                   fontSize: 10,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),

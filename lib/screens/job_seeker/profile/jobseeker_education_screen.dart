@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
@@ -21,6 +24,52 @@ class _JobseekerEducationScreenState
   final _endDateController = TextEditingController();
   final _descriptionController = TextEditingController();
   bool _isCurrentPosition = false;
+  bool _isSaving = false;
+
+  Future<void> _saveEducation() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    if (_levelController.text.isEmpty || _institutionController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in required fields'), backgroundColor: AppColors.error),
+      );
+      return;
+    }
+
+    setState(() => _isSaving = true);
+
+    try {
+      final newEducation = {
+        'level': _levelController.text.trim(),
+        'institution': _institutionController.text.trim(),
+        'field': _fieldController.text.trim(),
+        'startDate': _startDateController.text.trim(),
+        'endDate': _isCurrentPosition ? 'Present' : _endDateController.text.trim(),
+        'description': _descriptionController.text.trim(),
+        'isCurrent': _isCurrentPosition,
+      };
+
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        'education': FieldValue.arrayUnion([newEducation]),
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Education added!'), backgroundColor: Colors.green),
+        );
+        context.pop();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save: $e'), backgroundColor: AppColors.error),
+        );
+      }
+    } finally {
+      setState(() => _isSaving = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -48,7 +97,7 @@ class _JobseekerEducationScreenState
               const SizedBox(height: AppDimensions.paddingL),
 
               GestureDetector(
-                onTap: () => context.go('/jobseeker/profile'),
+                onTap: () => context.pop(),
                 child: const Icon(
                   Icons.arrow_back,
                   color: AppColors.textPrimary,
@@ -96,7 +145,8 @@ class _JobseekerEducationScreenState
                         const SizedBox(
                             height: AppDimensions.paddingXS),
                         TextField(
-                            controller: _startDateController),
+                            controller: _startDateController,
+                            decoration: const InputDecoration(hintText: 'MM/YYYY')),
                       ],
                     ),
                   ),
@@ -109,7 +159,13 @@ class _JobseekerEducationScreenState
                             style: AppTextStyles.labelText),
                         const SizedBox(
                             height: AppDimensions.paddingXS),
-                        TextField(controller: _endDateController),
+                        TextField(
+                          controller: _endDateController,
+                          enabled: !_isCurrentPosition,
+                          decoration: InputDecoration(
+                            hintText: _isCurrentPosition ? 'Present' : 'MM/YYYY',
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -167,10 +223,10 @@ class _JobseekerEducationScreenState
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
-                  onPressed: () =>
-                      context.go('/jobseeker/profile'),
-                  child: Text('SAVE',
-                      style: AppTextStyles.buttonText),
+                  onPressed: _isSaving ? null : _saveEducation,
+                  child: _isSaving
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text('SAVE', style: AppTextStyles.buttonText),
                 ),
               ),
 
@@ -180,8 +236,7 @@ class _JobseekerEducationScreenState
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: OutlinedButton(
-                  onPressed: () =>
-                      context.go('/jobseeker/profile'),
+                  onPressed: () => context.pop(),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(
                         color: AppColors.purpleButtonBorder),
@@ -192,7 +247,7 @@ class _JobseekerEducationScreenState
                     backgroundColor: AppColors.purpleButton,
                   ),
                   child: Text(
-                    'REMOVE',
+                    'CANCEL',
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.primaryNavy,
                       fontWeight: FontWeight.w600,

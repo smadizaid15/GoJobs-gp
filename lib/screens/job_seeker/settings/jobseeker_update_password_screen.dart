@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
@@ -20,6 +22,70 @@ class _JobseekerUpdatePasswordScreenState
   bool _obscureOld = true;
   bool _obscureNew = true;
   bool _obscureConfirm = true;
+  bool _isLoading = false;
+
+  Future<void> _updatePassword() async {
+    if (_oldPasswordController.text.isEmpty ||
+        _newPasswordController.text.isEmpty ||
+        _confirmPasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields'), backgroundColor: AppColors.error),
+      );
+      return;
+    }
+
+    if (_newPasswordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('New passwords do not match!'), backgroundColor: AppColors.error),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null && user.email != null) {
+        final credential = EmailAuthProvider.credential(
+          email: user.email!,
+          password: _oldPasswordController.text,
+        );
+        
+        await user.reauthenticateWithCredential(credential);
+        await user.updatePassword(_newPasswordController.text);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Password updated successfully!'), backgroundColor: Colors.green),
+          );
+          _oldPasswordController.clear();
+          _newPasswordController.clear();
+          _confirmPasswordController.clear();
+          context.pop();
+        }
+      }
+    } on FirebaseAuthException catch (e) {
+      String message = 'An error occurred while updating the password.';
+      if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
+        message = 'The current password you entered is incorrect.';
+      } else if (e.code == 'weak-password') {
+        message = 'The new password is too weak.';
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message), backgroundColor: AppColors.error),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update: $e'), backgroundColor: AppColors.error),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -46,8 +112,7 @@ class _JobseekerUpdatePasswordScreenState
               Row(
                 children: [
                   GestureDetector(
-                    onTap: () =>
-                        context.go('/jobseeker/settings'),
+                    onTap: () => context.pop(),
                     child: const Icon(
                       Icons.arrow_back,
                       color: AppColors.textPrimary,
@@ -136,10 +201,10 @@ class _JobseekerUpdatePasswordScreenState
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
-                  onPressed: () =>
-                      context.go('/jobseeker/settings'),
-                  child: Text(
-                      'UPDATE', style: AppTextStyles.buttonText),
+                  onPressed: _isLoading ? null : _updatePassword,
+                  child: _isLoading 
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text('UPDATE', style: AppTextStyles.buttonText),
                 ),
               ),
 

@@ -1,11 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 
-class StudentInternshipListScreen extends StatelessWidget {
-  const StudentInternshipListScreen({super.key});
+class StudentInternshipListScreen extends StatefulWidget {
+  final String? category;
+  const StudentInternshipListScreen({super.key, this.category});
+
+  @override
+  State<StudentInternshipListScreen> createState() => _StudentInternshipListScreenState();
+}
+
+class _StudentInternshipListScreenState extends State<StudentInternshipListScreen> {
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +41,7 @@ class StudentInternshipListScreen extends StatelessWidget {
               child: Row(
                 children: [
                   GestureDetector(
-                    onTap: () =>
-                        context.go('/student/internship-categories'),
+                    onTap: () => context.pop(), // Safe routing
                     child: const Icon(
                       Icons.arrow_back,
                       color: AppColors.textPrimary,
@@ -52,6 +68,8 @@ class StudentInternshipListScreen extends StatelessWidget {
                           const SizedBox(width: AppDimensions.paddingS),
                           Expanded(
                             child: TextField(
+                              controller: _searchController,
+                              onChanged: (val) => setState(() => _searchQuery = val.toLowerCase()),
                               decoration: InputDecoration(
                                 hintText: 'Search internships',
                                 hintStyle: AppTextStyles.bodySmall,
@@ -82,7 +100,7 @@ class StudentInternshipListScreen extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'UI/UX Design Internships',
+                  widget.category != null ? '${widget.category} Internships' : 'All Internships',
                   style: AppTextStyles.heading3.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -93,50 +111,75 @@ class StudentInternshipListScreen extends StatelessWidget {
 
             const SizedBox(height: AppDimensions.paddingM),
 
-            // Internship list
+            // LIVE Internship list
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingL,
-                ),
-                children: [
-                  _InternshipCard(
-                    title: 'AI & Data Science Intern',
-                    company: 'Calma Space',
-                    location: 'Amman',
-                    type: 'On site',
-                    duration: '3 month internship',
-                    onTap: () => context.push('/student/internship-detail')
-                  ),
-                  const SizedBox(height: AppDimensions.paddingM),
-                  _InternshipCard(
-                    title: 'UI/UX Designer Intern',
-                    company: 'Design Hub',
-                    location: 'Irbid',
-                    type: 'Hybrid',
-                    duration: '6 month internship',
-                    onTap: () => context.push('/student/internship-detail')
-                  ),
-                  const SizedBox(height: AppDimensions.paddingM),
-                  _InternshipCard(
-                    title: 'Frontend Developer Intern',
-                    company: 'Tech Corp',
-                    location: 'Amman',
-                    type: 'Remote',
-                    duration: '3 month internship',
-                    onTap: () => context.push('/student/internship-detail')
-                  ),
-                  const SizedBox(height: AppDimensions.paddingM),
-                  _InternshipCard(
-                    title: 'Data Analyst Intern',
-                    company: 'Analytics Co',
-                    location: 'Amman',
-                    type: 'On site',
-                    duration: '4 month internship',
-                    onTap: () => context.push('/student/internship-detail'),
-                  ),
-                  const SizedBox(height: AppDimensions.paddingXL),
-                ],
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('jobs')
+                    .where('jobType', isEqualTo: 'Internship')
+                    .where('isActive', isEqualTo: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.hasError) {
+                    return const Center(child: Text('Error loading internships.'));
+                  }
+
+                  final docs = snapshot.data?.docs ?? [];
+
+                  // Apply local search and category filtering
+                  final filteredInternships = docs.where((doc) {
+                    final data = doc.data() as Map<String, dynamic>;
+                    final title = data['title']?.toString().toLowerCase() ?? '';
+                    final cat = data['category']?.toString().toLowerCase() ?? '';
+
+                    bool matchesSearch = title.contains(_searchQuery);
+                    bool matchesCategory = widget.category == null || cat == widget.category!.toLowerCase();
+
+                    return matchesSearch && matchesCategory;
+                  }).toList();
+
+                  if (filteredInternships.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No internships found.',
+                        style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.paddingL,
+                    ),
+                    itemCount: filteredInternships.length,
+                    itemBuilder: (context, index) {
+                      final doc = filteredInternships[index];
+                      final data = doc.data() as Map<String, dynamic>;
+                      
+                      final jobDataForDetail = {
+                        'id': doc.id,
+                        ...data,
+                      };
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: AppDimensions.paddingM),
+                        child: _InternshipCard(
+                          title: data['title'] ?? 'Internship',
+                          company: data['companyName'] ?? 'Unknown Company',
+                          location: data['location'] ?? 'Location not specified',
+                          type: data['workplaceType'] ?? 'On-site',
+                          duration: data['duration'] ?? 'Duration not specified',
+                          logoUrl: data['logoUrl'],
+                          onTap: () => context.push('/student/internship-detail', extra: jobDataForDetail),
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ],
@@ -152,6 +195,7 @@ class _InternshipCard extends StatelessWidget {
   final String location;
   final String type;
   final String duration;
+  final String? logoUrl;
   final VoidCallback onTap;
 
   const _InternshipCard({
@@ -160,6 +204,7 @@ class _InternshipCard extends StatelessWidget {
     required this.location,
     required this.type,
     required this.duration,
+    this.logoUrl,
     required this.onTap,
   });
 
@@ -184,14 +229,14 @@ class _InternshipCard extends StatelessWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     color: AppColors.inputFill,
-                    borderRadius:
-                        BorderRadius.circular(AppDimensions.radiusS),
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                    image: logoUrl != null 
+                        ? DecorationImage(image: NetworkImage(logoUrl!), fit: BoxFit.cover)
+                        : null,
                   ),
-                  child: const Icon(
-                    Icons.business,
-                    color: AppColors.textSecondary,
-                    size: 20,
-                  ),
+                  child: logoUrl == null
+                      ? const Icon(Icons.business, color: AppColors.textSecondary, size: 20)
+                      : null,
                 ),
                 const Icon(
                   Icons.bookmark_border,

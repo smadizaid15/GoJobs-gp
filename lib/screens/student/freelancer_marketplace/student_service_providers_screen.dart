@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
@@ -43,42 +45,83 @@ class StudentServiceProvidersScreen extends StatelessWidget {
                             color: AppColors.textPrimary,
                           ),
                         ),
-                        
                       ],
                     ),
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Service provider 
-                    _ServiceProviderCard(
-                      name: 'Fares Masaadeh',
-                      profession: 'Plumber',
-                      description: '24/7 available round clock plumber, bathrooms, kitchens and more!',
-                      time: '25 minutes',
-                      onViewProfile: () {},
-                      onMessage: () => context.push('/student/chat-from-providers'),
-                    ),
+                    // LIVE FREELANCER DIRECTORY
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('users')
+                          .where('userType', isEqualTo: 'freelancer')
+                          .where('isAvailable', isEqualTo: true) // Only show active freelancers
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
 
-                    const SizedBox(height: AppDimensions.paddingM),
+                        if (snapshot.hasError) {
+                          return const Center(child: Text('Error loading providers.'));
+                        }
 
-                    _ServiceProviderCard(
-                      name: 'Zaid Kilany',
-                      profession: 'Electronics repair',
-                      description: 'Repairing refrigerator, Washers, Dryers, Dishwashers, Available round Clock.',
-                      time: '25 minutes',
-                      onViewProfile: () {},
-                      onMessage: () => context.push('/student/chat-from-providers'),
-                    ),
+                        final providers = snapshot.data?.docs ?? [];
 
-                    const SizedBox(height: AppDimensions.paddingM),
+                        if (providers.isEmpty) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingXL),
+                            child: Center(
+                              child: Text(
+                                'No service providers available right now.',
+                                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                              ),
+                            ),
+                          );
+                        }
 
-                    _ServiceProviderCard(
-                      name: 'Zaid Smadi',
-                      profession: 'Carpenter',
-                      description: 'Working on doors, living rooms, full kitchen makeovers',
-                      time: '25 minutes',
-                      onViewProfile: () {},
-                      onMessage: () => context.push('/student/chat-from-providers'),
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: providers.length,
+                          itemBuilder: (context, index) {
+                            final data = providers[index].data() as Map<String, dynamic>;
+                            
+                            final name = data['fullName']?.toString() ?? data['displayName']?.toString() ?? 'Freelancer';
+                            // Pull from the expertise/serviceType fields we wired up earlier
+                            final profession = data['serviceType']?.toString() ?? data['category']?.toString() ?? 'Service Provider';
+                            final description = data['aboutMe']?.toString() ?? data['expertiseDescription']?.toString() ?? 'Available for hire.';
+                            final profileImageUrl = data['profileImageUrl']?.toString() ?? data['logoUrl']?.toString();
+
+                            // Optional: Calculate availability string based on their shift fields
+                            final shiftStart = data['shiftStart']?.toString() ?? '';
+                            final shiftEnd = data['shiftEnd']?.toString() ?? '';
+                            final isOpen247 = data['isOpen24_7'] as bool? ?? false;
+                            
+                            String timeString = 'Available now';
+                            if (isOpen247) {
+                              timeString = '24/7';
+                            } else if (shiftStart.isNotEmpty && shiftEnd.isNotEmpty) {
+                              timeString = '$shiftStart - $shiftEnd';
+                            }
+
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: AppDimensions.paddingM),
+                              child: _ServiceProviderCard(
+                                name: name,
+                                profession: profession,
+                                description: description,
+                                time: timeString,
+                                imageUrl: profileImageUrl,
+                                onViewProfile: () {
+                                  // Can route to a public portfolio view if you build one
+                                },
+                                onMessage: () => context.push('/student/chat-from-providers'),
+                              ),
+                            );
+                          },
+                        );
+                      },
                     ),
 
                     const SizedBox(height: AppDimensions.paddingXL),
@@ -100,6 +143,7 @@ class _ServiceProviderCard extends StatelessWidget {
   final String profession;
   final String description;
   final String time;
+  final String? imageUrl;
   final VoidCallback onViewProfile;
   final VoidCallback onMessage;
 
@@ -108,6 +152,7 @@ class _ServiceProviderCard extends StatelessWidget {
     required this.profession,
     required this.description,
     required this.time,
+    this.imageUrl,
     required this.onViewProfile,
     required this.onMessage,
   });
@@ -150,32 +195,43 @@ class _ServiceProviderCard extends StatelessWidget {
               CircleAvatar(
                 radius: 24,
                 backgroundColor: AppColors.inputFill,
-                child: Text(
-                  name[0],
-                  style: AppTextStyles.bodyLarge.copyWith(
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                backgroundImage: imageUrl != null && imageUrl!.isNotEmpty 
+                    ? NetworkImage(imageUrl!) 
+                    : null,
+                child: imageUrl == null || imageUrl!.isEmpty
+                    ? Text(
+                        name.isNotEmpty ? name[0].toUpperCase() : 'U',
+                        style: AppTextStyles.bodyLarge.copyWith(
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    : null,
               ),
               const SizedBox(width: AppDimensions.paddingM),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  Text(
-                    profession,
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                    Text(
+                      profession,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
@@ -188,6 +244,8 @@ class _ServiceProviderCard extends StatelessWidget {
             style: AppTextStyles.bodySmall.copyWith(
               color: AppColors.textSecondary,
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
 
           const SizedBox(height: AppDimensions.paddingM),

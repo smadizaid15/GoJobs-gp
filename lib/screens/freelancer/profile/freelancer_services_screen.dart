@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
@@ -12,9 +15,62 @@ class FreelancerServicesScreen extends StatefulWidget {
       _FreelancerServicesScreenState();
 }
 
-class _FreelancerServicesScreenState
-    extends State<FreelancerServicesScreen> {
+class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
   final _servicesController = TextEditingController();
+  bool _isLoading = true;
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadServices();
+  }
+
+  Future<void> _loadServices() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        if (doc.exists && doc.data() != null) {
+          setState(() {
+            _servicesController.text = doc.data()!['servicesDescription'] ?? '';
+          });
+        }
+      } catch (e) {
+        debugPrint("Error loading services: $e");
+      }
+    }
+    setState(() => _isLoading = false);
+  }
+
+  Future<void> _saveServices() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    setState(() => _isSaving = true);
+
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        'servicesDescription': _servicesController.text.trim(),
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Services updated!'), backgroundColor: Colors.green),
+        );
+        Navigator.pop(context); // Close bottom sheet
+        context.go('/freelancer/profile'); // Go back to profile
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save: $e'), backgroundColor: AppColors.error),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -27,163 +83,152 @@ class _FreelancerServicesScreenState
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppDimensions.paddingL,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: AppDimensions.paddingL),
-
-              GestureDetector(
-                onTap: () => context.go('/freelancer/profile'),
-                child: const Icon(
-                  Icons.arrow_back,
-                  color: AppColors.textPrimary,
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.paddingL,
                 ),
-              ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: AppDimensions.paddingL),
 
-              const SizedBox(height: AppDimensions.paddingL),
-
-              Text(
-                'Write about your services / working times / prices',
-                style: AppTextStyles.heading3.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-
-              const SizedBox(height: AppDimensions.paddingXL),
-
-              Container(
-                width: double.infinity,
-                height: 200,
-                padding: const EdgeInsets.all(AppDimensions.paddingM),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius:
-                      BorderRadius.circular(AppDimensions.radiusM),
-                ),
-                child: TextField(
-                  controller: _servicesController,
-                  maxLines: null,
-                  decoration: InputDecoration(
-                    hintText: 'Tell me about you.',
-                    hintStyle: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                    GestureDetector(
+                      onTap: () => context.go('/freelancer/profile'),
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
-                    border: InputBorder.none,
-                    filled: false,
-                  ),
-                ),
-              ),
 
-              const Spacer(),
+                    const SizedBox(height: AppDimensions.paddingL),
 
-              SizedBox(
-                width: double.infinity,
-                height: AppDimensions.buttonHeight,
-                child: ElevatedButton(
-                  onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(
-                              AppDimensions.radiusXL),
+                    Text(
+                      'Write about your services / working times / prices',
+                      style: AppTextStyles.heading3.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+
+                    const SizedBox(height: AppDimensions.paddingXL),
+
+                    Container(
+                      width: double.infinity,
+                      height: 200,
+                      padding: const EdgeInsets.all(AppDimensions.paddingM),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius:
+                            BorderRadius.circular(AppDimensions.radiusM),
+                      ),
+                      child: TextField(
+                        controller: _servicesController,
+                        maxLines: null,
+                        decoration: InputDecoration(
+                          hintText: 'Tell me about you.',
+                          hintStyle: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                          border: InputBorder.none,
+                          filled: false,
                         ),
                       ),
-                      builder: (context) => Padding(
-                        padding: const EdgeInsets.all(
-                            AppDimensions.paddingXL),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 4,
-                              decoration: BoxDecoration(
-                                color: AppColors.divider,
-                                borderRadius: BorderRadius.circular(
-                                    AppDimensions.radiusFull),
+                    ),
+
+                    const Spacer(),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: AppDimensions.buttonHeight,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(AppDimensions.radiusXL),
                               ),
                             ),
-                            const SizedBox(
-                                height: AppDimensions.paddingL),
-                            Text(
-                              'Save Changes ?',
-                              style: AppTextStyles.heading3.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(
-                                height: AppDimensions.paddingS),
-                            Text(
-                              'Are you sure you want to change what you entered?',
-                              style: AppTextStyles.bodySmall.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(
-                                height: AppDimensions.paddingL),
-                            SizedBox(
-                              width: double.infinity,
-                              height: AppDimensions.buttonHeight,
-                              child: ElevatedButton(
-                                onPressed: () => context
-                                    .go('/freelancer/profile'),
-                                child: Text('SAVE CHANGES',
-                                    style:
-                                        AppTextStyles.buttonText),
-                              ),
-                            ),
-                            const SizedBox(
-                                height: AppDimensions.paddingM),
-                            SizedBox(
-                              width: double.infinity,
-                              height: AppDimensions.buttonHeight,
-                              child: OutlinedButton(
-                                onPressed: () =>
-                                    Navigator.pop(context),
-                                style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(
-                                      color: AppColors
-                                          .purpleButtonBorder),
-                                  backgroundColor:
-                                      AppColors.purpleButton,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                            AppDimensions.radiusL),
+                            builder: (context) => Padding(
+                              padding: const EdgeInsets.all(AppDimensions.paddingXL),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 4,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.divider,
+                                      borderRadius: BorderRadius.circular(
+                                          AppDimensions.radiusFull),
+                                    ),
                                   ),
-                                ),
-                                child: Text(
-                                  'CONTINUE EDITING',
-                                  style:
-                                      AppTextStyles.bodySmall.copyWith(
-                                    color: AppColors.primaryNavy,
-                                    fontWeight: FontWeight.w600,
+                                  const SizedBox(height: AppDimensions.paddingL),
+                                  Text(
+                                    'Save Changes ?',
+                                    style: AppTextStyles.heading3.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
+                                  const SizedBox(height: AppDimensions.paddingS),
+                                  Text(
+                                    'Are you sure you want to change what you entered?',
+                                    style: AppTextStyles.bodySmall.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: AppDimensions.paddingL),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: AppDimensions.buttonHeight,
+                                    child: ElevatedButton(
+                                      onPressed: _isSaving ? null : _saveServices,
+                                      child: _isSaving
+                                          ? const CircularProgressIndicator(color: Colors.white)
+                                          : Text('SAVE CHANGES', style: AppTextStyles.buttonText),
+                                    ),
+                                  ),
+                                  const SizedBox(height: AppDimensions.paddingM),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: AppDimensions.buttonHeight,
+                                    child: OutlinedButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      style: OutlinedButton.styleFrom(
+                                        side: const BorderSide(
+                                            color: AppColors.purpleButtonBorder),
+                                        backgroundColor: AppColors.purpleButton,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              AppDimensions.radiusL),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'CONTINUE EDITING',
+                                        style: AppTextStyles.bodySmall.copyWith(
+                                          color: AppColors.primaryNavy,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: AppDimensions.paddingL),
+                                ],
                               ),
                             ),
-                            const SizedBox(
-                                height: AppDimensions.paddingL),
-                          ],
-                        ),
+                          );
+                        },
+                        child: Text('SAVE', style: AppTextStyles.buttonText),
                       ),
-                    );
-                  },
-                  child: Text('SAVE', style: AppTextStyles.buttonText),
+                    ),
+
+                    const SizedBox(height: AppDimensions.paddingXL),
+                  ],
                 ),
               ),
-
-              const SizedBox(height: AppDimensions.paddingXL),
-            ],
-          ),
-        ),
       ),
     );
   }

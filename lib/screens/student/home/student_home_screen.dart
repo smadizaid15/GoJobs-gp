@@ -1,18 +1,87 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../widgets/student_bottom_nav.dart';
 
-class StudentHomeScreen extends StatelessWidget {
+class StudentHomeScreen extends StatefulWidget {
   const StudentHomeScreen({super.key});
+
+  @override
+  State<StudentHomeScreen> createState() => _StudentHomeScreenState();
+}
+
+class _StudentHomeScreenState extends State<StudentHomeScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  
+  String _studentName = 'Student';
+  String? _profileImageUrl;
+  int _internshipCount = 0;
+  int _courseCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStudentProfile();
+    _countInternships();
+    _countCourses();
+  }
+
+  Future<void> _loadStudentProfile() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      try {
+        final doc = await _firestore.collection('users').doc(user.uid).get();
+        if (doc.exists && doc.data() != null) {
+          final data = doc.data()!;
+          setState(() {
+            _studentName = data['fullName'] ?? data['displayName'] ?? 'Student';
+            _profileImageUrl = data['profileImageUrl'];
+          });
+        }
+      } catch (e) {
+        debugPrint("Error loading student profile: $e");
+      }
+    }
+  }
+
+  Future<void> _countInternships() async {
+    try {
+      final snapshot = await _firestore
+          .collection('jobs')
+          .where('jobType', isEqualTo: 'Internship')
+          .where('isActive', isEqualTo: true)
+          .get();
+      setState(() {
+        _internshipCount = snapshot.docs.length;
+      });
+    } catch (e) {
+      debugPrint("Error counting internships: $e");
+    }
+  }
+  Future<void> _countCourses() async {
+    try {
+      // Assuming your courses are stored in a 'courses' collection
+      final snapshot = await _firestore.collection('courses').get();
+      if (mounted) {
+        setState(() {
+          _courseCount = snapshot.docs.length;
+        });
+      }
+    } catch (e) {
+      debugPrint("Error counting courses: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
-     
       body: SafeArea(
         child: Column(
           children: [
@@ -40,7 +109,7 @@ class StudentHomeScreen extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              'Zaid Smadi.',
+                              '$_studentName.',
                               style: AppTextStyles.heading3.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
@@ -59,34 +128,39 @@ class StudentHomeScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: AppDimensions.paddingS),
                             GestureDetector(
-                             onTap: () => context.push('/ai-chat'),
+                              onTap: () => context.push('/ai-chat'),
                               child: Container(
-                               width: 36,
-                               height: 36,
-                               decoration: BoxDecoration(
-                                color: AppColors.primaryNavy,
-                                borderRadius: BorderRadius.circular(AppDimensions.radiusS),
-                              ),
-                               child: const Icon(
-                                 Icons.smart_toy_outlined,
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryNavy,
+                                  borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                                ),
+                                child: const Icon(
+                                  Icons.smart_toy_outlined,
                                   color: Colors.white,
                                   size: 18,
-                               ),
-                             ),
-                          ),
-                          const SizedBox(width: AppDimensions.paddingS),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: AppDimensions.paddingS),
                             GestureDetector(
                               onTap: () => context.go('/student/profile'),
                               child: CircleAvatar(
                                 radius: 20,
                                 backgroundColor: AppColors.primaryNavy,
-                                child: Text(
-                                  'Z',
-                                  style: AppTextStyles.bodyMedium.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                                backgroundImage: _profileImageUrl != null && _profileImageUrl!.isNotEmpty
+                                    ? NetworkImage(_profileImageUrl!)
+                                    : null,
+                                child: _profileImageUrl == null || _profileImageUrl!.isEmpty
+                                    ? Text(
+                                        _studentName.isNotEmpty ? _studentName[0].toUpperCase() : 'S',
+                                        style: AppTextStyles.bodyMedium.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      )
+                                    : null,
                               ),
                             ),
                           ],
@@ -189,6 +263,7 @@ class StudentHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
+                    // Quick Actions Row
                     Row(
                       children: [
                         Expanded(
@@ -214,7 +289,7 @@ class StudentHomeScreen extends StatelessWidget {
                                   const SizedBox(
                                       height: AppDimensions.paddingS),
                                   Text(
-                                    '4.5k',
+                                    '$_courseCount',
                                     style: AppTextStyles.heading3.copyWith(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -258,7 +333,7 @@ class StudentHomeScreen extends StatelessWidget {
                                   const SizedBox(
                                       height: AppDimensions.paddingS),
                                   Text(
-                                    '3k+',
+                                    '$_internshipCount+', // Dynamically count internships
                                     style: AppTextStyles.heading3.copyWith(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -344,26 +419,56 @@ class StudentHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    _InternshipCard(
-                      title: 'Data scientist',
-                      company: 'Startup Company',
-                      location: 'Amman, Jordan',
-                      type: 'On site',
-                      jobType: 'Full time',
-                      onTap: () =>
-                          context.push('/student/internship-list'),
-                    ),
+                    // LIVE INTERNSHIPS FEED
+                    StreamBuilder<QuerySnapshot>(
+                      stream: _firestore
+                          .collection('jobs')
+                          .where('jobType', isEqualTo: 'Internship')
+                          .where('isActive', isEqualTo: true)
+                          .limit(5) // Just show the top 5 on the home screen
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        if (snapshot.hasError) {
+                          return const Center(child: Text('Failed to load internships'));
+                        }
 
-                    const SizedBox(height: AppDimensions.paddingS),
+                        final internships = snapshot.data?.docs ?? [];
 
-                    _InternshipCard(
-                      title: 'Sunpaid',
-                      company: 'Tech Corp',
-                      location: 'Irbid, Jordan',
-                      type: 'On site',
-                      jobType: 'Full time',
-                      onTap: () =>
-                          context.push('/student/internship-list'),
+                        if (internships.isEmpty) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingM),
+                            child: Text(
+                              'No internships available right now.',
+                              style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                            ),
+                          );
+                        }
+
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: internships.length,
+                          itemBuilder: (context, index) {
+                            final jobData = internships[index].data() as Map<String, dynamic>;
+                            final fullJobData = {'id': internships[index].id, ...jobData};
+
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: AppDimensions.paddingS),
+                              child: _InternshipCard(
+                                title: jobData['title'] ?? 'Internship',
+                                company: jobData['companyName'] ?? 'Unknown Company',
+                                location: jobData['location'] ?? 'Location unknown',
+                                type: jobData['workplaceType'] ?? 'On-site',
+                                jobType: jobData['jobType'] ?? 'Internship',
+                                onTap: () => context.push('/student/job-detail', extra: fullJobData),
+                              ),
+                            );
+                          },
+                        );
+                      },
                     ),
 
                     const SizedBox(height: AppDimensions.paddingXL),
