@@ -70,7 +70,10 @@ class _StudentCheckEmailScreenState extends State<StudentCheckEmailScreen> {
 
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Enter new password', style: AppTextStyles.labelText),
+                child: Text(
+                  'Enter new password',
+                  style: AppTextStyles.labelText,
+                ),
               ),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(
@@ -98,7 +101,10 @@ class _StudentCheckEmailScreenState extends State<StudentCheckEmailScreen> {
 
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Confirm new password', style: AppTextStyles.labelText),
+                child: Text(
+                  'Confirm new password',
+                  style: AppTextStyles.labelText,
+                ),
               ),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(
@@ -147,7 +153,9 @@ class _StudentCheckEmailScreenState extends State<StudentCheckEmailScreen> {
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.purpleButtonBorder),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusL,
+                      ),
                     ),
                     backgroundColor: AppColors.purpleButton,
                   ),

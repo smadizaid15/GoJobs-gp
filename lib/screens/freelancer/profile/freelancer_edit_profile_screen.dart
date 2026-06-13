@@ -15,7 +15,8 @@ class FreelancerEditProfileScreen extends StatefulWidget {
       _FreelancerEditProfileScreenState();
 }
 
-class _FreelancerEditProfileScreenState extends State<FreelancerEditProfileScreen> {
+class _FreelancerEditProfileScreenState
+    extends State<FreelancerEditProfileScreen> {
   final _nameController = TextEditingController();
   final _dobController = TextEditingController();
   final _emailController = TextEditingController();
@@ -36,11 +37,15 @@ class _FreelancerEditProfileScreenState extends State<FreelancerEditProfileScree
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        final doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
         if (doc.exists && doc.data() != null) {
           final data = doc.data()!;
           setState(() {
-            _nameController.text = data['fullName'] ?? data['displayName'] ?? '';
+            _nameController.text =
+                data['fullName'] ?? data['displayName'] ?? '';
             _dobController.text = data['dob'] ?? '';
             _emailController.text = data['email'] ?? user.email ?? '';
             _phoneController.text = data['phone'] ?? '';
@@ -62,25 +67,34 @@ class _FreelancerEditProfileScreenState extends State<FreelancerEditProfileScree
     setState(() => _isSaving = true);
 
     try {
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-        'fullName': _nameController.text.trim(),
-        'dob': _dobController.text.trim(),
-        'email': _emailController.text.trim(),
-        'phone': _phoneController.text.trim(),
-        'location': _locationController.text.trim(),
-        'gender': _isMale ? 'Male' : 'Female',
-      });
-      
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .update({
+            'fullName': _nameController.text.trim(),
+            'dob': _dobController.text.trim(),
+            'email': _emailController.text.trim(),
+            'phone': _phoneController.text.trim(),
+            'location': _locationController.text.trim(),
+            'gender': _isMale ? 'Male' : 'Female',
+          });
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated!'), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text('Profile updated!'),
+            backgroundColor: Colors.green,
+          ),
         );
         context.go('/freelancer/profile');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text('Failed to update: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -104,114 +118,126 @@ class _FreelancerEditProfileScreenState extends State<FreelancerEditProfileScree
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: _isLoading
-        ? const Center(child: CircularProgressIndicator())
-        : SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: AppDimensions.paddingL),
-
-              GestureDetector(
-                onTap: () => context.go('/freelancer/profile'),
-                child: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-              ),
-
-              const SizedBox(height: AppDimensions.paddingL),
-
-              Text('Fullname', style: AppTextStyles.labelText),
-              const SizedBox(height: AppDimensions.paddingXS),
-              TextField(controller: _nameController),
-
-              const SizedBox(height: AppDimensions.paddingM),
-
-              Text('Date of birth', style: AppTextStyles.labelText),
-              const SizedBox(height: AppDimensions.paddingXS),
-              TextField(
-                controller: _dobController,
-                decoration: const InputDecoration(
-                  suffixIcon: Icon(Icons.calendar_today_outlined, color: AppColors.textSecondary),
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.paddingL,
                 ),
-              ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: AppDimensions.paddingL),
 
-              const SizedBox(height: AppDimensions.paddingM),
-
-              Text('Gender', style: AppTextStyles.labelText),
-              const SizedBox(height: AppDimensions.paddingS),
-              Row(
-                children: [
-                  _GenderOption(
-                    label: 'Male',
-                    isSelected: _isMale,
-                    onTap: () => setState(() => _isMale = true),
-                  ),
-                  const SizedBox(width: AppDimensions.paddingL),
-                  _GenderOption(
-                    label: 'Female',
-                    isSelected: !_isMale,
-                    onTap: () => setState(() => _isMale = false),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: AppDimensions.paddingM),
-
-              Text('Email address', style: AppTextStyles.labelText),
-              const SizedBox(height: AppDimensions.paddingXS),
-              TextField(controller: _emailController),
-
-              const SizedBox(height: AppDimensions.paddingM),
-
-              Text('Phone number', style: AppTextStyles.labelText),
-              const SizedBox(height: AppDimensions.paddingXS),
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppDimensions.paddingM,
-                      vertical: AppDimensions.paddingM,
+                    GestureDetector(
+                      onTap: () => context.go('/freelancer/profile'),
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+
+                    const SizedBox(height: AppDimensions.paddingL),
+
+                    Text('Fullname', style: AppTextStyles.labelText),
+                    const SizedBox(height: AppDimensions.paddingXS),
+                    TextField(controller: _nameController),
+
+                    const SizedBox(height: AppDimensions.paddingM),
+
+                    Text('Date of birth', style: AppTextStyles.labelText),
+                    const SizedBox(height: AppDimensions.paddingXS),
+                    TextField(
+                      controller: _dobController,
+                      decoration: const InputDecoration(
+                        suffixIcon: Icon(
+                          Icons.calendar_today_outlined,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                     ),
-                    child: Row(
+
+                    const SizedBox(height: AppDimensions.paddingM),
+
+                    Text('Gender', style: AppTextStyles.labelText),
+                    const SizedBox(height: AppDimensions.paddingS),
+                    Row(
                       children: [
-                        Text('962+', style: AppTextStyles.bodySmall),
-                        const Icon(Icons.keyboard_arrow_down, size: 16),
+                        _GenderOption(
+                          label: 'Male',
+                          isSelected: _isMale,
+                          onTap: () => setState(() => _isMale = true),
+                        ),
+                        const SizedBox(width: AppDimensions.paddingL),
+                        _GenderOption(
+                          label: 'Female',
+                          isSelected: !_isMale,
+                          onTap: () => setState(() => _isMale = false),
+                        ),
                       ],
                     ),
-                  ),
-                  const SizedBox(width: AppDimensions.paddingS),
-                  Expanded(
-                    child: TextField(controller: _phoneController),
-                  ),
-                ],
-              ),
 
-              const SizedBox(height: AppDimensions.paddingM),
+                    const SizedBox(height: AppDimensions.paddingM),
 
-              Text('Location', style: AppTextStyles.labelText),
-              const SizedBox(height: AppDimensions.paddingXS),
-              TextField(controller: _locationController),
+                    Text('Email address', style: AppTextStyles.labelText),
+                    const SizedBox(height: AppDimensions.paddingXS),
+                    TextField(controller: _emailController),
 
-              const SizedBox(height: AppDimensions.paddingXL),
+                    const SizedBox(height: AppDimensions.paddingM),
 
-              SizedBox(
-                width: double.infinity,
-                height: AppDimensions.buttonHeight,
-                child: ElevatedButton(
-                  onPressed: _isSaving ? null : _saveProfileData,
-                  child: _isSaving 
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text('SAVE', style: AppTextStyles.buttonText),
+                    Text('Phone number', style: AppTextStyles.labelText),
+                    const SizedBox(height: AppDimensions.paddingXS),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppDimensions.paddingM,
+                            vertical: AppDimensions.paddingM,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(
+                              AppDimensions.radiusM,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Text('962+', style: AppTextStyles.bodySmall),
+                              const Icon(Icons.keyboard_arrow_down, size: 16),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: AppDimensions.paddingS),
+                        Expanded(
+                          child: TextField(controller: _phoneController),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: AppDimensions.paddingM),
+
+                    Text('Location', style: AppTextStyles.labelText),
+                    const SizedBox(height: AppDimensions.paddingXS),
+                    TextField(controller: _locationController),
+
+                    const SizedBox(height: AppDimensions.paddingXL),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: AppDimensions.buttonHeight,
+                      child: ElevatedButton(
+                        onPressed: _isSaving ? null : _saveProfileData,
+                        child: _isSaving
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : Text('SAVE', style: AppTextStyles.buttonText),
+                      ),
+                    ),
+
+                    const SizedBox(height: AppDimensions.paddingXL),
+                  ],
                 ),
               ),
-
-              const SizedBox(height: AppDimensions.paddingXL),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -240,7 +266,9 @@ class _GenderOption extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: isSelected ? AppColors.primaryOrange : AppColors.textSecondary,
+                color: isSelected
+                    ? AppColors.primaryOrange
+                    : AppColors.textSecondary,
                 width: 2,
               ),
             ),
@@ -249,7 +277,10 @@ class _GenderOption extends StatelessWidget {
                     child: Container(
                       width: 10,
                       height: 10,
-                      decoration: const BoxDecoration(color: AppColors.primaryOrange, shape: BoxShape.circle),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primaryOrange,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   )
                 : null,

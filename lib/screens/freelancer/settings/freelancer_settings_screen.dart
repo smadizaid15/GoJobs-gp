@@ -51,8 +51,7 @@ class FreelancerSettingsScreen extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius:
-                      BorderRadius.circular(AppDimensions.radiusL),
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusL),
                 ),
                 child: Column(
                   children: [
@@ -69,13 +68,11 @@ class FreelancerSettingsScreen extends StatelessWidget {
                       icon: Icons.dark_mode_outlined,
                       label: 'Dark mode',
                       value: themeProvider.isDarkMode,
-                      onChanged: (val) =>
-                          themeProvider.toggleTheme(val),
+                      onChanged: (val) => themeProvider.toggleTheme(val),
                     ),
 
                     const Divider(height: 1, color: AppColors.divider),
 
-                   
                     const Divider(height: 1, color: AppColors.divider),
 
                     _SettingsItem(
@@ -86,7 +83,6 @@ class FreelancerSettingsScreen extends StatelessWidget {
 
                     const Divider(height: 1, color: AppColors.divider),
 
-                    
                     _SettingsItem(
                       icon: Icons.swap_horiz,
                       label: 'Switch to JobSeeker mode',
@@ -134,8 +130,7 @@ class FreelancerSettingsScreen extends StatelessWidget {
                 height: 4,
                 decoration: BoxDecoration(
                   color: AppColors.divider,
-                  borderRadius:
-                      BorderRadius.circular(AppDimensions.radiusFull),
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                 ),
               ),
               const SizedBox(height: AppDimensions.paddingL),
@@ -158,10 +153,13 @@ class FreelancerSettingsScreen extends StatelessWidget {
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
                   onPressed: () async {
-                   final authProvider = Provider.of<AuthProvider>(context, listen: false);
-                   await authProvider.logout();
-                   if (context.mounted) context.go('/welcome');
-                   },
+                    final authProvider = Provider.of<AuthProvider>(
+                      context,
+                      listen: false,
+                    );
+                    await authProvider.logout();
+                    if (context.mounted) context.go('/welcome');
+                  },
                   child: Text('YES', style: AppTextStyles.buttonText),
                 ),
               ),
@@ -172,11 +170,11 @@ class FreelancerSettingsScreen extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(
-                        color: AppColors.purpleButtonBorder),
+                    side: const BorderSide(color: AppColors.purpleButtonBorder),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusL),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusL,
+                      ),
                     ),
                     backgroundColor: AppColors.purpleButton,
                   ),

@@ -31,8 +31,11 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: () => context.go('/student/home'), 
-                    child: const Icon(Icons.close, color: AppColors.textPrimary),
+                    onTap: () => context.go('/student/home'),
+                    child: const Icon(
+                      Icons.close,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                   const Icon(Icons.more_vert, color: AppColors.textPrimary),
                 ],
@@ -40,7 +43,6 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              
               Center(
                 child: Column(
                   children: [
@@ -49,13 +51,22 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
                       height: 80,
                       decoration: BoxDecoration(
                         color: AppColors.inputFill,
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusL),
-                        image: logoUrl != null 
-                            ? DecorationImage(image: NetworkImage(logoUrl), fit: BoxFit.cover)
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusL,
+                        ),
+                        image: logoUrl != null
+                            ? DecorationImage(
+                                image: NetworkImage(logoUrl),
+                                fit: BoxFit.cover,
+                              )
                             : null,
                       ),
-                      child: logoUrl == null 
-                          ? const Icon(Icons.business, color: AppColors.textSecondary, size: 40)
+                      child: logoUrl == null
+                          ? const Icon(
+                              Icons.business,
+                              color: AppColors.textSecondary,
+                              size: 40,
+                            )
                           : null,
                     ),
                     const SizedBox(height: AppDimensions.paddingS),
@@ -71,7 +82,6 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              
               Center(
                 child: Text(
                   title,
@@ -89,9 +99,19 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(location, style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+                    Text(
+                      location,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
                     const Text(' • '),
-                    Text(company, style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+                    Text(
+                      company,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -126,7 +146,6 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
 
               const Spacer(),
 
-              
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
@@ -135,7 +154,9 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.purpleButtonBorder),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusL,
+                      ),
                     ),
                     backgroundColor: AppColors.purpleButton,
                   ),
@@ -151,16 +172,12 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-            
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
                   onPressed: () => context.go('/student/home'),
-                  child: Text(
-                    'BACK TO HOME',
-                    style: AppTextStyles.buttonText,
-                  ),
+                  child: Text('BACK TO HOME', style: AppTextStyles.buttonText),
                 ),
               ),
 

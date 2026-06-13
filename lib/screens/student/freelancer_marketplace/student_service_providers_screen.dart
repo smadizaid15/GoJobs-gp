@@ -27,7 +27,6 @@ class StudentServiceProvidersScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: AppDimensions.paddingL),
 
-            
                     Row(
                       children: [
                         GestureDetector(
@@ -50,31 +49,39 @@ class StudentServiceProvidersScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                 
                     StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection('users')
                           .where('userType', isEqualTo: 'freelancer')
-                          .where('isAvailable', isEqualTo: true) 
+                          .where('isAvailable', isEqualTo: true)
                           .snapshots(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         }
 
                         if (snapshot.hasError) {
-                          return const Center(child: Text('Error loading providers.'));
+                          return const Center(
+                            child: Text('Error loading providers.'),
+                          );
                         }
 
                         final providers = snapshot.data?.docs ?? [];
 
                         if (providers.isEmpty) {
                           return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingXL),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: AppDimensions.paddingXL,
+                            ),
                             child: Center(
                               child: Text(
                                 'No service providers available right now.',
-                                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                               ),
                             ),
                           );
@@ -85,38 +92,54 @@ class StudentServiceProvidersScreen extends StatelessWidget {
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: providers.length,
                           itemBuilder: (context, index) {
-                            final data = providers[index].data() as Map<String, dynamic>;
-                            
-                            final name = data['fullName']?.toString() ?? data['displayName']?.toString() ?? 'Freelancer';
-                           
-                            final profession = data['serviceType']?.toString() ?? data['category']?.toString() ?? 'Service Provider';
-                            final description = data['aboutMe']?.toString() ?? data['expertiseDescription']?.toString() ?? 'Available for hire.';
-                            final profileImageUrl = data['profileImageUrl']?.toString() ?? data['logoUrl']?.toString();
+                            final data =
+                                providers[index].data() as Map<String, dynamic>;
 
-                            
-                            final shiftStart = data['shiftStart']?.toString() ?? '';
+                            final name =
+                                data['fullName']?.toString() ??
+                                data['displayName']?.toString() ??
+                                'Freelancer';
+
+                            final profession =
+                                data['serviceType']?.toString() ??
+                                data['category']?.toString() ??
+                                'Service Provider';
+                            final description =
+                                data['aboutMe']?.toString() ??
+                                data['expertiseDescription']?.toString() ??
+                                'Available for hire.';
+                            final profileImageUrl =
+                                data['profileImageUrl']?.toString() ??
+                                data['logoUrl']?.toString();
+
+                            final shiftStart =
+                                data['shiftStart']?.toString() ?? '';
                             final shiftEnd = data['shiftEnd']?.toString() ?? '';
-                            final isOpen247 = data['isOpen24_7'] as bool? ?? false;
-                            
+                            final isOpen247 =
+                                data['isOpen24_7'] as bool? ?? false;
+
                             String timeString = 'Available now';
                             if (isOpen247) {
                               timeString = '24/7';
-                            } else if (shiftStart.isNotEmpty && shiftEnd.isNotEmpty) {
+                            } else if (shiftStart.isNotEmpty &&
+                                shiftEnd.isNotEmpty) {
                               timeString = '$shiftStart - $shiftEnd';
                             }
 
                             return Padding(
-                              padding: const EdgeInsets.only(bottom: AppDimensions.paddingM),
+                              padding: const EdgeInsets.only(
+                                bottom: AppDimensions.paddingM,
+                              ),
                               child: _ServiceProviderCard(
                                 name: name,
                                 profession: profession,
                                 description: description,
                                 time: timeString,
                                 imageUrl: profileImageUrl,
-                                onViewProfile: () {
-                                
-                                },
-                                onMessage: () => context.push('/student/chat-from-providers'),
+                                onViewProfile: () {},
+                                onMessage: () => context.push(
+                                  '/student/chat-from-providers',
+                                ),
                               ),
                             );
                           },
@@ -168,7 +191,6 @@ class _ServiceProviderCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-         
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -189,14 +211,13 @@ class _ServiceProviderCard extends StatelessWidget {
 
           const SizedBox(height: AppDimensions.paddingS),
 
-        
           Row(
             children: [
               CircleAvatar(
                 radius: 24,
                 backgroundColor: AppColors.inputFill,
-                backgroundImage: imageUrl != null && imageUrl!.isNotEmpty 
-                    ? NetworkImage(imageUrl!) 
+                backgroundImage: imageUrl != null && imageUrl!.isNotEmpty
+                    ? NetworkImage(imageUrl!)
                     : null,
                 child: imageUrl == null || imageUrl!.isEmpty
                     ? Text(
@@ -238,7 +259,7 @@ class _ServiceProviderCard extends StatelessWidget {
 
           const SizedBox(height: AppDimensions.paddingS),
 
-                  Text(
+          Text(
             description,
             style: AppTextStyles.bodySmall.copyWith(
               color: AppColors.textSecondary,
@@ -249,7 +270,6 @@ class _ServiceProviderCard extends StatelessWidget {
 
           const SizedBox(height: AppDimensions.paddingM),
 
-        
           Row(
             children: [
               Expanded(
@@ -258,8 +278,9 @@ class _ServiceProviderCard extends StatelessWidget {
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.primaryNavy),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusFull),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusFull,
+                      ),
                     ),
                   ),
                   child: Text(
@@ -277,8 +298,9 @@ class _ServiceProviderCard extends StatelessWidget {
                   onPressed: onMessage,
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusFull),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusFull,
+                      ),
                     ),
                   ),
                   child: Text(

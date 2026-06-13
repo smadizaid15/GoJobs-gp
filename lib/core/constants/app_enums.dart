@@ -17,17 +17,6 @@ enum ApplicationStatus { pending, accepted, rejected }
 
 enum NotificationType { job, course, message, system }
 
-enum EducationLevel {
-  highSchool,
-  diploma,
-  bachelor,
-  master,
-  phd,
-}
+enum EducationLevel { highSchool, diploma, bachelor, master, phd }
 
-enum ExperienceLevel {
-  noExperience,
-  junior,
-  mid,
-  senior,
-}
+enum ExperienceLevel { noExperience, junior, mid, senior }

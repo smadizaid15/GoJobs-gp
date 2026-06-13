@@ -29,14 +29,20 @@ class _StudentUpdatePasswordScreenState
         _newPasswordController.text.isEmpty ||
         _confirmPasswordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields'), backgroundColor: AppColors.error),
+        const SnackBar(
+          content: Text('Please fill in all fields'),
+          backgroundColor: AppColors.error,
+        ),
       );
       return;
     }
 
     if (_newPasswordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('New passwords do not match!'), backgroundColor: AppColors.error),
+        const SnackBar(
+          content: Text('New passwords do not match!'),
+          backgroundColor: AppColors.error,
+        ),
       );
       return;
     }
@@ -50,18 +56,21 @@ class _StudentUpdatePasswordScreenState
           email: user.email!,
           password: _oldPasswordController.text,
         );
-        
+
         await user.reauthenticateWithCredential(credential);
         await user.updatePassword(_newPasswordController.text);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Password updated successfully!'), backgroundColor: Colors.green),
+            const SnackBar(
+              content: Text('Password updated successfully!'),
+              backgroundColor: Colors.green,
+            ),
           );
           _oldPasswordController.clear();
           _newPasswordController.clear();
           _confirmPasswordController.clear();
-          context.pop(); 
+          context.pop();
         }
       }
     } on FirebaseAuthException catch (e) {
@@ -79,7 +88,10 @@ class _StudentUpdatePasswordScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text('Failed to update: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -200,7 +212,7 @@ class _StudentUpdatePasswordScreenState
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _updatePassword,
-                  child: _isLoading 
+                  child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
                       : Text('UPDATE', style: AppTextStyles.buttonText),
                 ),

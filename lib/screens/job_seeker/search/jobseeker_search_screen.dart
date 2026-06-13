@@ -9,7 +9,7 @@ import '../../../services/job_service.dart';
 import '../../../models/job_model.dart';
 
 class JobseekerSearchScreen extends StatefulWidget {
-  final String? initialFilter; 
+  final String? initialFilter;
 
   const JobseekerSearchScreen({super.key, this.initialFilter});
 
@@ -29,7 +29,7 @@ class _JobseekerSearchScreenState extends State<JobseekerSearchScreen> {
   void initState() {
     super.initState();
     _currentFilter = widget.initialFilter ?? '';
-    
+
     _searchController.addListener(() => setState(() {}));
     _locationController.addListener(() => setState(() {}));
   }
@@ -48,7 +48,6 @@ class _JobseekerSearchScreenState extends State<JobseekerSearchScreen> {
       body: SafeArea(
         child: Column(
           children: [
-          
             Container(
               padding: const EdgeInsets.all(AppDimensions.paddingL),
               decoration: const BoxDecoration(
@@ -64,11 +63,16 @@ class _JobseekerSearchScreenState extends State<JobseekerSearchScreen> {
                     children: [
                       GestureDetector(
                         onTap: () => context.go('/jobseeker/home'),
-                        child: const Icon(Icons.arrow_back, color: Colors.white),
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                        ),
                       ),
                       const SizedBox(width: AppDimensions.paddingM),
                       Text(
-                        _currentFilter == 'Internships' ? 'Find Internships' : 'Find Your Job',
+                        _currentFilter == 'Internships'
+                            ? 'Find Internships'
+                            : 'Find Your Job',
                         style: AppTextStyles.heading3.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -79,17 +83,23 @@ class _JobseekerSearchScreenState extends State<JobseekerSearchScreen> {
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                
                   Container(
                     height: 48,
-                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingM),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.paddingM,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusM,
+                      ),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.search, color: AppColors.textSecondary),
+                        const Icon(
+                          Icons.search,
+                          color: AppColors.textSecondary,
+                        ),
                         const SizedBox(width: AppDimensions.paddingS),
                         Expanded(
                           child: TextField(
@@ -107,17 +117,23 @@ class _JobseekerSearchScreenState extends State<JobseekerSearchScreen> {
 
                   const SizedBox(height: AppDimensions.paddingS),
 
-                 
                   Container(
                     height: 48,
-                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingM),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.paddingM,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusM,
+                      ),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.location_on_outlined, color: AppColors.primaryOrange),
+                        const Icon(
+                          Icons.location_on_outlined,
+                          color: AppColors.primaryOrange,
+                        ),
                         const SizedBox(width: AppDimensions.paddingS),
                         Expanded(
                           child: TextField(
@@ -131,11 +147,15 @@ class _JobseekerSearchScreenState extends State<JobseekerSearchScreen> {
                         ),
                         GestureDetector(
                           onTap: () async {
-                            final result = await context.push('/jobseeker/filter');
-                            if (result != null && result is Map<String, dynamic>) {
+                            final result = await context.push(
+                              '/jobseeker/filter',
+                            );
+                            if (result != null &&
+                                result is Map<String, dynamic>) {
                               setState(() {
                                 _appliedFilters = result;
-                                if (result['location'] != null && result['location'] != 'Remote') {
+                                if (result['location'] != null &&
+                                    result['location'] != 'Remote') {
                                   _locationController.text = result['location'];
                                 }
                               });
@@ -146,9 +166,15 @@ class _JobseekerSearchScreenState extends State<JobseekerSearchScreen> {
                             height: 36,
                             decoration: BoxDecoration(
                               color: AppColors.primaryOrange,
-                              borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                              borderRadius: BorderRadius.circular(
+                                AppDimensions.radiusS,
+                              ),
                             ),
-                            child: const Icon(Icons.tune, color: Colors.white, size: 20),
+                            child: const Icon(
+                              Icons.tune,
+                              color: Colors.white,
+                              size: 20,
+                            ),
                           ),
                         ),
                       ],
@@ -164,23 +190,34 @@ class _JobseekerSearchScreenState extends State<JobseekerSearchScreen> {
               height: 40,
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.paddingL,
+                ),
                 children: [
                   GestureDetector(
                     onTap: () => setState(() => _currentFilter = ''),
-                    child: _FilterChip(label: 'All', isSelected: _currentFilter == ''),
+                    child: _FilterChip(
+                      label: 'All',
+                      isSelected: _currentFilter == '',
+                    ),
                   ),
                   const SizedBox(width: AppDimensions.paddingS),
                   GestureDetector(
                     onTap: () => setState(() => _currentFilter = 'Jobs'),
-                    child: _FilterChip(label: 'Jobs', isSelected: _currentFilter == 'Jobs'),
+                    child: _FilterChip(
+                      label: 'Jobs',
+                      isSelected: _currentFilter == 'Jobs',
+                    ),
                   ),
                   const SizedBox(width: AppDimensions.paddingS),
                   GestureDetector(
                     onTap: () => setState(() => _currentFilter = 'Internships'),
-                    child: _FilterChip(label: 'Internships', isSelected: _currentFilter == 'Internships'),
+                    child: _FilterChip(
+                      label: 'Internships',
+                      isSelected: _currentFilter == 'Internships',
+                    ),
                   ),
-                  
+
                   if (_appliedFilters != null) ...[
                     const SizedBox(width: AppDimensions.paddingS),
                     GestureDetector(
@@ -188,7 +225,10 @@ class _JobseekerSearchScreenState extends State<JobseekerSearchScreen> {
                         _appliedFilters = null;
                         _locationController.clear();
                       }),
-                      child: _FilterChip(label: 'Clear Advanced Filters ✕', isSelected: true),
+                      child: _FilterChip(
+                        label: 'Clear Advanced Filters ✕',
+                        isSelected: true,
+                      ),
                     ),
                   ],
                 ],
@@ -197,7 +237,6 @@ class _JobseekerSearchScreenState extends State<JobseekerSearchScreen> {
 
             const SizedBox(height: AppDimensions.paddingM),
 
-           
             Expanded(
               child: StreamBuilder<List<JobModel>>(
                 stream: _jobService.getActiveJobs(),
@@ -213,76 +252,112 @@ class _JobseekerSearchScreenState extends State<JobseekerSearchScreen> {
                   final allJobs = snapshot.data ?? [];
 
                   final filteredJobs = allJobs.where((job) {
-                    final searchMatch = job.title.toLowerCase().contains(_searchController.text.toLowerCase()) || 
-                                        job.companyName.toLowerCase().contains(_searchController.text.toLowerCase());
-                    
-                    final locMatch = job.location.toLowerCase().contains(_locationController.text.toLowerCase());
-                    
+                    final searchMatch =
+                        job.title.toLowerCase().contains(
+                          _searchController.text.toLowerCase(),
+                        ) ||
+                        job.companyName.toLowerCase().contains(
+                          _searchController.text.toLowerCase(),
+                        );
+
+                    final locMatch = job.location.toLowerCase().contains(
+                      _locationController.text.toLowerCase(),
+                    );
+
                     bool typeMatch = true;
                     if (_currentFilter == 'Internships') {
-                      typeMatch = job.employmentType.toLowerCase().contains('internship');
+                      typeMatch = job.employmentType.toLowerCase().contains(
+                        'internship',
+                      );
                     } else if (_currentFilter == 'Jobs') {
-                      typeMatch = !job.employmentType.toLowerCase().contains('internship');
+                      typeMatch = !job.employmentType.toLowerCase().contains(
+                        'internship',
+                      );
                     }
 
                     bool advancedMatch = true;
                     if (_appliedFilters != null) {
-                      if (_appliedFilters!['jobType'] != null && _appliedFilters!['jobType'] != '') {
-                        if (job.employmentType.toLowerCase() != _appliedFilters!['jobType'].toString().toLowerCase()) {
+                      if (_appliedFilters!['jobType'] != null &&
+                          _appliedFilters!['jobType'] != '') {
+                        if (job.employmentType.toLowerCase() !=
+                            _appliedFilters!['jobType']
+                                .toString()
+                                .toLowerCase()) {
                           advancedMatch = false;
                         }
                       }
-                      
+
                       if (_appliedFilters!['category'] != null) {
-                        final cat = _appliedFilters!['category'].toString().toLowerCase();
-                        if (!job.title.toLowerCase().contains(cat) && !job.description.toLowerCase().contains(cat)) {
+                        final cat = _appliedFilters!['category']
+                            .toString()
+                            .toLowerCase();
+                        if (!job.title.toLowerCase().contains(cat) &&
+                            !job.description.toLowerCase().contains(cat)) {
                           advancedMatch = false;
                         }
                       }
                     }
 
-                    return searchMatch && locMatch && typeMatch && advancedMatch;
+                    return searchMatch &&
+                        locMatch &&
+                        typeMatch &&
+                        advancedMatch;
                   }).toList();
 
                   if (filteredJobs.isEmpty) {
                     return Center(
                       child: Text(
                         'No results found',
-                        style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     );
                   }
 
                   return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.paddingL,
+                    ),
                     itemCount: filteredJobs.length,
                     itemBuilder: (context, index) {
                       final job = filteredJobs[index];
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: AppDimensions.paddingM),
+                        padding: const EdgeInsets.only(
+                          bottom: AppDimensions.paddingM,
+                        ),
                         child: _SearchJobCard(
                           title: job.title,
                           company: job.companyName,
                           location: job.location,
                           tags: [job.employmentType, job.workplaceType],
                           salary: 'View Details',
-                          onTap: () => context.push('/jobseeker/job-detail', extra: {
-                            'id': job.id,
-                            'title': job.title,
-                            'companyName': job.companyName,
-                            'location': job.location,
-                            'workplaceType': job.workplaceType,
-                            'employmentType': job.employmentType,
-                            'description': job.description,
-                          }),
+                          onTap: () => context.push(
+                            '/jobseeker/job-detail',
+                            extra: {
+                              'id': job.id,
+                              'title': job.title,
+                              'companyName': job.companyName,
+                              'location': job.location,
+                              'workplaceType': job.workplaceType,
+                              'employmentType': job.employmentType,
+                              'description': job.description,
+                            },
+                          ),
                           onSave: () async {
-                            final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
-                            await _jobService.toggleSavedJob(currentUserId, job.id);
-                            
+                            final currentUserId =
+                                FirebaseAuth.instance.currentUser?.uid ?? '';
+                            await _jobService.toggleSavedJob(
+                              currentUserId,
+                              job.id,
+                            );
+
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('${job.title} saved to profile!'),
+                                  content: Text(
+                                    '${job.title} saved to profile!',
+                                  ),
                                   duration: const Duration(seconds: 2),
                                   backgroundColor: Colors.green,
                                 ),
@@ -314,7 +389,10 @@ class _FilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingM, vertical: AppDimensions.paddingXS),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppDimensions.paddingM,
+        vertical: AppDimensions.paddingXS,
+      ),
       decoration: BoxDecoration(
         color: isSelected ? AppColors.primaryNavy : Colors.white,
         borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
@@ -372,36 +450,56 @@ class _SearchJobCard extends StatelessWidget {
                     color: AppColors.inputFill,
                     borderRadius: BorderRadius.circular(AppDimensions.radiusS),
                   ),
-                  child: const Icon(Icons.business, color: AppColors.textSecondary, size: 20),
+                  child: const Icon(
+                    Icons.business,
+                    color: AppColors.textSecondary,
+                    size: 20,
+                  ),
                 ),
                 GestureDetector(
                   onTap: onSave,
-                  child: const Icon(Icons.bookmark_border, color: AppColors.textSecondary),
+                  child: const Icon(
+                    Icons.bookmark_border,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: AppDimensions.paddingS),
             Text(
               title,
-              style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+              style: AppTextStyles.bodyMedium.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
             ),
             Text(
               '$company • $location',
-              style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
             const SizedBox(height: AppDimensions.paddingS),
             Wrap(
               spacing: AppDimensions.paddingXS,
               children: tags.map((tag) {
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingS, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppDimensions.paddingS,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.inputFill,
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                    borderRadius: BorderRadius.circular(
+                      AppDimensions.radiusFull,
+                    ),
                   ),
                   child: Text(
                     tag,
-                    style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary, fontSize: 10),
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                      fontSize: 10,
+                    ),
                   ),
                 );
               }).toList(),

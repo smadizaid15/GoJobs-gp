@@ -11,7 +11,8 @@ class StudentEditProfileScreen extends StatefulWidget {
   const StudentEditProfileScreen({super.key});
 
   @override
-  State<StudentEditProfileScreen> createState() => _StudentEditProfileScreenState();
+  State<StudentEditProfileScreen> createState() =>
+      _StudentEditProfileScreenState();
 }
 
 class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
@@ -37,11 +38,15 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        final doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
         if (doc.exists && doc.data() != null) {
           final data = doc.data()!;
           setState(() {
-            _nameController.text = data['fullName'] ?? data['displayName'] ?? '';
+            _nameController.text =
+                data['fullName'] ?? data['displayName'] ?? '';
             _dobController.text = data['dob'] ?? '';
             _emailController.text = data['email'] ?? user.email ?? '';
             _phoneController.text = data['phone'] ?? '';
@@ -65,27 +70,36 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
     setState(() => _isSaving = true);
 
     try {
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-        'fullName': _nameController.text.trim(),
-        'dob': _dobController.text.trim(),
-        'email': _emailController.text.trim(),
-        'phone': _phoneController.text.trim(),
-        'location': _locationController.text.trim(),
-        'university': _universityController.text.trim(),
-        'major': _majorController.text.trim(),
-        'gender': _isMale ? 'Male' : 'Female',
-      });
-      
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .update({
+            'fullName': _nameController.text.trim(),
+            'dob': _dobController.text.trim(),
+            'email': _emailController.text.trim(),
+            'phone': _phoneController.text.trim(),
+            'location': _locationController.text.trim(),
+            'university': _universityController.text.trim(),
+            'major': _majorController.text.trim(),
+            'gender': _isMale ? 'Male' : 'Female',
+          });
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated!'), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text('Profile updated!'),
+            backgroundColor: Colors.green,
+          ),
         );
         context.go('/student/profile');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text('Failed to update: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -111,172 +125,206 @@ class _StudentEditProfileScreenState extends State<StudentEditProfileScreen> {
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: _isLoading
-        ? const Center(child: CircularProgressIndicator())
-        : SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: AppDimensions.paddingL),
-
-              GestureDetector(
-                onTap: () => context.go('/student/profile'),
-                child: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-              ),
-
-              const SizedBox(height: AppDimensions.paddingL),
-              
-              Text(
-                'Edit Profile',
-                style: AppTextStyles.heading3.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.paddingL,
                 ),
-              ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: AppDimensions.paddingL),
 
-              const SizedBox(height: AppDimensions.paddingXL),
-
-              Text('Fullname', style: AppTextStyles.labelText),
-              const SizedBox(height: AppDimensions.paddingXS),
-              TextField(controller: _nameController),
-
-              const SizedBox(height: AppDimensions.paddingM),
-
-              Text('Date of birth', style: AppTextStyles.labelText),
-              const SizedBox(height: AppDimensions.paddingXS),
-              TextField(
-                controller: _dobController,
-                decoration: const InputDecoration(
-                  suffixIcon: Icon(Icons.calendar_today_outlined, color: AppColors.textSecondary),
-                ),
-              ),
-
-              const SizedBox(height: AppDimensions.paddingM),
-
-              Text('Gender', style: AppTextStyles.labelText),
-              const SizedBox(height: AppDimensions.paddingS),
-              Row(
-                children: [
-                  _GenderOption(
-                    label: 'Male',
-                    isSelected: _isMale,
-                    onTap: () => setState(() => _isMale = true),
-                  ),
-                  const SizedBox(width: AppDimensions.paddingL),
-                  _GenderOption(
-                    label: 'Female',
-                    isSelected: !_isMale,
-                    onTap: () => setState(() => _isMale = false),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: AppDimensions.paddingM),
-
-              Text('Email address', style: AppTextStyles.labelText),
-              const SizedBox(height: AppDimensions.paddingXS),
-              TextField(controller: _emailController),
-
-              const SizedBox(height: AppDimensions.paddingM),
-
-              Text('Phone number', style: AppTextStyles.labelText),
-              const SizedBox(height: AppDimensions.paddingXS),
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppDimensions.paddingM,
-                      vertical: AppDimensions.paddingM,
+                    GestureDetector(
+                      onTap: () => context.go('/student/profile'),
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+
+                    const SizedBox(height: AppDimensions.paddingL),
+
+                    Text(
+                      'Edit Profile',
+                      style: AppTextStyles.heading3.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
-                    child: Row(
+
+                    const SizedBox(height: AppDimensions.paddingXL),
+
+                    Text('Fullname', style: AppTextStyles.labelText),
+                    const SizedBox(height: AppDimensions.paddingXS),
+                    TextField(controller: _nameController),
+
+                    const SizedBox(height: AppDimensions.paddingM),
+
+                    Text('Date of birth', style: AppTextStyles.labelText),
+                    const SizedBox(height: AppDimensions.paddingXS),
+                    TextField(
+                      controller: _dobController,
+                      decoration: const InputDecoration(
+                        suffixIcon: Icon(
+                          Icons.calendar_today_outlined,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: AppDimensions.paddingM),
+
+                    Text('Gender', style: AppTextStyles.labelText),
+                    const SizedBox(height: AppDimensions.paddingS),
+                    Row(
                       children: [
-                        Text('962+', style: AppTextStyles.bodySmall),
-                        const Icon(Icons.keyboard_arrow_down, size: 16),
+                        _GenderOption(
+                          label: 'Male',
+                          isSelected: _isMale,
+                          onTap: () => setState(() => _isMale = true),
+                        ),
+                        const SizedBox(width: AppDimensions.paddingL),
+                        _GenderOption(
+                          label: 'Female',
+                          isSelected: !_isMale,
+                          onTap: () => setState(() => _isMale = false),
+                        ),
                       ],
                     ),
-                  ),
-                  const SizedBox(width: AppDimensions.paddingS),
-                  Expanded(
-                    child: TextField(controller: _phoneController),
-                  ),
-                ],
-              ),
 
-              const SizedBox(height: AppDimensions.paddingM),
+                    const SizedBox(height: AppDimensions.paddingM),
 
-              Text('Location', style: AppTextStyles.labelText),
-              const SizedBox(height: AppDimensions.paddingXS),
-              TextField(controller: _locationController),
+                    Text('Email address', style: AppTextStyles.labelText),
+                    const SizedBox(height: AppDimensions.paddingXS),
+                    TextField(controller: _emailController),
 
-              const SizedBox(height: AppDimensions.paddingM),
+                    const SizedBox(height: AppDimensions.paddingM),
 
-              Text('University', style: AppTextStyles.labelText),
-              const SizedBox(height: AppDimensions.paddingXS),
-              TextField(controller: _universityController),
+                    Text('Phone number', style: AppTextStyles.labelText),
+                    const SizedBox(height: AppDimensions.paddingXS),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppDimensions.paddingM,
+                            vertical: AppDimensions.paddingM,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(
+                              AppDimensions.radiusM,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Text('962+', style: AppTextStyles.bodySmall),
+                              const Icon(Icons.keyboard_arrow_down, size: 16),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: AppDimensions.paddingS),
+                        Expanded(
+                          child: TextField(controller: _phoneController),
+                        ),
+                      ],
+                    ),
 
-              const SizedBox(height: AppDimensions.paddingM),
+                    const SizedBox(height: AppDimensions.paddingM),
 
-              Text('Major', style: AppTextStyles.labelText),
-              const SizedBox(height: AppDimensions.paddingXS),
-              TextField(controller: _majorController),
+                    Text('Location', style: AppTextStyles.labelText),
+                    const SizedBox(height: AppDimensions.paddingXS),
+                    TextField(controller: _locationController),
 
-              const SizedBox(height: AppDimensions.paddingXL),
+                    const SizedBox(height: AppDimensions.paddingM),
 
-              Text('Profile Additions', style: AppTextStyles.heading3.copyWith(fontWeight: FontWeight.bold)),
-              const SizedBox(height: AppDimensions.paddingM),
-              
-              _ActionCard(
-                icon: Icons.language,
-                title: 'Add Languages',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Language route needed')));
-                },
-              ),
-              _ActionCard(
-                icon: Icons.school_outlined,
-                title: 'Add Education',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Education route needed')));
-                },
-              ),
-              _ActionCard(
-                icon: Icons.work_outline,
-                title: 'Add Experience (Optional)',
-                onTap: () {
-                 
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Experience route needed')));
-                },
-              ),
-              _ActionCard(
-                icon: Icons.description_outlined,
-                title: 'Upload CV (Optional)',
-                onTap: () {
-                 
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('CV Upload manager route needed')));
-                },
-              ),
+                    Text('University', style: AppTextStyles.labelText),
+                    const SizedBox(height: AppDimensions.paddingXS),
+                    TextField(controller: _universityController),
 
-              const SizedBox(height: AppDimensions.paddingXL),
+                    const SizedBox(height: AppDimensions.paddingM),
 
-              SizedBox(
-                width: double.infinity,
-                height: AppDimensions.buttonHeight,
-                child: ElevatedButton(
-                  onPressed: _isSaving ? null : _saveProfileData,
-                  child: _isSaving 
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text('SAVE CHANGES', style: AppTextStyles.buttonText),
+                    Text('Major', style: AppTextStyles.labelText),
+                    const SizedBox(height: AppDimensions.paddingXS),
+                    TextField(controller: _majorController),
+
+                    const SizedBox(height: AppDimensions.paddingXL),
+
+                    Text(
+                      'Profile Additions',
+                      style: AppTextStyles.heading3.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: AppDimensions.paddingM),
+
+                    _ActionCard(
+                      icon: Icons.language,
+                      title: 'Add Languages',
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Language route needed'),
+                          ),
+                        );
+                      },
+                    ),
+                    _ActionCard(
+                      icon: Icons.school_outlined,
+                      title: 'Add Education',
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Education route needed'),
+                          ),
+                        );
+                      },
+                    ),
+                    _ActionCard(
+                      icon: Icons.work_outline,
+                      title: 'Add Experience (Optional)',
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Experience route needed'),
+                          ),
+                        );
+                      },
+                    ),
+                    _ActionCard(
+                      icon: Icons.description_outlined,
+                      title: 'Upload CV (Optional)',
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('CV Upload manager route needed'),
+                          ),
+                        );
+                      },
+                    ),
+
+                    const SizedBox(height: AppDimensions.paddingXL),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: AppDimensions.buttonHeight,
+                      child: ElevatedButton(
+                        onPressed: _isSaving ? null : _saveProfileData,
+                        child: _isSaving
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : Text(
+                                'SAVE CHANGES',
+                                style: AppTextStyles.buttonText,
+                              ),
+                      ),
+                    ),
+
+                    const SizedBox(height: AppDimensions.paddingXL),
+                  ],
                 ),
               ),
-
-              const SizedBox(height: AppDimensions.paddingXL),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -287,7 +335,11 @@ class _ActionCard extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
 
-  const _ActionCard({required this.icon, required this.title, required this.onTap});
+  const _ActionCard({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -308,10 +360,19 @@ class _ActionCard extends StatelessWidget {
               children: [
                 Icon(icon, color: AppColors.primaryNavy),
                 const SizedBox(width: AppDimensions.paddingM),
-                Text(title, style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600)),
+                Text(
+                  title,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
-            const Icon(Icons.arrow_forward_ios, color: AppColors.textSecondary, size: 16),
+            const Icon(
+              Icons.arrow_forward_ios,
+              color: AppColors.textSecondary,
+              size: 16,
+            ),
           ],
         ),
       ),
@@ -342,7 +403,9 @@ class _GenderOption extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: isSelected ? AppColors.primaryOrange : AppColors.textSecondary,
+                color: isSelected
+                    ? AppColors.primaryOrange
+                    : AppColors.textSecondary,
                 width: 2,
               ),
             ),
@@ -351,7 +414,10 @@ class _GenderOption extends StatelessWidget {
                     child: Container(
                       width: 10,
                       height: 10,
-                      decoration: const BoxDecoration(color: AppColors.primaryOrange, shape: BoxShape.circle),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primaryOrange,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   )
                 : null,

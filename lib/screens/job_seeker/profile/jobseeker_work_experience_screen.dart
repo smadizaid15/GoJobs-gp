@@ -29,9 +29,13 @@ class _JobseekerWorkExperienceScreenState
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    if (_jobTitleController.text.trim().isEmpty || _companyController.text.trim().isEmpty) {
+    if (_jobTitleController.text.trim().isEmpty ||
+        _companyController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in Job Title and Company'), backgroundColor: AppColors.error),
+        const SnackBar(
+          content: Text('Please fill in Job Title and Company'),
+          backgroundColor: AppColors.error,
+        ),
       );
       return;
     }
@@ -43,25 +47,35 @@ class _JobseekerWorkExperienceScreenState
         'jobTitle': _jobTitleController.text.trim(),
         'company': _companyController.text.trim(),
         'startDate': _startDateController.text.trim(),
-        'endDate': _isCurrentPosition ? 'Present' : _endDateController.text.trim(),
+        'endDate': _isCurrentPosition
+            ? 'Present'
+            : _endDateController.text.trim(),
         'description': _descriptionController.text.trim(),
         'isCurrent': _isCurrentPosition,
       };
 
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-        'experience': FieldValue.arrayUnion([newExperience]),
-      });
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update(
+        {
+          'experience': FieldValue.arrayUnion([newExperience]),
+        },
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Experience added!'), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text('Experience added!'),
+            backgroundColor: Colors.green,
+          ),
         );
         context.pop();
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text('Failed to save: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -93,7 +107,6 @@ class _JobseekerWorkExperienceScreenState
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              
               GestureDetector(
                 onTap: () => context.pop(),
                 child: const Icon(
@@ -114,34 +127,31 @@ class _JobseekerWorkExperienceScreenState
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              
               Text('Job title', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(controller: _jobTitleController),
 
               const SizedBox(height: AppDimensions.paddingM),
 
-             
               Text('Company', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(controller: _companyController),
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              
               Row(
                 children: [
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Start date',
-                            style: AppTextStyles.labelText),
-                        const SizedBox(
-                            height: AppDimensions.paddingXS),
+                        Text('Start date', style: AppTextStyles.labelText),
+                        const SizedBox(height: AppDimensions.paddingXS),
                         TextField(
                           controller: _startDateController,
-                          decoration: const InputDecoration(hintText: 'MM/YYYY'),
+                          decoration: const InputDecoration(
+                            hintText: 'MM/YYYY',
+                          ),
                         ),
                       ],
                     ),
@@ -151,15 +161,15 @@ class _JobseekerWorkExperienceScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('End date',
-                            style: AppTextStyles.labelText),
-                        const SizedBox(
-                            height: AppDimensions.paddingXS),
+                        Text('End date', style: AppTextStyles.labelText),
+                        const SizedBox(height: AppDimensions.paddingXS),
                         TextField(
                           controller: _endDateController,
                           enabled: !_isCurrentPosition,
                           decoration: InputDecoration(
-                            hintText: _isCurrentPosition ? 'Present' : 'MM/YYYY',
+                            hintText: _isCurrentPosition
+                                ? 'Present'
+                                : 'MM/YYYY',
                           ),
                         ),
                       ],
@@ -170,14 +180,13 @@ class _JobseekerWorkExperienceScreenState
 
               const SizedBox(height: AppDimensions.paddingM),
 
-             
               Row(
                 children: [
                   Checkbox(
                     value: _isCurrentPosition,
                     activeColor: AppColors.primaryNavy,
-                    onChanged: (val) => setState(
-                        () => _isCurrentPosition = val ?? false),
+                    onChanged: (val) =>
+                        setState(() => _isCurrentPosition = val ?? false),
                   ),
                   Text(
                     'This is my position now',
@@ -190,7 +199,6 @@ class _JobseekerWorkExperienceScreenState
 
               const SizedBox(height: AppDimensions.paddingM),
 
-             
               Text('Description', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
               Container(
@@ -198,8 +206,7 @@ class _JobseekerWorkExperienceScreenState
                 padding: const EdgeInsets.all(AppDimensions.paddingM),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius:
-                      BorderRadius.circular(AppDimensions.radiusM),
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusM),
                 ),
                 child: TextField(
                   controller: _descriptionController,
@@ -217,32 +224,30 @@ class _JobseekerWorkExperienceScreenState
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
                   onPressed: _isSaving ? null : _saveExperience,
-                  child: _isSaving 
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text('SAVE', style: AppTextStyles.buttonText),
+                  child: _isSaving
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text('SAVE', style: AppTextStyles.buttonText),
                 ),
               ),
 
               const SizedBox(height: AppDimensions.paddingM),
 
-             
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: OutlinedButton(
                   onPressed: () => context.pop(),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(
-                        color: AppColors.purpleButtonBorder),
+                    side: const BorderSide(color: AppColors.purpleButtonBorder),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(
-                          AppDimensions.radiusL),
+                        AppDimensions.radiusL,
+                      ),
                     ),
                     backgroundColor: AppColors.purpleButton,
                   ),

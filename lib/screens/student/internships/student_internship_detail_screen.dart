@@ -11,17 +11,18 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
- 
     final data = jobData ?? {};
     final title = data['title']?.toString() ?? 'Internship';
     final company = data['companyName']?.toString() ?? 'Company';
     final location = data['location']?.toString() ?? 'Location';
     final type = data['workplaceType']?.toString() ?? 'On-site';
     final duration = data['duration']?.toString() ?? 'Duration unlisted';
-    final description = data['description']?.toString() ?? 'No description available.';
+    final description =
+        data['description']?.toString() ?? 'No description available.';
     final requirements = List<String>.from(data['requirements'] ?? []);
     final qualifications = data['qualifications']?.toString() ?? 'None listed';
-    final experienceLevel = data['experienceLevel']?.toString() ?? 'Entry Level';
+    final experienceLevel =
+        data['experienceLevel']?.toString() ?? 'Entry Level';
     final logoUrl = data['logoUrl']?.toString();
 
     return Scaffold(
@@ -33,7 +34,6 @@ class StudentInternshipDetailScreen extends StatelessWidget {
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-             
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,
@@ -49,7 +49,6 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              
               Center(
                 child: Column(
                   children: [
@@ -58,14 +57,22 @@ class StudentInternshipDetailScreen extends StatelessWidget {
                       height: 80,
                       decoration: BoxDecoration(
                         color: AppColors.inputFill,
-                        borderRadius:
-                            BorderRadius.circular(AppDimensions.radiusL),
-                        image: logoUrl != null 
-                            ? DecorationImage(image: NetworkImage(logoUrl), fit: BoxFit.cover)
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusL,
+                        ),
+                        image: logoUrl != null
+                            ? DecorationImage(
+                                image: NetworkImage(logoUrl),
+                                fit: BoxFit.cover,
+                              )
                             : null,
                       ),
-                      child: logoUrl == null 
-                          ? const Icon(Icons.business, color: AppColors.textSecondary, size: 40)
+                      child: logoUrl == null
+                          ? const Icon(
+                              Icons.business,
+                              color: AppColors.textSecondary,
+                              size: 40,
+                            )
                           : null,
                     ),
                     const SizedBox(height: AppDimensions.paddingS),
@@ -88,7 +95,6 @@ class StudentInternshipDetailScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    
                     Center(
                       child: Text(
                         title,
@@ -102,7 +108,6 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingS),
 
-                   
                     Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -133,16 +138,17 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                   
                     Center(
                       child: OutlinedButton(
                         onPressed: () {},
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(
-                              color: AppColors.purpleButtonBorder),
+                            color: AppColors.purpleButtonBorder,
+                          ),
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(AppDimensions.radiusFull),
+                            borderRadius: BorderRadius.circular(
+                              AppDimensions.radiusFull,
+                            ),
                           ),
                           backgroundColor: AppColors.purpleButton,
                         ),
@@ -157,7 +163,6 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                   
                     Text(
                       'Job Description',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -186,11 +191,12 @@ class StudentInternshipDetailScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: AppDimensions.paddingS),
-                      ...requirements.map((req) => _BulletItem(text: req)).toList(),
+                      ...requirements
+                          .map((req) => _BulletItem(text: req))
+                          .toList(),
                       const SizedBox(height: AppDimensions.paddingL),
                     ],
 
-                    
                     Text(
                       'Location',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -215,8 +221,9 @@ class StudentInternshipDetailScreen extends StatelessWidget {
                       height: 150,
                       decoration: BoxDecoration(
                         color: AppColors.inputFill,
-                        borderRadius:
-                            BorderRadius.circular(AppDimensions.radiusL),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusL,
+                        ),
                       ),
                       child: const Center(
                         child: Icon(
@@ -246,12 +253,12 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingXL),
 
-                  
                     SizedBox(
                       width: double.infinity,
                       height: AppDimensions.buttonHeight,
                       child: ElevatedButton(
-                        onPressed: () => context.push('/student/upload-cv', extra: data),
+                        onPressed: () =>
+                            context.push('/student/upload-cv', extra: data),
                         child: Text(
                           'APPLY NOW',
                           style: AppTextStyles.buttonText,

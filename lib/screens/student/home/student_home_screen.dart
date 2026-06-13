@@ -18,7 +18,7 @@ class StudentHomeScreen extends StatefulWidget {
 class _StudentHomeScreenState extends State<StudentHomeScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
+
   String _studentName = 'Student';
   String? _profileImageUrl;
   int _internshipCount = 0;
@@ -64,9 +64,9 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
       debugPrint("Error counting internships: $e");
     }
   }
+
   Future<void> _countCourses() async {
     try {
-    
       final snapshot = await _firestore.collection('courses').get();
       if (mounted) {
         setState(() {
@@ -133,7 +133,9 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                                 height: 36,
                                 decoration: BoxDecoration(
                                   color: AppColors.primaryNavy,
-                                  borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                                  borderRadius: BorderRadius.circular(
+                                    AppDimensions.radiusS,
+                                  ),
                                 ),
                                 child: const Icon(
                                   Icons.smart_toy_outlined,
@@ -148,16 +150,23 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                               child: CircleAvatar(
                                 radius: 20,
                                 backgroundColor: AppColors.primaryNavy,
-                                backgroundImage: _profileImageUrl != null && _profileImageUrl!.isNotEmpty
+                                backgroundImage:
+                                    _profileImageUrl != null &&
+                                        _profileImageUrl!.isNotEmpty
                                     ? NetworkImage(_profileImageUrl!)
                                     : null,
-                                child: _profileImageUrl == null || _profileImageUrl!.isEmpty
+                                child:
+                                    _profileImageUrl == null ||
+                                        _profileImageUrl!.isEmpty
                                     ? Text(
-                                        _studentName.isNotEmpty ? _studentName[0].toUpperCase() : 'S',
-                                        style: AppTextStyles.bodyMedium.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                        _studentName.isNotEmpty
+                                            ? _studentName[0].toUpperCase()
+                                            : 'S',
+                                        style: AppTextStyles.bodyMedium
+                                            .copyWith(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                       )
                                     : null,
                               ),
@@ -169,14 +178,14 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    
                     Container(
                       width: double.infinity,
                       height: 130,
                       decoration: BoxDecoration(
                         color: AppColors.primaryNavy,
-                        borderRadius:
-                            BorderRadius.circular(AppDimensions.radiusL),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusL,
+                        ),
                       ),
                       child: Row(
                         children: [
@@ -203,10 +212,10 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                                     ),
                                   ),
                                   const SizedBox(
-                                      height: AppDimensions.paddingS),
+                                    height: AppDimensions.paddingS,
+                                  ),
                                   GestureDetector(
-                                    onTap: () =>
-                                        context.go('/student/courses'),
+                                    onTap: () => context.go('/student/courses'),
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: AppDimensions.paddingM,
@@ -220,8 +229,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                                       ),
                                       child: Text(
                                         'Join Now',
-                                        style:
-                                            AppTextStyles.bodySmall.copyWith(
+                                        style: AppTextStyles.bodySmall.copyWith(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
                                         ),
@@ -234,10 +242,10 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                           ),
                           ClipRRect(
                             borderRadius: const BorderRadius.only(
-                              topRight:
-                                  Radius.circular(AppDimensions.radiusL),
-                              bottomRight:
-                                  Radius.circular(AppDimensions.radiusL),
+                              topRight: Radius.circular(AppDimensions.radiusL),
+                              bottomRight: Radius.circular(
+                                AppDimensions.radiusL,
+                              ),
                             ),
                             child: Image.asset(
                               'assets/images/woman_banner.png',
@@ -262,7 +270,6 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                
                     Row(
                       children: [
                         Expanded(
@@ -286,7 +293,8 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                                     color: Colors.white,
                                   ),
                                   const SizedBox(
-                                      height: AppDimensions.paddingS),
+                                    height: AppDimensions.paddingS,
+                                  ),
                                   Text(
                                     '$_courseCount',
                                     style: AppTextStyles.heading3.copyWith(
@@ -310,8 +318,8 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
 
                         Expanded(
                           child: GestureDetector(
-                            onTap: () => context
-                                .go('/student/internship-categories'),
+                            onTap: () =>
+                                context.go('/student/internship-categories'),
                             child: Container(
                               padding: const EdgeInsets.all(
                                 AppDimensions.paddingM,
@@ -330,7 +338,8 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                                     color: Colors.white,
                                   ),
                                   const SizedBox(
-                                      height: AppDimensions.paddingS),
+                                    height: AppDimensions.paddingS,
+                                  ),
                                   Text(
                                     '$_internshipCount+',
                                     style: AppTextStyles.heading3.copyWith(
@@ -355,18 +364,16 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                     const SizedBox(height: AppDimensions.paddingL),
 
                     GestureDetector(
-                      onTap: () =>
-                          context.go('/student/service-providers'),
+                      onTap: () => context.go('/student/service-providers'),
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(AppDimensions.paddingL),
                         decoration: BoxDecoration(
                           color: const Color(0xFFFFF3E0),
-                          borderRadius:
-                              BorderRadius.circular(AppDimensions.radiusL),
-                          border: Border.all(
-                            color: AppColors.primaryOrange,
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.radiusL,
                           ),
+                          border: Border.all(color: AppColors.primaryOrange),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -403,8 +410,8 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () => context
-                              .go('/student/internship-categories'),
+                          onTap: () =>
+                              context.go('/student/internship-categories'),
                           child: Text(
                             'View all',
                             style: AppTextStyles.bodySmall.copyWith(
@@ -418,30 +425,38 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                   
                     StreamBuilder<QuerySnapshot>(
                       stream: _firestore
                           .collection('jobs')
                           .where('jobType', isEqualTo: 'Internship')
                           .where('isActive', isEqualTo: true)
-                          .limit(5) 
+                          .limit(5)
                           .snapshots(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         }
                         if (snapshot.hasError) {
-                          return const Center(child: Text('Failed to load internships'));
+                          return const Center(
+                            child: Text('Failed to load internships'),
+                          );
                         }
 
                         final internships = snapshot.data?.docs ?? [];
 
                         if (internships.isEmpty) {
                           return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingM),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: AppDimensions.paddingM,
+                            ),
                             child: Text(
                               'No internships available right now.',
-                              style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
                             ),
                           );
                         }
@@ -451,18 +466,30 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: internships.length,
                           itemBuilder: (context, index) {
-                            final jobData = internships[index].data() as Map<String, dynamic>;
-                            final fullJobData = {'id': internships[index].id, ...jobData};
+                            final jobData =
+                                internships[index].data()
+                                    as Map<String, dynamic>;
+                            final fullJobData = {
+                              'id': internships[index].id,
+                              ...jobData,
+                            };
 
                             return Padding(
-                              padding: const EdgeInsets.only(bottom: AppDimensions.paddingS),
+                              padding: const EdgeInsets.only(
+                                bottom: AppDimensions.paddingS,
+                              ),
                               child: _InternshipCard(
                                 title: jobData['title'] ?? 'Internship',
-                                company: jobData['companyName'] ?? 'Unknown Company',
-                                location: jobData['location'] ?? 'Location unknown',
+                                company:
+                                    jobData['companyName'] ?? 'Unknown Company',
+                                location:
+                                    jobData['location'] ?? 'Location unknown',
                                 type: jobData['workplaceType'] ?? 'On-site',
                                 jobType: jobData['jobType'] ?? 'Internship',
-                                onTap: () => context.push('/student/job-detail', extra: fullJobData),
+                                onTap: () => context.push(
+                                  '/student/job-detail',
+                                  extra: fullJobData,
+                                ),
                               ),
                             );
                           },
@@ -541,10 +568,7 @@ class _InternshipCard extends StatelessWidget {
                 ),
               ],
             ),
-            const Icon(
-              Icons.bookmark_border,
-              color: AppColors.textSecondary,
-            ),
+            const Icon(Icons.bookmark_border, color: AppColors.textSecondary),
           ],
         ),
       ),

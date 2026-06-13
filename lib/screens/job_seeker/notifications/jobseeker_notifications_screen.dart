@@ -12,10 +12,12 @@ class JobseekerNotificationsScreen extends StatefulWidget {
   const JobseekerNotificationsScreen({super.key});
 
   @override
-  State<JobseekerNotificationsScreen> createState() => _JobseekerNotificationsScreenState();
+  State<JobseekerNotificationsScreen> createState() =>
+      _JobseekerNotificationsScreenState();
 }
 
-class _JobseekerNotificationsScreenState extends State<JobseekerNotificationsScreen> {
+class _JobseekerNotificationsScreenState
+    extends State<JobseekerNotificationsScreen> {
   String _selectedFilter = 'All';
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
@@ -53,7 +55,6 @@ class _JobseekerNotificationsScreenState extends State<JobseekerNotificationsScr
                   children: [
                     const SizedBox(height: AppDimensions.paddingL),
 
-                 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -71,7 +72,10 @@ class _JobseekerNotificationsScreenState extends State<JobseekerNotificationsScr
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.menu, color: AppColors.textSecondary),
+                                const Icon(
+                                  Icons.menu,
+                                  color: AppColors.textSecondary,
+                                ),
                                 const SizedBox(width: AppDimensions.paddingS),
                                 Expanded(
                                   child: TextField(
@@ -81,7 +85,7 @@ class _JobseekerNotificationsScreenState extends State<JobseekerNotificationsScr
                                         _searchQuery = value;
                                       });
                                     },
-                                    decoration:  InputDecoration(
+                                    decoration: InputDecoration(
                                       hintText: 'Search',
                                       hintStyle: AppTextStyles.bodySmall,
                                       border: InputBorder.none,
@@ -97,9 +101,15 @@ class _JobseekerNotificationsScreenState extends State<JobseekerNotificationsScr
                                             _searchQuery = '';
                                           });
                                         },
-                                        child: const Icon(Icons.clear, color: AppColors.textSecondary),
+                                        child: const Icon(
+                                          Icons.clear,
+                                          color: AppColors.textSecondary,
+                                        ),
                                       )
-                                    : const Icon(Icons.search, color: AppColors.textSecondary),
+                                    : const Icon(
+                                        Icons.search,
+                                        color: AppColors.textSecondary,
+                                      ),
                               ],
                             ),
                           ),
@@ -124,7 +134,6 @@ class _JobseekerNotificationsScreenState extends State<JobseekerNotificationsScr
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                   
                     Row(
                       children: [
                         _buildFilterTab('All'),
@@ -144,32 +153,41 @@ class _JobseekerNotificationsScreenState extends State<JobseekerNotificationsScr
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                 
                     StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection('notifications')
                           .where('userId', isEqualTo: currentUserId)
                           .snapshots(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return const Padding(
                             padding: EdgeInsets.only(top: 50),
-                            child: Center(child: CircularProgressIndicator(color: AppColors.primaryNavy)),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: AppColors.primaryNavy,
+                              ),
+                            ),
                           );
                         }
 
                         if (snapshot.hasError) {
                           return Padding(
                             padding: const EdgeInsets.only(top: 50),
-                            child: Center(child: Text('Error: ${snapshot.error}')),
+                            child: Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            ),
                           );
                         }
 
-                        
                         final docs = snapshot.data?.docs ?? [];
                         docs.sort((a, b) {
-                          final tA = (a.data() as Map<String, dynamic>)['createdAt'] as Timestamp?;
-                          final tB = (b.data() as Map<String, dynamic>)['createdAt'] as Timestamp?;
+                          final tA =
+                              (a.data() as Map<String, dynamic>)['createdAt']
+                                  as Timestamp?;
+                          final tB =
+                              (b.data() as Map<String, dynamic>)['createdAt']
+                                  as Timestamp?;
                           if (tA == null && tB == null) return 0;
                           if (tA == null) return 1;
                           if (tB == null) return -1;
@@ -178,21 +196,29 @@ class _JobseekerNotificationsScreenState extends State<JobseekerNotificationsScr
 
                         final filteredDocs = docs.where((doc) {
                           final data = doc.data() as Map<String, dynamic>;
-                          final type = data['type']?.toString().toLowerCase() ?? '';
-                          final title = data['title']?.toString().toLowerCase() ?? '';
-                          final subtitle = (data['message'] ?? data['subtitle'])?.toString().toLowerCase() ?? '';
+                          final type =
+                              data['type']?.toString().toLowerCase() ?? '';
+                          final title =
+                              data['title']?.toString().toLowerCase() ?? '';
+                          final subtitle =
+                              (data['message'] ?? data['subtitle'])
+                                  ?.toString()
+                                  .toLowerCase() ??
+                              '';
 
                           bool matchesFilter = true;
                           if (_selectedFilter == 'Jobs') {
-                            matchesFilter = type == 'job' || type == 'application';
+                            matchesFilter =
+                                type == 'job' || type == 'application';
                           } else if (_selectedFilter == 'Messages') {
                             matchesFilter = type == 'message' || type == 'chat';
                           }
 
                           bool matchesSearch = true;
                           if (_searchQuery.isNotEmpty) {
-                            matchesSearch = title.contains(_searchQuery.toLowerCase()) || 
-                                            subtitle.contains(_searchQuery.toLowerCase());
+                            matchesSearch =
+                                title.contains(_searchQuery.toLowerCase()) ||
+                                subtitle.contains(_searchQuery.toLowerCase());
                           }
 
                           return matchesFilter && matchesSearch;
@@ -204,7 +230,9 @@ class _JobseekerNotificationsScreenState extends State<JobseekerNotificationsScr
                             child: Center(
                               child: Text(
                                 'No notifications found.',
-                                style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                                style: AppTextStyles.bodySmall.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                               ),
                             ),
                           );
@@ -217,16 +245,23 @@ class _JobseekerNotificationsScreenState extends State<JobseekerNotificationsScr
                           itemBuilder: (context, index) {
                             final doc = filteredDocs[index];
                             final data = doc.data() as Map<String, dynamic>;
-                            
+
                             return GestureDetector(
-                              onTap: () => _markAsReadAndNavigate(doc.id, data['actionRoute'] ?? data['route']),
+                              onTap: () => _markAsReadAndNavigate(
+                                doc.id,
+                                data['actionRoute'] ?? data['route'],
+                              ),
                               child: _NotificationItem(
                                 title: data['title'] ?? 'Notification',
-                                subtitle: data['message'] ?? data['subtitle'] ?? '',
+                                subtitle:
+                                    data['message'] ?? data['subtitle'] ?? '',
                                 actionLabel: data['actionLabel'],
-                                onAction: data['actionLabel'] != null 
-                                  ? () => _markAsReadAndNavigate(doc.id, data['actionRoute'] ?? data['route'])
-                                  : null,
+                                onAction: data['actionLabel'] != null
+                                    ? () => _markAsReadAndNavigate(
+                                        doc.id,
+                                        data['actionRoute'] ?? data['route'],
+                                      )
+                                    : null,
                                 isRead: data['isRead'] ?? false,
                               ),
                             );

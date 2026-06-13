@@ -45,7 +45,9 @@ class _CompanyForgotPasswordScreenState
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(authProvider.errorMessage ?? 'Failed to send reset email'),
+          content: Text(
+            authProvider.errorMessage ?? 'Failed to send reset email',
+          ),
           backgroundColor: AppColors.error,
         ),
       );
@@ -124,8 +126,7 @@ class _CompanyForgotPasswordScreenState
                   ),
                   child: authProvider.isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : Text('RESET PASSWORD',
-                          style: AppTextStyles.buttonText),
+                      : Text('RESET PASSWORD', style: AppTextStyles.buttonText),
                 ),
               ),
 
@@ -137,11 +138,11 @@ class _CompanyForgotPasswordScreenState
                 child: OutlinedButton(
                   onPressed: () => context.go('/company/login'),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(
-                        color: AppColors.purpleButtonBorder),
+                    side: const BorderSide(color: AppColors.purpleButtonBorder),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusL),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusL,
+                      ),
                     ),
                     backgroundColor: AppColors.purpleButton,
                   ),

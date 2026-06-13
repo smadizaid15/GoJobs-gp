@@ -68,10 +68,8 @@ class StorageService {
       if (image == null) return null;
 
       final file = File(image.path);
-      final fileName =
-          'portfolio_${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final ref =
-          _storage.ref().child('portfolios/$userId/$fileName');
+      final fileName = 'portfolio_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final ref = _storage.ref().child('portfolios/$userId/$fileName');
       final uploadTask = await ref.putFile(file);
       final downloadUrl = await uploadTask.ref.getDownloadURL();
 

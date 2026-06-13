@@ -16,9 +16,7 @@ class JobseekerProfileScreen extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      return const Scaffold(
-        body: Center(child: Text('User not logged in.')),
-      );
+      return const Scaffold(body: Center(child: Text('User not logged in.')));
     }
 
     return Scaffold(
@@ -30,23 +28,37 @@ class JobseekerProfileScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    
                     StreamBuilder<DocumentSnapshot>(
-                      stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
+                      stream: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(user.uid)
+                          .snapshots(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return Container(
                             width: double.infinity,
                             height: 250,
                             color: AppColors.primaryNavy,
-                            child: const Center(child: CircularProgressIndicator(color: Colors.white)),
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            ),
                           );
                         }
 
-                        final data = snapshot.data?.data() as Map<String, dynamic>? ?? {};
-                        final fullName = data['fullName']?.toString() ?? data['displayName']?.toString() ?? 'Job Seeker';
-                        final location = data['location']?.toString() ?? 'Location not set';
-                        final profileImageUrl = data['profileImageUrl']?.toString();
+                        final data =
+                            snapshot.data?.data() as Map<String, dynamic>? ??
+                            {};
+                        final fullName =
+                            data['fullName']?.toString() ??
+                            data['displayName']?.toString() ??
+                            'Job Seeker';
+                        final location =
+                            data['location']?.toString() ?? 'Location not set';
+                        final profileImageUrl = data['profileImageUrl']
+                            ?.toString();
 
                         return Container(
                           width: double.infinity,
@@ -54,16 +66,20 @@ class JobseekerProfileScreen extends StatelessWidget {
                           decoration: const BoxDecoration(
                             color: AppColors.primaryNavy,
                             borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(AppDimensions.radiusXL),
-                              bottomRight: Radius.circular(AppDimensions.radiusXL),
+                              bottomLeft: Radius.circular(
+                                AppDimensions.radiusXL,
+                              ),
+                              bottomRight: Radius.circular(
+                                AppDimensions.radiusXL,
+                              ),
                             ),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                         
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   GestureDetector(
                                     onTap: () => context.go('/jobseeker/home'),
@@ -73,7 +89,8 @@ class JobseekerProfileScreen extends StatelessWidget {
                                     ),
                                   ),
                                   GestureDetector(
-                                    onTap: () => context.go('/jobseeker/settings'),
+                                    onTap: () =>
+                                        context.go('/jobseeker/settings'),
                                     child: const Icon(
                                       Icons.settings_outlined,
                                       color: Colors.white,
@@ -84,16 +101,21 @@ class JobseekerProfileScreen extends StatelessWidget {
 
                               const SizedBox(height: AppDimensions.paddingM),
 
-                             
                               CircleAvatar(
                                 radius: 40,
                                 backgroundColor: AppColors.inputFill,
-                                backgroundImage: profileImageUrl != null && profileImageUrl.isNotEmpty
+                                backgroundImage:
+                                    profileImageUrl != null &&
+                                        profileImageUrl.isNotEmpty
                                     ? NetworkImage(profileImageUrl)
                                     : null,
-                                child: profileImageUrl == null || profileImageUrl.isEmpty
+                                child:
+                                    profileImageUrl == null ||
+                                        profileImageUrl.isEmpty
                                     ? Text(
-                                        fullName.isNotEmpty ? fullName[0].toUpperCase() : 'J',
+                                        fullName.isNotEmpty
+                                            ? fullName[0].toUpperCase()
+                                            : 'J',
                                         style: AppTextStyles.heading2.copyWith(
                                           color: AppColors.textSecondary,
                                           fontWeight: FontWeight.bold,
@@ -121,9 +143,9 @@ class JobseekerProfileScreen extends StatelessWidget {
 
                               const SizedBox(height: AppDimensions.paddingM),
 
-                           
                               GestureDetector(
-                                onTap: () => context.push('/jobseeker/edit-profile'),
+                                onTap: () =>
+                                    context.push('/jobseeker/edit-profile'),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: AppDimensions.paddingL,
@@ -141,9 +163,13 @@ class JobseekerProfileScreen extends StatelessWidget {
                                     children: [
                                       Text(
                                         'Edit profile',
-                                        style: AppTextStyles.bodySmall.copyWith(color: Colors.white),
+                                        style: AppTextStyles.bodySmall.copyWith(
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                      const SizedBox(width: AppDimensions.paddingXS),
+                                      const SizedBox(
+                                        width: AppDimensions.paddingXS,
+                                      ),
                                       const Icon(
                                         Icons.edit_outlined,
                                         color: Colors.white,
@@ -156,12 +182,11 @@ class JobseekerProfileScreen extends StatelessWidget {
                             ],
                           ),
                         );
-                      }
+                      },
                     ),
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                  
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppDimensions.paddingL,
@@ -176,7 +201,8 @@ class JobseekerProfileScreen extends StatelessWidget {
                           _ProfileSection(
                             icon: Icons.work_outline,
                             label: 'Work experience',
-                            onTap: () => context.push('/jobseeker/work-experience'),
+                            onTap: () =>
+                                context.push('/jobseeker/work-experience'),
                           ),
                           _ProfileSection(
                             icon: Icons.school_outlined,
@@ -253,10 +279,7 @@ class _ProfileSection extends StatelessWidget {
                 ),
               ],
             ),
-            const Icon(
-              Icons.add,
-              color: AppColors.primaryOrange,
-            ),
+            const Icon(Icons.add, color: AppColors.primaryOrange),
           ],
         ),
       ),

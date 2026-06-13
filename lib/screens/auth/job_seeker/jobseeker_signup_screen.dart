@@ -212,8 +212,9 @@ class _JobseekerSignupScreenState extends State<JobseekerSignupScreen> {
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.divider),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusL),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusL,
+                      ),
                     ),
                     backgroundColor: const Color(0xFFF0EEFF),
                   ),

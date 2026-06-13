@@ -18,7 +18,6 @@ class _AIChatScreenState extends State<AIChatScreen> {
   final List<Map<String, String>> _messages = [];
   bool _isLoading = false;
 
-
   @override
   void initState() {
     super.initState();
@@ -92,32 +91,30 @@ class _AIChatScreenState extends State<AIChatScreen> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-              ), 
-              
+              ),
+
               child: Row(
-  children: [
-    GestureDetector(
-      onTap: () => Navigator.of(context).pop(),
-      child: const Icon(
-        Icons.arrow_back,
-        color: Colors.white,
-      ),
-    ),
-    const SizedBox(width: AppDimensions.paddingM),
-    Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: AppColors.primaryOrange,
-        borderRadius:
-            BorderRadius.circular(AppDimensions.radiusM),
-      ),
-      child: const Icon(
-        Icons.smart_toy_outlined,
-        color: Colors.white,
-        size: 24,
-      ),
-    ),
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: const Icon(Icons.arrow_back, color: Colors.white),
+                  ),
+                  const SizedBox(width: AppDimensions.paddingM),
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryOrange,
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusM,
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.smart_toy_outlined,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
                   const SizedBox(width: AppDimensions.paddingM),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,10 +143,12 @@ class _AIChatScreenState extends State<AIChatScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.primaryOrange.withValues(alpha: 0.2),
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusFull),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusFull,
+                      ),
                       border: Border.all(
-                          color: AppColors.primaryOrange.withValues(alpha: 0.5)),
+                        color: AppColors.primaryOrange.withValues(alpha: 0.5),
+                      ),
                     ),
                     child: Text(
                       'AI Powered',
@@ -176,10 +175,7 @@ class _AIChatScreenState extends State<AIChatScreen> {
                   }
                   final msg = _messages[index];
                   final isMe = msg['role'] == 'user';
-                  return _ChatBubble(
-                    text: msg['content']!,
-                    isMe: isMe,
-                  );
+                  return _ChatBubble(text: msg['content']!, isMe: isMe);
                 },
               ),
             ),
@@ -191,13 +187,13 @@ class _AIChatScreenState extends State<AIChatScreen> {
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(
-                      horizontal: AppDimensions.paddingL),
+                    horizontal: AppDimensions.paddingL,
+                  ),
                   children: [
                     _SuggestionChip(
                       label: 'How do I apply for a job?',
                       onTap: () {
-                        _messageController.text =
-                            'How do I apply for a job?';
+                        _messageController.text = 'How do I apply for a job?';
                         _sendMessage();
                       },
                     ),
@@ -224,7 +220,7 @@ class _AIChatScreenState extends State<AIChatScreen> {
               const SizedBox(height: AppDimensions.paddingS),
             ],
 
-            // Input 
+            // Input
             Container(
               padding: const EdgeInsets.all(AppDimensions.paddingM),
               color: Colors.white,
@@ -237,8 +233,9 @@ class _AIChatScreenState extends State<AIChatScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF0F0F5),
-                        borderRadius:
-                            BorderRadius.circular(AppDimensions.radiusFull),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusFull,
+                        ),
                       ),
                       child: TextField(
                         controller: _messageController,
@@ -292,8 +289,9 @@ class _ChatBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: AppDimensions.paddingM),
       child: Row(
-        mainAxisAlignment:
-            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isMe
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isMe) ...[
@@ -302,8 +300,7 @@ class _ChatBubble extends StatelessWidget {
               height: 32,
               decoration: BoxDecoration(
                 color: AppColors.primaryNavy,
-                borderRadius:
-                    BorderRadius.circular(AppDimensions.radiusS),
+                borderRadius: BorderRadius.circular(AppDimensions.radiusS),
               ),
               child: const Icon(
                 Icons.smart_toy_outlined,
@@ -355,8 +352,7 @@ class _TypingIndicator extends StatelessWidget {
             height: 32,
             decoration: BoxDecoration(
               color: AppColors.primaryNavy,
-              borderRadius:
-                  BorderRadius.circular(AppDimensions.radiusS),
+              borderRadius: BorderRadius.circular(AppDimensions.radiusS),
             ),
             child: const Icon(
               Icons.smart_toy_outlined,
@@ -414,8 +410,7 @@ class _SuggestionChip extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: AppColors.purpleButton,
-          borderRadius:
-              BorderRadius.circular(AppDimensions.radiusFull),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
           border: Border.all(color: AppColors.purpleButtonBorder),
         ),
         child: Text(

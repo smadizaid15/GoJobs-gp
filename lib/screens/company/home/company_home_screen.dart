@@ -40,8 +40,10 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
         return;
       }
 
-      final url = Uri.parse('http://10.0.2.2:3000/api/companies/$currentCompanyId/dashboard-stats');
-      
+      final url = Uri.parse(
+        'http://10.0.2.2:3000/api/companies/$currentCompanyId/dashboard-stats',
+      );
+
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -51,7 +53,7 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
           totalJobsCount = data['totalJobs'] ?? 0;
           applicantsCount = data['applicants'] ?? 0;
           deletedJobsCount = data['deletedJobs'] ?? 0;
-          isLoading = false; 
+          isLoading = false;
         });
       } else {
         print('Failed to load stats');
@@ -72,7 +74,6 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(AppDimensions.paddingL),
@@ -99,7 +100,9 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                         ),
                         decoration: BoxDecoration(
                           color: AppColors.companyGold.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.radiusFull,
+                          ),
                           border: Border.all(
                             color: AppColors.companyGold.withValues(alpha: 0.5),
                           ),
@@ -116,7 +119,10 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                         children: [
                           GestureDetector(
                             onTap: () => context.go('/company/notifications'),
-                            child: const Icon(Icons.notifications_outlined, color: Colors.white),
+                            child: const Icon(
+                              Icons.notifications_outlined,
+                              color: Colors.white,
+                            ),
                           ),
                           const SizedBox(width: AppDimensions.paddingM),
                           GestureDetector(
@@ -126,21 +132,32 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                               height: 36,
                               decoration: BoxDecoration(
                                 color: AppColors.primaryNavy,
-                                borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                                borderRadius: BorderRadius.circular(
+                                  AppDimensions.radiusS,
+                                ),
                               ),
-                              child: const Icon(Icons.smart_toy_outlined, color: Colors.white, size: 18),
+                              child: const Icon(
+                                Icons.smart_toy_outlined,
+                                color: Colors.white,
+                                size: 18,
+                              ),
                             ),
                           ),
                           const SizedBox(width: AppDimensions.paddingS),
-                          
+
                           GestureDetector(
                             onTap: () => context.go('/company/profile'),
                             child: StreamBuilder<DocumentSnapshot>(
-                              stream: FirebaseFirestore.instance.collection('users').doc(currentUserId).snapshots(),
+                              stream: FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(currentUserId)
+                                  .snapshots(),
                               builder: (context, snapshot) {
                                 String? logoUrl;
                                 if (snapshot.hasData && snapshot.data!.exists) {
-                                  final data = snapshot.data!.data() as Map<String, dynamic>?;
+                                  final data =
+                                      snapshot.data!.data()
+                                          as Map<String, dynamic>?;
                                   logoUrl = data?['logoUrl']?.toString();
                                 }
 
@@ -149,18 +166,30 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                                   height: 40,
                                   decoration: BoxDecoration(
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                                    borderRadius: BorderRadius.circular(
+                                      AppDimensions.radiusS,
+                                    ),
                                   ),
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                                    borderRadius: BorderRadius.circular(
+                                      AppDimensions.radiusS,
+                                    ),
                                     child: logoUrl != null && logoUrl.isNotEmpty
                                         ? Image.network(
                                             logoUrl,
                                             fit: BoxFit.cover,
-                                            errorBuilder: (context, error, stackTrace) =>
-                                                const Icon(Icons.business, color: AppColors.textSecondary),
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    const Icon(
+                                                      Icons.business,
+                                                      color: AppColors
+                                                          .textSecondary,
+                                                    ),
                                           )
-                                        : const Icon(Icons.business, color: AppColors.textSecondary),
+                                        : const Icon(
+                                            Icons.business,
+                                            color: AppColors.textSecondary,
+                                          ),
                                   ),
                                 );
                               },
@@ -190,10 +219,14 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                   const SizedBox(height: AppDimensions.paddingL),
                   Container(
                     height: 48,
-                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingM),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.paddingM,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusM,
+                      ),
                     ),
                     child: Row(
                       children: [
@@ -212,9 +245,15 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                           height: 36,
                           decoration: BoxDecoration(
                             color: AppColors.companyGold,
-                            borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                            borderRadius: BorderRadius.circular(
+                              AppDimensions.radiusS,
+                            ),
                           ),
-                          child: const Icon(Icons.search, color: Colors.white, size: 20),
+                          child: const Icon(
+                            Icons.search,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ),
                       ],
                     ),
@@ -225,9 +264,15 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
 
             Expanded(
               child: isLoading
-                  ? const Center(child: CircularProgressIndicator(color: AppColors.primaryNavy))
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryNavy,
+                      ),
+                    )
                   : SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimensions.paddingL,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -255,14 +300,14 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                             ],
                           ),
                           const SizedBox(height: AppDimensions.paddingM),
-                          
+
                           Row(
                             children: [
                               Expanded(
                                 child: _StatCard(
                                   icon: Icons.work_outline,
                                   label: 'Active jobs',
-                                  value: '$activeJobsCount jobs', 
+                                  value: '$activeJobsCount jobs',
                                   onTap: () => context.go('/company/jobs'),
                                 ),
                               ),
@@ -271,7 +316,7 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                                 child: _StatCard(
                                   icon: Icons.post_add_outlined,
                                   label: 'Jobs posted',
-                                  value: '$totalJobsCount jobs', 
+                                  value: '$totalJobsCount jobs',
                                   onTap: () => context.go('/company/jobs'),
                                 ),
                               ),
@@ -280,8 +325,9 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                                 child: _StatCard(
                                   icon: Icons.people_outline,
                                   label: 'Applicants',
-                                  value: '$applicantsCount', 
-                                  onTap: () => context.go('/company/applicants'),
+                                  value: '$applicantsCount',
+                                  onTap: () =>
+                                      context.go('/company/applicants'),
                                 ),
                               ),
                             ],
@@ -293,7 +339,7 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                                 child: _StatCard(
                                   icon: Icons.delete_outline,
                                   label: 'Deleted jobs',
-                                  value: '$deletedJobsCount jobs', 
+                                  value: '$deletedJobsCount jobs',
                                   onTap: () {},
                                 ),
                               ),
@@ -302,30 +348,41 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                                 child: GestureDetector(
                                   onTap: () => context.push('/company/add-job'),
                                   child: Container(
-                                    padding: const EdgeInsets.all(AppDimensions.paddingM),
+                                    padding: const EdgeInsets.all(
+                                      AppDimensions.paddingM,
+                                    ),
                                     decoration: BoxDecoration(
                                       gradient: const LinearGradient(
-                                        colors: [AppColors.primaryNavy, Color(0xFF1a1850)],
+                                        colors: [
+                                          AppColors.primaryNavy,
+                                          Color(0xFF1a1850),
+                                        ],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                       ),
-                                      borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                                      borderRadius: BorderRadius.circular(
+                                        AppDimensions.radiusL,
+                                      ),
                                     ),
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         const Icon(
                                           Icons.add_circle_outline,
                                           color: AppColors.companyGold,
                                           size: 32,
                                         ),
-                                        const SizedBox(height: AppDimensions.paddingXS),
+                                        const SizedBox(
+                                          height: AppDimensions.paddingXS,
+                                        ),
                                         Text(
                                           'Add new\njob',
-                                          style: AppTextStyles.bodySmall.copyWith(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                          style: AppTextStyles.bodySmall
+                                              .copyWith(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w600,
+                                              ),
                                           textAlign: TextAlign.center,
                                         ),
                                       ],

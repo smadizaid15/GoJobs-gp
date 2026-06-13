@@ -1,10 +1,10 @@
-import 'dart:typed_data'; 
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:file_picker/file_picker.dart' as fp;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart'; 
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -16,15 +16,15 @@ class JobseekerUploadCvScreen extends StatefulWidget {
   const JobseekerUploadCvScreen({super.key, this.job});
 
   @override
-  State<JobseekerUploadCvScreen> createState() => _JobseekerUploadCvScreenState();
+  State<JobseekerUploadCvScreen> createState() =>
+      _JobseekerUploadCvScreenState();
 }
 
 class _JobseekerUploadCvScreenState extends State<JobseekerUploadCvScreen> {
-
   Uint8List? _cvBytes;
   String? _cvFileName;
   bool _isSubmitting = false;
-  
+
   final TextEditingController _infoController = TextEditingController();
 
   Future<void> _pickCvFile() async {
@@ -32,7 +32,7 @@ class _JobseekerUploadCvScreenState extends State<JobseekerUploadCvScreen> {
       fp.FilePickerResult? result = await fp.FilePicker.pickFiles(
         type: fp.FileType.custom,
         allowedExtensions: ['pdf', 'doc', 'docx'],
-        withData: true, 
+        withData: true,
       );
 
       if (result != null && result.files.single.bytes != null) {
@@ -63,50 +63,49 @@ class _JobseekerUploadCvScreenState extends State<JobseekerUploadCvScreen> {
     setState(() => _isSubmitting = true);
 
     try {
-     
-      final String uniqueFileName = '${DateTime.now().millisecondsSinceEpoch}_$_cvFileName';
-      
-     
-      final storageRef = FirebaseStorage.instance.ref().child('cvs/$currentUserId/$uniqueFileName');
+      final String uniqueFileName =
+          '${DateTime.now().millisecondsSinceEpoch}_$_cvFileName';
 
-     
+      final storageRef = FirebaseStorage.instance.ref().child(
+        'cvs/$currentUserId/$uniqueFileName',
+      );
+
       final uploadTask = await storageRef.putData(_cvBytes!);
       final secureUrl = await uploadTask.ref.getDownloadURL();
 
-      
       await FirebaseFirestore.instance.collection('applications').add({
         'jobId': widget.job?['id'] ?? 'unknown_job',
         'companyId': widget.job?['companyId'] ?? 'unknown_company',
         'applicantId': currentUserId,
         'message': _infoController.text,
-        'cvFileName': _cvFileName, 
-        'cvUrl': secureUrl, 
-        'hasCv': true,                
+        'cvFileName': _cvFileName,
+        'cvUrl': secureUrl,
+        'hasCv': true,
         'appliedAt': FieldValue.serverTimestamp(),
         'status': 'pending',
       });
-  
-await FirebaseFirestore.instance.collection('notifications').add({
-  'recipientId': widget.job?['companyId'] ?? 'unknown_company', 
-  'type': 'application',
-  'title': 'New Application',
-  'subtitle': '${FirebaseAuth.instance.currentUser?.displayName ?? 'A user'} applied for your ${widget.job?['title'] ?? 'job'} position.',
-  'actionLabel': 'View Applicant',
-  'route': '/company/applicants', 
-  'isRead': false,
-  'createdAt': FieldValue.serverTimestamp(),
-});
+
+      await FirebaseFirestore.instance.collection('notifications').add({
+        'recipientId': widget.job?['companyId'] ?? 'unknown_company',
+        'type': 'application',
+        'title': 'New Application',
+        'subtitle':
+            '${FirebaseAuth.instance.currentUser?.displayName ?? 'A user'} applied for your ${widget.job?['title'] ?? 'job'} position.',
+        'actionLabel': 'View Applicant',
+        'route': '/company/applicants',
+        'isRead': false,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
 
       if (mounted) {
         context.push('/jobseeker/application-success', extra: widget.job);
       }
-
     } catch (e) {
       print('Error submitting application: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -129,7 +128,9 @@ await FirebaseFirestore.instance.collection('notifications').add({
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppDimensions.paddingL,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -139,7 +140,10 @@ await FirebaseFirestore.instance.collection('notifications').add({
                 children: [
                   GestureDetector(
                     onTap: () => context.pop(),
-                    child: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                   const Icon(Icons.more_vert, color: AppColors.textPrimary),
                 ],
@@ -153,14 +157,22 @@ await FirebaseFirestore.instance.collection('notifications').add({
                       height: 80,
                       decoration: BoxDecoration(
                         color: AppColors.inputFill,
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusL,
+                        ),
                       ),
-                      child: const Icon(Icons.business, color: AppColors.textSecondary, size: 40),
+                      child: const Icon(
+                        Icons.business,
+                        color: AppColors.textSecondary,
+                        size: 40,
+                      ),
                     ),
                     const SizedBox(height: AppDimensions.paddingS),
                     Text(
                       company,
-                      style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -180,9 +192,19 @@ await FirebaseFirestore.instance.collection('notifications').add({
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(location, style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+                    Text(
+                      location,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
                     const Text(' • '),
-                    Text(company, style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+                    Text(
+                      company,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -197,7 +219,9 @@ await FirebaseFirestore.instance.collection('notifications').add({
               const SizedBox(height: AppDimensions.paddingXS),
               Text(
                 'Add your CV/Resume to apply for a job',
-                style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
               const SizedBox(height: AppDimensions.paddingM),
               Row(
@@ -209,16 +233,23 @@ await FirebaseFirestore.instance.collection('notifications').add({
                         padding: const EdgeInsets.all(AppDimensions.paddingM),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.radiusM,
+                          ),
                           border: Border.all(color: AppColors.divider),
                         ),
                         child: Column(
                           children: [
-                            const Icon(Icons.upload_outlined, color: AppColors.textSecondary),
+                            const Icon(
+                              Icons.upload_outlined,
+                              color: AppColors.textSecondary,
+                            ),
                             const SizedBox(height: AppDimensions.paddingXS),
                             Text(
                               'Upload CV/\nResume',
-                              style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -234,16 +265,25 @@ await FirebaseFirestore.instance.collection('notifications').add({
                         padding: const EdgeInsets.all(AppDimensions.paddingM),
                         decoration: BoxDecoration(
                           color: AppColors.purpleButton,
-                          borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-                          border: Border.all(color: AppColors.purpleButtonBorder),
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.radiusM,
+                          ),
+                          border: Border.all(
+                            color: AppColors.purpleButtonBorder,
+                          ),
                         ),
                         child: Column(
                           children: [
-                            const Icon(Icons.folder_outlined, color: AppColors.primaryNavy),
+                            const Icon(
+                              Icons.folder_outlined,
+                              color: AppColors.primaryNavy,
+                            ),
                             const SizedBox(height: AppDimensions.paddingXS),
                             Text(
                               'Use existing /\nadded CV',
-                              style: AppTextStyles.bodySmall.copyWith(color: AppColors.primaryNavy),
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.primaryNavy,
+                              ),
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -265,7 +305,11 @@ await FirebaseFirestore.instance.collection('notifications').add({
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.picture_as_pdf, color: Colors.red, size: 32),
+                      const Icon(
+                        Icons.picture_as_pdf,
+                        color: Colors.red,
+                        size: 32,
+                      ),
                       const SizedBox(width: AppDimensions.paddingM),
                       Expanded(
                         child: Column(
@@ -295,7 +339,11 @@ await FirebaseFirestore.instance.collection('notifications').add({
                           _cvBytes = null;
                           _cvFileName = null;
                         }),
-                        child: const Icon(Icons.close, color: AppColors.textSecondary, size: 20),
+                        child: const Icon(
+                          Icons.close,
+                          color: AppColors.textSecondary,
+                          size: 20,
+                        ),
                       ),
                     ],
                   ),
@@ -323,8 +371,11 @@ await FirebaseFirestore.instance.collection('notifications').add({
                   controller: _infoController,
                   maxLines: null,
                   decoration: InputDecoration(
-                    hintText: 'Explain why you are the right person for this job',
-                    hintStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                    hintText:
+                        'Explain why you are the right person for this job',
+                    hintStyle: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                     border: InputBorder.none,
                     filled: false,
                   ),
@@ -340,7 +391,10 @@ await FirebaseFirestore.instance.collection('notifications').add({
                       ? const SizedBox(
                           width: 24,
                           height: 24,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
                         )
                       : Text('APPLY NOW', style: AppTextStyles.buttonText),
                 ),

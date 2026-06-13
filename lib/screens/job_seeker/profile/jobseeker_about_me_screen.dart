@@ -162,7 +162,10 @@ class _JobseekerAboutMeScreenState extends State<JobseekerAboutMeScreen> {
                       ? const SizedBox(
                           height: 20,
                           width: 20,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
                         )
                       : Text('SAVE', style: AppTextStyles.buttonText),
                 ),

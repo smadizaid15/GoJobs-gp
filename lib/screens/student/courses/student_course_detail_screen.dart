@@ -8,12 +8,13 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 
 class StudentCourseDetailScreen extends StatefulWidget {
-  final Map<String, dynamic>? courseData; 
+  final Map<String, dynamic>? courseData;
 
   const StudentCourseDetailScreen({super.key, this.courseData});
 
   @override
-  State<StudentCourseDetailScreen> createState() => _StudentCourseDetailScreenState();
+  State<StudentCourseDetailScreen> createState() =>
+      _StudentCourseDetailScreenState();
 }
 
 class _StudentCourseDetailScreenState extends State<StudentCourseDetailScreen> {
@@ -22,13 +23,12 @@ class _StudentCourseDetailScreenState extends State<StudentCourseDetailScreen> {
   Future<void> _enrollInCourse() async {
     final user = FirebaseAuth.instance.currentUser;
     final courseId = widget.courseData?['id'];
-    
+
     if (user == null || courseId == null) return;
 
     setState(() => _isEnrolling = true);
 
     try {
-     
       await FirebaseFirestore.instance.collection('course_enrollments').add({
         'studentId': user.uid,
         'courseId': courseId,
@@ -62,17 +62,23 @@ class _StudentCourseDetailScreenState extends State<StudentCourseDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
     final data = widget.courseData ?? {};
     final title = data['title']?.toString() ?? 'Course Details';
     final company = data['companyName']?.toString() ?? 'Institution';
     final isOnline = data['isOnline'] as bool? ?? false;
-    final location = isOnline ? 'Online' : (data['location']?.toString() ?? 'On-site');
+    final location = isOnline
+        ? 'Online'
+        : (data['location']?.toString() ?? 'On-site');
     final isFree = data['isFree'] as bool? ?? false;
-    final priceStr = isFree ? 'Free of charge' : (data['price']?.toString() ?? 'Paid');
-    final description = data['description']?.toString() ?? 'No description provided.';
+    final priceStr = isFree
+        ? 'Free of charge'
+        : (data['price']?.toString() ?? 'Paid');
+    final description =
+        data['description']?.toString() ?? 'No description provided.';
     final logoUrl = data['logoUrl']?.toString();
-    final List<String> learningPoints = List<String>.from(data['learningPoints'] ?? []);
+    final List<String> learningPoints = List<String>.from(
+      data['learningPoints'] ?? [],
+    );
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
@@ -84,9 +90,11 @@ class _StudentCourseDetailScreenState extends State<StudentCourseDetailScreen> {
               const SizedBox(height: AppDimensions.paddingL),
 
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.paddingL,
+                ),
                 child: GestureDetector(
-                  onTap: () => context.pop(), 
+                  onTap: () => context.pop(),
                   child: const Icon(
                     Icons.arrow_back,
                     color: AppColors.textPrimary,
@@ -96,9 +104,10 @@ class _StudentCourseDetailScreenState extends State<StudentCourseDetailScreen> {
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.paddingL,
+                ),
                 child: Column(
                   children: [
                     Center(
@@ -107,13 +116,22 @@ class _StudentCourseDetailScreenState extends State<StudentCourseDetailScreen> {
                         height: 80,
                         decoration: BoxDecoration(
                           color: AppColors.inputFill,
-                          borderRadius: BorderRadius.circular(AppDimensions.radiusL),
-                          image: logoUrl != null 
-                              ? DecorationImage(image: NetworkImage(logoUrl), fit: BoxFit.cover)
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.radiusL,
+                          ),
+                          image: logoUrl != null
+                              ? DecorationImage(
+                                  image: NetworkImage(logoUrl),
+                                  fit: BoxFit.cover,
+                                )
                               : null,
                         ),
                         child: logoUrl == null
-                            ? const Icon(Icons.business, color: AppColors.textSecondary, size: 40)
+                            ? const Icon(
+                                Icons.business,
+                                color: AppColors.textSecondary,
+                                size: 40,
+                              )
                             : null,
                       ),
                     ),
@@ -133,9 +151,10 @@ class _StudentCourseDetailScreenState extends State<StudentCourseDetailScreen> {
 
               const SizedBox(height: AppDimensions.paddingL),
 
-             
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.paddingL,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -156,11 +175,26 @@ class _StudentCourseDetailScreenState extends State<StudentCourseDetailScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(location, style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+                          Text(
+                            location,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
                           const Text(' • '),
-                          Text(isOnline ? 'Online' : 'On site', style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+                          Text(
+                            isOnline ? 'Online' : 'On site',
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
                           const Text(' • '),
-                          Text(priceStr, style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+                          Text(
+                            priceStr,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -169,13 +203,15 @@ class _StudentCourseDetailScreenState extends State<StudentCourseDetailScreen> {
 
                     Center(
                       child: OutlinedButton(
-                        onPressed: () {
-                          
-                        },
+                        onPressed: () {},
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: AppColors.purpleButtonBorder),
+                          side: const BorderSide(
+                            color: AppColors.purpleButtonBorder,
+                          ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                            borderRadius: BorderRadius.circular(
+                              AppDimensions.radiusFull,
+                            ),
                           ),
                           backgroundColor: AppColors.purpleButton,
                         ),
@@ -218,7 +254,9 @@ class _StudentCourseDetailScreenState extends State<StudentCourseDetailScreen> {
                         ),
                       ),
                       const SizedBox(height: AppDimensions.paddingS),
-                      ...learningPoints.map((point) => _LearnItem(text: point)).toList(),
+                      ...learningPoints
+                          .map((point) => _LearnItem(text: point))
+                          .toList(),
                       const SizedBox(height: AppDimensions.paddingXL),
                     ],
 
@@ -228,7 +266,9 @@ class _StudentCourseDetailScreenState extends State<StudentCourseDetailScreen> {
                       child: ElevatedButton(
                         onPressed: _isEnrolling ? null : _enrollInCourse,
                         child: _isEnrolling
-                            ? const CircularProgressIndicator(color: Colors.white)
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
                             : Text(
                                 'ENROLL NOW',
                                 style: AppTextStyles.buttonText,

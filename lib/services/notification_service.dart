@@ -6,11 +6,7 @@ class NotificationService {
 
   Future<void> initialize() async {
     // Request permission
-    await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+    await _messaging.requestPermission(alert: true, badge: true, sound: true);
 
     // Get FCM token
     final token = await _messaging.getToken();
@@ -21,8 +17,7 @@ class NotificationService {
       debugPrint('Got a message in foreground!');
       debugPrint('Message data: ${message.data}');
       if (message.notification != null) {
-        debugPrint(
-            'Notification: ${message.notification!.title}');
+        debugPrint('Notification: ${message.notification!.title}');
       }
     });
 

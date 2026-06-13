@@ -36,7 +36,6 @@ class StudentInternshipCategoriesScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: AppDimensions.paddingL),
 
-                   
                     Row(
                       children: [
                         GestureDetector(
@@ -99,7 +98,6 @@ class StudentInternshipCategoriesScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                   
                     StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection('jobs')
@@ -107,22 +105,21 @@ class StudentInternshipCategoriesScreen extends StatelessWidget {
                           .where('isActive', isEqualTo: true)
                           .snapshots(),
                       builder: (context, snapshot) {
-                       
                         Map<String, int> categoryCounts = {};
                         for (var cat in _categories) {
                           categoryCounts[cat['title']] = 0;
                         }
 
-                     
                         if (snapshot.hasData) {
                           for (var doc in snapshot.data!.docs) {
                             final data = doc.data() as Map<String, dynamic>;
                             final category = data['category']?.toString() ?? '';
-                            
-                         
+
                             for (var cat in _categories) {
-                              if (cat['title'].toString().toLowerCase() == category.toLowerCase()) {
-                                categoryCounts[cat['title']] = (categoryCounts[cat['title']] ?? 0) + 1;
+                              if (cat['title'].toString().toLowerCase() ==
+                                  category.toLowerCase()) {
+                                categoryCounts[cat['title']] =
+                                    (categoryCounts[cat['title']] ?? 0) + 1;
                                 break;
                               }
                             }
@@ -134,22 +131,24 @@ class StudentInternshipCategoriesScreen extends StatelessWidget {
                           physics: const NeverScrollableScrollPhysics(),
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: AppDimensions.paddingM,
-                            mainAxisSpacing: AppDimensions.paddingM,
-                            childAspectRatio: 1.3,
-                          ),
+                                crossAxisCount: 2,
+                                crossAxisSpacing: AppDimensions.paddingM,
+                                mainAxisSpacing: AppDimensions.paddingM,
+                                childAspectRatio: 1.3,
+                              ),
                           itemCount: _categories.length,
                           itemBuilder: (context, index) {
                             final cat = _categories[index];
                             final title = cat['title'] as String;
                             final isFirst = index == 0;
-                            
-                   
+
                             final jobCount = categoryCounts[title] ?? 0;
 
                             return GestureDetector(
-                              onTap: () => context.push('/student/internship-list', extra: title),
+                              onTap: () => context.push(
+                                '/student/internship-list',
+                                extra: title,
+                              ),
                               child: Container(
                                 padding: const EdgeInsets.all(
                                   AppDimensions.paddingM,
@@ -173,7 +172,9 @@ class StudentInternshipCategoriesScreen extends StatelessWidget {
                                           : AppColors.primaryOrange,
                                       size: 32,
                                     ),
-                                    const SizedBox(height: AppDimensions.paddingS),
+                                    const SizedBox(
+                                      height: AppDimensions.paddingS,
+                                    ),
                                     Text(
                                       title,
                                       style: AppTextStyles.bodyMedium.copyWith(
@@ -199,7 +200,7 @@ class StudentInternshipCategoriesScreen extends StatelessWidget {
                             );
                           },
                         );
-                      }
+                      },
                     ),
 
                     const SizedBox(height: AppDimensions.paddingXL),

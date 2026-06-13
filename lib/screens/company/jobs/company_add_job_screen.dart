@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; 
-import 'package:firebase_auth/firebase_auth.dart';     
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';        
+import 'package:image_picker/image_picker.dart';
 import 'dart:typed_data';
 
 import '../../../core/theme/app_colors.dart';
@@ -18,13 +18,13 @@ class CompanyAddJobScreen extends StatefulWidget {
 }
 
 class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
-  String? _jobCategory; 
+  String? _jobCategory;
   String? _jobPosition;
   String? _workplaceType;
   String? _jobLocation;
   String? _employmentType;
   final _descriptionController = TextEditingController();
-  final _salaryController = TextEditingController(); 
+  final _salaryController = TextEditingController();
   bool _isPosting = false;
 
   final ImagePicker _picker = ImagePicker();
@@ -33,7 +33,7 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
   @override
   void dispose() {
     _descriptionController.dispose();
-    _salaryController.dispose(); 
+    _salaryController.dispose();
     super.dispose();
   }
 
@@ -52,12 +52,13 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
     });
   }
 
- 
   void _showCategoryPicker() {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppDimensions.radiusL)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppDimensions.radiusL),
+        ),
       ),
       builder: (context) {
         return SafeArea(
@@ -74,7 +75,7 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
             }).toList(),
           ),
         );
-      }
+      },
     );
   }
 
@@ -99,55 +100,63 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
     try {
       final currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
-     
       String realCompanyName = 'Unknown Company';
-      String? realCompanyLogo; 
-      
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(currentUserId).get();
+      String? realCompanyLogo;
+
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUserId)
+          .get();
       if (userDoc.exists && userDoc.data() != null) {
-        realCompanyName = userDoc.data()!['companyName']?.toString() ?? 'Unknown Company';
-        realCompanyLogo = userDoc.data()!['logoUrl']?.toString(); 
+        realCompanyName =
+            userDoc.data()!['companyName']?.toString() ?? 'Unknown Company';
+        realCompanyLogo = userDoc.data()!['logoUrl']?.toString();
       }
 
-      
       List<String> uploadedImageUrls = [];
       if (_selectedImages.isNotEmpty) {
         for (var image in _selectedImages) {
           final bytes = await image.readAsBytes();
-          final fileName = '${DateTime.now().millisecondsSinceEpoch}_${image.name}';
-          final ref = FirebaseStorage.instance.ref().child('job_images/$currentUserId/$fileName');
-          
-          final uploadTask = await ref.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
+          final fileName =
+              '${DateTime.now().millisecondsSinceEpoch}_${image.name}';
+          final ref = FirebaseStorage.instance.ref().child(
+            'job_images/$currentUserId/$fileName',
+          );
+
+          final uploadTask = await ref.putData(
+            bytes,
+            SettableMetadata(contentType: 'image/jpeg'),
+          );
           final url = await uploadTask.ref.getDownloadURL();
           uploadedImageUrls.add(url);
         }
       }
 
-      
       await FirebaseFirestore.instance.collection('jobs').add({
         'companyId': currentUserId,
         'companyName': realCompanyName,
         'logoUrl': realCompanyLogo,
-        'jobType': _jobCategory, 
+        'jobType': _jobCategory,
         'title': _jobPosition,
         'location': _jobLocation,
         'workplaceType': _workplaceType,
         'employmentType': _employmentType,
         'description': _descriptionController.text.trim(),
-        'salary': _salaryController.text.trim().isEmpty ? null : _salaryController.text.trim(),
+        'salary': _salaryController.text.trim().isEmpty
+            ? null
+            : _salaryController.text.trim(),
         'jobImages': uploadedImageUrls,
         'isActive': true,
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-     
       await FirebaseFirestore.instance.collection('notifications').add({
-        'userId': currentUserId, 
+        'userId': currentUserId,
         'type': 'job',
         'title': '$_jobCategory Posted',
         'message': 'Your $_jobPosition post is now live.',
         'actionLabel': 'View Jobs',
-        'actionRoute': '/company/jobs', 
+        'actionRoute': '/company/jobs',
         'isRead': false,
         'createdAt': FieldValue.serverTimestamp(),
       });
@@ -189,7 +198,10 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                 children: [
                   GestureDetector(
                     onTap: () => context.pop(),
-                    child: const Icon(Icons.close, color: AppColors.textPrimary),
+                    child: const Icon(
+                      Icons.close,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                   Text(
                     'Create Post',
@@ -223,7 +235,9 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
 
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.paddingL,
+                ),
                 child: Column(
                   children: [
                     _JobFormItem(
@@ -236,8 +250,11 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                       label: 'Job position*',
                       value: _jobPosition,
                       onTap: () async {
-                        final result = await context.push<String>('/company/job-position-picker');
-                        if (result != null) setState(() => _jobPosition = result);
+                        final result = await context.push<String>(
+                          '/company/job-position-picker',
+                        );
+                        if (result != null)
+                          setState(() => _jobPosition = result);
                       },
                     ),
 
@@ -245,8 +262,11 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                       label: 'Type of workplace*',
                       value: _workplaceType,
                       onTap: () async {
-                        final result = await context.push<String>('/company/workplace-type');
-                        if (result != null) setState(() => _workplaceType = result);
+                        final result = await context.push<String>(
+                          '/company/workplace-type',
+                        );
+                        if (result != null)
+                          setState(() => _workplaceType = result);
                       },
                     ),
 
@@ -254,8 +274,11 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                       label: 'Job location*',
                       value: _jobLocation,
                       onTap: () async {
-                        final result = await context.push<String>('/company/location-picker');
-                        if (result != null) setState(() => _jobLocation = result);
+                        final result = await context.push<String>(
+                          '/company/location-picker',
+                        );
+                        if (result != null)
+                          setState(() => _jobLocation = result);
                       },
                     ),
 
@@ -263,8 +286,11 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                       label: 'Employment type*',
                       value: _employmentType,
                       onTap: () async {
-                        final result = await context.push<String>('/company/job-type');
-                        if (result != null) setState(() => _employmentType = result);
+                        final result = await context.push<String>(
+                          '/company/job-type',
+                        );
+                        if (result != null)
+                          setState(() => _employmentType = result);
                       },
                     ),
 
@@ -282,16 +308,22 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                     ),
                     const SizedBox(height: AppDimensions.paddingXS),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingM),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimensions.paddingM,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.inputFill,
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusM,
+                        ),
                       ),
                       child: TextField(
                         controller: _salaryController,
                         decoration: InputDecoration(
                           hintText: 'e.g. 500 JOD / month',
-                          hintStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                          hintStyle: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                           border: InputBorder.none,
                           filled: false,
                         ),
@@ -314,9 +346,18 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                           ),
                           TextButton.icon(
                             onPressed: _pickImages,
-                            icon: const Icon(Icons.add_a_photo, color: AppColors.companyGold, size: 16),
-                            label: Text('Add Photos', style: AppTextStyles.bodySmall.copyWith(color: AppColors.companyGold)),
-                          )
+                            icon: const Icon(
+                              Icons.add_a_photo,
+                              color: AppColors.companyGold,
+                              size: 16,
+                            ),
+                            label: Text(
+                              'Add Photos',
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.companyGold,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -333,17 +374,23 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                               builder: (context, snapshot) {
                                 if (!snapshot.hasData) {
                                   return const SizedBox(
-                                    width: 100, 
-                                    child: Center(child: CircularProgressIndicator())
+                                    width: 100,
+                                    child: Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
                                   );
                                 }
                                 return Stack(
                                   children: [
                                     Container(
                                       width: 100,
-                                      margin: const EdgeInsets.only(right: AppDimensions.paddingS),
+                                      margin: const EdgeInsets.only(
+                                        right: AppDimensions.paddingS,
+                                      ),
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                                        borderRadius: BorderRadius.circular(
+                                          AppDimensions.radiusM,
+                                        ),
                                         image: DecorationImage(
                                           image: MemoryImage(snapshot.data!),
                                           fit: BoxFit.cover,
@@ -361,13 +408,17 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                                             color: Colors.black54,
                                             shape: BoxShape.circle,
                                           ),
-                                          child: const Icon(Icons.close, color: Colors.white, size: 14),
+                                          child: const Icon(
+                                            Icons.close,
+                                            color: Colors.white,
+                                            size: 14,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ],
                                 );
-                              }
+                              },
                             );
                           },
                         ),
@@ -387,7 +438,9 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                           ),
                           decoration: BoxDecoration(
                             color: AppColors.companyGold.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                            borderRadius: BorderRadius.circular(
+                              AppDimensions.radiusFull,
+                            ),
                             border: Border.all(
                               color: AppColors.companyGold.withOpacity(0.3),
                             ),
@@ -395,7 +448,11 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.smart_toy_outlined, color: AppColors.companyGold, size: 14),
+                              const Icon(
+                                Icons.smart_toy_outlined,
+                                color: AppColors.companyGold,
+                                size: 14,
+                              ),
                               const SizedBox(width: AppDimensions.paddingXS),
                               Text(
                                 'Generate with AI',
@@ -411,7 +468,7 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                       ),
                     ),
                     const SizedBox(height: AppDimensions.paddingXS),
-                    
+
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
@@ -428,7 +485,9 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                       padding: const EdgeInsets.all(AppDimensions.paddingM),
                       decoration: BoxDecoration(
                         color: AppColors.inputFill,
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusM,
+                        ),
                       ),
                       child: TextField(
                         controller: _descriptionController,
@@ -477,9 +536,7 @@ class _JobFormItem extends StatelessWidget {
           horizontal: AppDimensions.paddingS,
         ),
         decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: AppColors.divider),
-          ),
+          border: Border(bottom: BorderSide(color: AppColors.divider)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -503,10 +560,7 @@ class _JobFormItem extends StatelessWidget {
                   ),
               ],
             ),
-            const Icon(
-              Icons.add,
-              color: AppColors.companyGold,
-            ),
+            const Icon(Icons.add, color: AppColors.companyGold),
           ],
         ),
       ),

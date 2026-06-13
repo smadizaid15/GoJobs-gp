@@ -8,7 +8,7 @@ class AuthService {
   // Get current user
   User? get currentUser => _auth.currentUser;
 
-  // Auth state 
+  // Auth state
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
   // signup
@@ -27,10 +27,7 @@ class AuthService {
       );
 
       // Save user data to Firestore
-      await _firestore
-          .collection('users')
-          .doc(credential.user!.uid)
-          .set({
+      await _firestore.collection('users').doc(credential.user!.uid).set({
         'uid': credential.user!.uid,
         'firstName': firstName,
         'lastName': lastName,
@@ -63,10 +60,7 @@ class AuthService {
         password: password,
       );
 
-      await _firestore
-          .collection('users')
-          .doc(credential.user!.uid)
-          .set({
+      await _firestore.collection('users').doc(credential.user!.uid).set({
         'uid': credential.user!.uid,
         'companyName': companyName,
         'category': category,
@@ -97,10 +91,7 @@ class AuthService {
         password: password,
       );
 
-      await _firestore
-          .collection('users')
-          .doc(credential.user!.uid)
-          .set({
+      await _firestore.collection('users').doc(credential.user!.uid).set({
         'uid': credential.user!.uid,
         'firstName': firstName,
         'lastName': lastName,
@@ -150,8 +141,7 @@ class AuthService {
 
   Future<String?> getUserType(String uid) async {
     try {
-      final doc =
-          await _firestore.collection('users').doc(uid).get();
+      final doc = await _firestore.collection('users').doc(uid).get();
       return doc.data()?['userType'] as String?;
     } catch (e) {
       return null;

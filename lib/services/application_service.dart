@@ -43,9 +43,11 @@ class ApplicationService {
         .where('userId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => ApplicationModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => ApplicationModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   Stream<List<ApplicationModel>> getJobApplications(String jobId) {
@@ -54,18 +56,19 @@ class ApplicationService {
         .where('jobId', isEqualTo: jobId)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => ApplicationModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => ApplicationModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   Future<void> updateApplicationStatus({
     required String applicationId,
     required String status,
   }) async {
-    await _firestore
-        .collection('applications')
-        .doc(applicationId)
-        .update({'status': status});
+    await _firestore.collection('applications').doc(applicationId).update({
+      'status': status,
+    });
   }
 }

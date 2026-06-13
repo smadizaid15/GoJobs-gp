@@ -14,12 +14,14 @@ class JobseekerMyApplicationScreen extends StatefulWidget {
   const JobseekerMyApplicationScreen({super.key, this.job});
 
   @override
-  State<JobseekerMyApplicationScreen> createState() => _JobseekerMyApplicationScreenState();
+  State<JobseekerMyApplicationScreen> createState() =>
+      _JobseekerMyApplicationScreenState();
 }
 
-class _JobseekerMyApplicationScreenState extends State<JobseekerMyApplicationScreen> {
+class _JobseekerMyApplicationScreenState
+    extends State<JobseekerMyApplicationScreen> {
   String _actualCvName = 'Loading CV...';
-  String? _actualCvUrl; 
+  String? _actualCvUrl;
   bool _isLoading = true;
 
   @override
@@ -31,8 +33,8 @@ class _JobseekerMyApplicationScreenState extends State<JobseekerMyApplicationScr
   Future<void> _fetchRealApplicationDetails() async {
     try {
       final currentUserId = FirebaseAuth.instance.currentUser?.uid;
-      
-      final currentJobId = widget.job?['id'] ?? 'unknown_job'; 
+
+      final currentJobId = widget.job?['id'] ?? 'unknown_job';
 
       if (currentUserId != null) {
         final snapshot = await FirebaseFirestore.instance
@@ -42,26 +44,26 @@ class _JobseekerMyApplicationScreenState extends State<JobseekerMyApplicationScr
             .get();
 
         if (snapshot.docs.isNotEmpty) {
-          
           final docs = snapshot.docs;
           docs.sort((a, b) {
             final aTime = a.data()['appliedAt'] as Timestamp?;
             final bTime = b.data()['appliedAt'] as Timestamp?;
             if (aTime == null || bTime == null) return 0;
-            return bTime.compareTo(aTime); 
+            return bTime.compareTo(aTime);
           });
 
           final latestData = docs.first.data();
-          
+
           setState(() {
-            _actualCvName = latestData['cvFileName']?.toString() ?? 'My_Resume.pdf';
-            _actualCvUrl = latestData['cvUrl']?.toString(); 
+            _actualCvName =
+                latestData['cvFileName']?.toString() ?? 'My_Resume.pdf';
+            _actualCvUrl = latestData['cvUrl']?.toString();
             _isLoading = false;
           });
           return;
         }
       }
-      
+
       setState(() {
         _actualCvName = 'No CV Found';
         _isLoading = false;
@@ -85,8 +87,8 @@ class _JobseekerMyApplicationScreenState extends State<JobseekerMyApplicationScr
 
     try {
       final Uri url = Uri.parse(_actualCvUrl!);
-      
-      await launchUrl(url); 
+
+      await launchUrl(url);
     } catch (e) {
       print('Error opening CV link: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -117,7 +119,10 @@ class _JobseekerMyApplicationScreenState extends State<JobseekerMyApplicationScr
 
               GestureDetector(
                 onTap: () => context.pop(),
-                child: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                child: const Icon(
+                  Icons.arrow_back,
+                  color: AppColors.textPrimary,
+                ),
               ),
 
               const SizedBox(height: AppDimensions.paddingL),
@@ -140,7 +145,11 @@ class _JobseekerMyApplicationScreenState extends State<JobseekerMyApplicationScr
                     color: AppColors.inputFill,
                     borderRadius: BorderRadius.circular(AppDimensions.radiusM),
                   ),
-                  child: const Icon(Icons.business, color: AppColors.textSecondary, size: 30),
+                  child: const Icon(
+                    Icons.business,
+                    color: AppColors.textSecondary,
+                    size: 30,
+                  ),
                 ),
               ),
 
@@ -217,7 +226,11 @@ class _JobseekerMyApplicationScreenState extends State<JobseekerMyApplicationScr
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.picture_as_pdf, color: Colors.red, size: 32),
+                      const Icon(
+                        Icons.picture_as_pdf,
+                        color: Colors.red,
+                        size: 32,
+                      ),
                       const SizedBox(width: AppDimensions.paddingM),
                       Expanded(
                         child: Column(
@@ -227,7 +240,10 @@ class _JobseekerMyApplicationScreenState extends State<JobseekerMyApplicationScr
                                 ? const SizedBox(
                                     height: 14,
                                     width: 14,
-                                    child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.textSecondary),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: AppColors.textSecondary,
+                                    ),
                                   )
                                 : Text(
                                     _actualCvName,
@@ -239,7 +255,9 @@ class _JobseekerMyApplicationScreenState extends State<JobseekerMyApplicationScr
                                     overflow: TextOverflow.ellipsis,
                                   ),
                             Text(
-                              _actualCvUrl != null ? 'Tap to open document' : 'Submitted successfully',
+                              _actualCvUrl != null
+                                  ? 'Tap to open document'
+                                  : 'Submitted successfully',
                               style: AppTextStyles.bodySmall.copyWith(
                                 color: AppColors.textSecondary,
                                 fontSize: 10,
@@ -249,7 +267,11 @@ class _JobseekerMyApplicationScreenState extends State<JobseekerMyApplicationScr
                         ),
                       ),
                       if (!_isLoading && _actualCvUrl != null)
-                        const Icon(Icons.open_in_new, size: 16, color: AppColors.textSecondary),
+                        const Icon(
+                          Icons.open_in_new,
+                          size: 16,
+                          color: AppColors.textSecondary,
+                        ),
                     ],
                   ),
                 ),
@@ -262,7 +284,10 @@ class _JobseekerMyApplicationScreenState extends State<JobseekerMyApplicationScr
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
                   onPressed: () => context.go('/jobseeker/search'),
-                  child: Text('APPLY FOR MORE JOBS', style: AppTextStyles.buttonText),
+                  child: Text(
+                    'APPLY FOR MORE JOBS',
+                    style: AppTextStyles.buttonText,
+                  ),
                 ),
               ),
 

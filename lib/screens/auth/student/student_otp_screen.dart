@@ -57,8 +57,7 @@ class _StudentOtpScreenState extends State<StudentOtpScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(
-                  'Email not verified yet. Please check your inbox!'),
+              content: Text('Email not verified yet. Please check your inbox!'),
               backgroundColor: AppColors.error,
             ),
           );
@@ -137,8 +136,7 @@ class _StudentOtpScreenState extends State<StudentOtpScreen> {
                 child: ElevatedButton(
                   onPressed: _isVerifying ? null : _handleVerify,
                   child: _isVerifying
-                      ? const CircularProgressIndicator(
-                          color: Colors.white)
+                      ? const CircularProgressIndicator(color: Colors.white)
                       : Text(
                           'I VERIFIED MY EMAIL',
                           style: AppTextStyles.buttonText,
@@ -152,14 +150,13 @@ class _StudentOtpScreenState extends State<StudentOtpScreen> {
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: OutlinedButton(
-                  onPressed:
-                      _isResending ? null : _handleResendEmail,
+                  onPressed: _isResending ? null : _handleResendEmail,
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(
-                        color: AppColors.purpleButtonBorder),
+                    side: const BorderSide(color: AppColors.purpleButtonBorder),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusL),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusL,
+                      ),
                     ),
                     backgroundColor: AppColors.purpleButton,
                   ),

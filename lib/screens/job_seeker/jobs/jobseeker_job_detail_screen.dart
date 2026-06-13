@@ -21,8 +21,7 @@ class JobseekerJobDetailScreen extends StatelessWidget {
     final employmentType = job?['employmentType'] ?? 'Full time';
     final description = job?['description'] ?? 'No description provided.';
     final companyLogo = job?['companyLogo']?.toString();
-    
-  
+
     final List<String> jobImages = [];
     if (job?['jobImages'] != null) {
       jobImages.addAll(List<String>.from(job!['jobImages']));
@@ -53,10 +52,11 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: () async {
-                        if (jobId.isEmpty) return; 
-                        final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
+                        if (jobId.isEmpty) return;
+                        final currentUserId =
+                            FirebaseAuth.instance.currentUser?.uid ?? '';
                         await JobService().toggleSavedJob(currentUserId, jobId);
-                        
+
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -86,7 +86,9 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                       height: 80,
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusL,
+                        ),
                         image: companyLogo != null && companyLogo.isNotEmpty
                             ? DecorationImage(
                                 image: NetworkImage(companyLogo),
@@ -160,13 +162,18 @@ class JobseekerJobDetailScreen extends StatelessWidget {
 
                     Center(
                       child: OutlinedButton(
-                        onPressed: () => context.push('/jobseeker/company-profile', extra: job),
+                        onPressed: () => context.push(
+                          '/jobseeker/company-profile',
+                          extra: job,
+                        ),
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(
-                              color: AppColors.purpleButtonBorder),
+                            color: AppColors.purpleButtonBorder,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
-                                AppDimensions.radiusFull),
+                              AppDimensions.radiusFull,
+                            ),
                           ),
                           backgroundColor: AppColors.purpleButton,
                         ),
@@ -183,7 +190,8 @@ class JobseekerJobDetailScreen extends StatelessWidget {
 
                     Center(
                       child: OutlinedButton.icon(
-                        onPressed: () => context.push('/ai-job-match', extra: job),
+                        onPressed: () =>
+                            context.push('/ai-job-match', extra: job),
                         icon: const Icon(
                           Icons.smart_toy_outlined,
                           size: 16,
@@ -197,10 +205,12 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                         ),
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(
-                              color: AppColors.purpleButtonBorder),
+                            color: AppColors.purpleButtonBorder,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
-                                AppDimensions.radiusFull),
+                              AppDimensions.radiusFull,
+                            ),
                           ),
                           backgroundColor: AppColors.purpleButton,
                         ),
@@ -211,7 +221,8 @@ class JobseekerJobDetailScreen extends StatelessWidget {
 
                     Center(
                       child: OutlinedButton.icon(
-                        onPressed: () => context.push('/ai-interview-prep', extra: job),
+                        onPressed: () =>
+                            context.push('/ai-interview-prep', extra: job),
                         icon: const Icon(
                           Icons.record_voice_over_outlined,
                           size: 16,
@@ -225,10 +236,12 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                         ),
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(
-                              color: AppColors.purpleButtonBorder),
+                            color: AppColors.purpleButtonBorder,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
-                                AppDimensions.radiusFull),
+                              AppDimensions.radiusFull,
+                            ),
                           ),
                           backgroundColor: AppColors.purpleButton,
                         ),
@@ -254,7 +267,6 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                       ),
                     ),
 
-                  
                     if (jobImages.isNotEmpty) ...[
                       const SizedBox(height: AppDimensions.paddingL),
                       Text(
@@ -273,9 +285,13 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                           itemBuilder: (context, index) {
                             return Container(
                               width: 200,
-                              margin: const EdgeInsets.only(right: AppDimensions.paddingM),
+                              margin: const EdgeInsets.only(
+                                right: AppDimensions.paddingM,
+                              ),
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                                borderRadius: BorderRadius.circular(
+                                  AppDimensions.radiusM,
+                                ),
                                 image: DecorationImage(
                                   image: NetworkImage(jobImages[index]),
                                   fit: BoxFit.cover,
@@ -313,8 +329,9 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                       height: 150,
                       decoration: BoxDecoration(
                         color: AppColors.inputFill,
-                        borderRadius:
-                            BorderRadius.circular(AppDimensions.radiusL),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusL,
+                        ),
                       ),
                       child: const Center(
                         child: Icon(
@@ -348,7 +365,8 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                       width: double.infinity,
                       height: AppDimensions.buttonHeight,
                       child: ElevatedButton(
-                        onPressed: () => context.push('/jobseeker/upload-cv', extra: job),
+                        onPressed: () =>
+                            context.push('/jobseeker/upload-cv', extra: job),
                         child: Text(
                           'APPLY NOW',
                           style: AppTextStyles.buttonText,
@@ -382,7 +400,9 @@ class _InfoRow extends StatelessWidget {
         children: [
           Text(
             label,
-            style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
           Text(
             value,

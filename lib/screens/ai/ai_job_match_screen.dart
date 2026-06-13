@@ -33,7 +33,8 @@ class _AIJobMatchScreenState extends State<AIJobMatchScreen> {
     try {
       final result = await _aiService.getJobMatchScore(
         jobTitle: widget.job?['title'] ?? 'Head Manager',
-        jobDescription: widget.job?['description'] ??
+        jobDescription:
+            widget.job?['description'] ??
             'The Head Manager oversees all daily operations.',
         jobLocation: widget.job?['location'] ?? 'Irbid, Jordan',
         jobType: widget.job?['employmentType'] ?? 'Full time',
@@ -93,8 +94,7 @@ class _AIJobMatchScreenState extends State<AIJobMatchScreen> {
                 children: [
                   GestureDetector(
                     onTap: () => context.pop(),
-                    child:
-                        const Icon(Icons.arrow_back, color: Colors.white),
+                    child: const Icon(Icons.arrow_back, color: Colors.white),
                   ),
                   const SizedBox(width: AppDimensions.paddingM),
                   Column(
@@ -123,13 +123,13 @@ class _AIJobMatchScreenState extends State<AIJobMatchScreen> {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color:
-                          AppColors.primaryOrange.withValues(alpha: 0.2),
+                      color: AppColors.primaryOrange.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(
-                          AppDimensions.radiusFull),
+                        AppDimensions.radiusFull,
+                      ),
                       border: Border.all(
-                          color: AppColors.primaryOrange
-                              .withValues(alpha: 0.5)),
+                        color: AppColors.primaryOrange.withValues(alpha: 0.5),
+                      ),
                     ),
                     child: Text(
                       'AI Powered',
@@ -152,12 +152,12 @@ class _AIJobMatchScreenState extends State<AIJobMatchScreen> {
                     // Job info card
                     Container(
                       width: double.infinity,
-                      padding:
-                          const EdgeInsets.all(AppDimensions.paddingM),
+                      padding: const EdgeInsets.all(AppDimensions.paddingM),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius:
-                            BorderRadius.circular(AppDimensions.radiusL),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusL,
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,18 +184,17 @@ class _AIJobMatchScreenState extends State<AIJobMatchScreen> {
                     if (_isLoading)
                       Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.all(
-                            AppDimensions.paddingXL),
+                        padding: const EdgeInsets.all(AppDimensions.paddingXL),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(
-                              AppDimensions.radiusL),
+                            AppDimensions.radiusL,
+                          ),
                         ),
                         child: Column(
                           children: [
                             const CircularProgressIndicator(),
-                            const SizedBox(
-                                height: AppDimensions.paddingM),
+                            const SizedBox(height: AppDimensions.paddingM),
                             Text(
                               'Analyzing your profile...',
                               style: AppTextStyles.bodySmall.copyWith(
@@ -208,12 +207,12 @@ class _AIJobMatchScreenState extends State<AIJobMatchScreen> {
                     else if (_matchResult != null) ...[
                       Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.all(
-                            AppDimensions.paddingXL),
+                        padding: const EdgeInsets.all(AppDimensions.paddingXL),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(
-                              AppDimensions.radiusL),
+                            AppDimensions.radiusL,
+                          ),
                         ),
                         child: Column(
                           children: [
@@ -225,29 +224,28 @@ class _AIJobMatchScreenState extends State<AIJobMatchScreen> {
                                   height: 120,
                                   child: CircularProgressIndicator(
                                     value:
-                                        (_matchResult!['score'] as int) /
-                                            100,
+                                        (_matchResult!['score'] as int) / 100,
                                     strokeWidth: 10,
                                     backgroundColor: AppColors.inputFill,
                                     color: _getScoreColor(
-                                        _matchResult!['score'] as int),
+                                      _matchResult!['score'] as int,
+                                    ),
                                   ),
                                 ),
                                 Column(
                                   children: [
                                     Text(
                                       '${_matchResult!['score']}%',
-                                      style:
-                                          AppTextStyles.heading2.copyWith(
+                                      style: AppTextStyles.heading2.copyWith(
                                         fontWeight: FontWeight.bold,
                                         color: _getScoreColor(
-                                            _matchResult!['score'] as int),
+                                          _matchResult!['score'] as int,
+                                        ),
                                       ),
                                     ),
                                     Text(
                                       'Match',
-                                      style:
-                                          AppTextStyles.bodySmall.copyWith(
+                                      style: AppTextStyles.bodySmall.copyWith(
                                         color: AppColors.textSecondary,
                                       ),
                                     ),
@@ -265,16 +263,18 @@ class _AIJobMatchScreenState extends State<AIJobMatchScreen> {
                               ),
                               decoration: BoxDecoration(
                                 color: _getScoreColor(
-                                        _matchResult!['score'] as int)
-                                    .withValues(alpha: 0.1),
+                                  _matchResult!['score'] as int,
+                                ).withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(
-                                    AppDimensions.radiusFull),
+                                  AppDimensions.radiusFull,
+                                ),
                               ),
                               child: Text(
                                 _matchResult!['level'] as String,
                                 style: AppTextStyles.bodyMedium.copyWith(
                                   color: _getScoreColor(
-                                      _matchResult!['score'] as int),
+                                    _matchResult!['score'] as int,
+                                  ),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -287,12 +287,12 @@ class _AIJobMatchScreenState extends State<AIJobMatchScreen> {
 
                       Container(
                         width: double.infinity,
-                        padding:
-                            const EdgeInsets.all(AppDimensions.paddingM),
+                        padding: const EdgeInsets.all(AppDimensions.paddingM),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(
-                              AppDimensions.radiusL),
+                            AppDimensions.radiusL,
+                          ),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -305,36 +305,34 @@ class _AIJobMatchScreenState extends State<AIJobMatchScreen> {
                               ),
                             ),
                             const SizedBox(height: AppDimensions.paddingM),
-                            ...(_matchResult!['reasons'] as List<dynamic>)
-                                .map((reason) => Padding(
-                                      padding: const EdgeInsets.only(
-                                          bottom: AppDimensions.paddingS),
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const Icon(
-                                            Icons.check_circle_outline,
-                                            color: Colors.green,
-                                            size: 18,
-                                          ),
-                                          const SizedBox(
-                                              width:
-                                                  AppDimensions.paddingS),
-                                          Expanded(
-                                            child: Text(
-                                              reason as String,
-                                              style: AppTextStyles
-                                                  .bodySmall
-                                                  .copyWith(
-                                                color:
-                                                    AppColors.textSecondary,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                            ...(_matchResult!['reasons'] as List<dynamic>).map(
+                              (reason) => Padding(
+                                padding: const EdgeInsets.only(
+                                  bottom: AppDimensions.paddingS,
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Icon(
+                                      Icons.check_circle_outline,
+                                      color: Colors.green,
+                                      size: 18,
+                                    ),
+                                    const SizedBox(
+                                      width: AppDimensions.paddingS,
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        reason as String,
+                                        style: AppTextStyles.bodySmall.copyWith(
+                                          color: AppColors.textSecondary,
+                                        ),
                                       ),
-                                    )),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -343,14 +341,15 @@ class _AIJobMatchScreenState extends State<AIJobMatchScreen> {
 
                       Container(
                         width: double.infinity,
-                        padding:
-                            const EdgeInsets.all(AppDimensions.paddingM),
+                        padding: const EdgeInsets.all(AppDimensions.paddingM),
                         decoration: BoxDecoration(
                           color: AppColors.purpleButton,
                           borderRadius: BorderRadius.circular(
-                              AppDimensions.radiusL),
+                            AppDimensions.radiusL,
+                          ),
                           border: Border.all(
-                              color: AppColors.purpleButtonBorder),
+                            color: AppColors.purpleButtonBorder,
+                          ),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -363,21 +362,18 @@ class _AIJobMatchScreenState extends State<AIJobMatchScreen> {
                             const SizedBox(width: AppDimensions.paddingS),
                             Expanded(
                               child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     'Tip to improve',
-                                    style: AppTextStyles.bodySmall
-                                        .copyWith(
+                                    style: AppTextStyles.bodySmall.copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: AppColors.primaryNavy,
                                     ),
                                   ),
                                   Text(
                                     _matchResult!['tip'] as String,
-                                    style: AppTextStyles.bodySmall
-                                        .copyWith(
+                                    style: AppTextStyles.bodySmall.copyWith(
                                       color: AppColors.textSecondary,
                                     ),
                                   ),
@@ -395,10 +391,13 @@ class _AIJobMatchScreenState extends State<AIJobMatchScreen> {
                         height: AppDimensions.buttonHeight,
                         child: ElevatedButton(
                           onPressed: () => context.push(
-                              '/jobseeker/upload-cv',
-                              extra: widget.job),
-                          child: Text('APPLY NOW',
-                              style: AppTextStyles.buttonText),
+                            '/jobseeker/upload-cv',
+                            extra: widget.job,
+                          ),
+                          child: Text(
+                            'APPLY NOW',
+                            style: AppTextStyles.buttonText,
+                          ),
                         ),
                       ),
                     ],

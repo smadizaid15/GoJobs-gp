@@ -30,7 +30,10 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        final doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
         if (doc.exists && doc.data() != null) {
           setState(() {
             _servicesController.text = doc.data()!['servicesDescription'] ?? '';
@@ -50,21 +53,27 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
     setState(() => _isSaving = true);
 
     try {
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-        'servicesDescription': _servicesController.text.trim(),
-      });
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update(
+        {'servicesDescription': _servicesController.text.trim()},
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Services updated!'), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text('Services updated!'),
+            backgroundColor: Colors.green,
+          ),
         );
-        Navigator.pop(context); 
-        context.go('/freelancer/profile'); 
+        Navigator.pop(context);
+        context.go('/freelancer/profile');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text('Failed to save: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -120,8 +129,9 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
                       padding: const EdgeInsets.all(AppDimensions.paddingM),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius:
-                            BorderRadius.circular(AppDimensions.radiusM),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusM,
+                        ),
                       ),
                       child: TextField(
                         controller: _servicesController,
@@ -152,7 +162,9 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
                               ),
                             ),
                             builder: (context) => Padding(
-                              padding: const EdgeInsets.all(AppDimensions.paddingXL),
+                              padding: const EdgeInsets.all(
+                                AppDimensions.paddingXL,
+                              ),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -162,17 +174,22 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
                                     decoration: BoxDecoration(
                                       color: AppColors.divider,
                                       borderRadius: BorderRadius.circular(
-                                          AppDimensions.radiusFull),
+                                        AppDimensions.radiusFull,
+                                      ),
                                     ),
                                   ),
-                                  const SizedBox(height: AppDimensions.paddingL),
+                                  const SizedBox(
+                                    height: AppDimensions.paddingL,
+                                  ),
                                   Text(
                                     'Save Changes ?',
                                     style: AppTextStyles.heading3.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  const SizedBox(height: AppDimensions.paddingS),
+                                  const SizedBox(
+                                    height: AppDimensions.paddingS,
+                                  ),
                                   Text(
                                     'Are you sure you want to change what you entered?',
                                     style: AppTextStyles.bodySmall.copyWith(
@@ -180,18 +197,29 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
-                                  const SizedBox(height: AppDimensions.paddingL),
+                                  const SizedBox(
+                                    height: AppDimensions.paddingL,
+                                  ),
                                   SizedBox(
                                     width: double.infinity,
                                     height: AppDimensions.buttonHeight,
                                     child: ElevatedButton(
-                                      onPressed: _isSaving ? null : _saveServices,
+                                      onPressed: _isSaving
+                                          ? null
+                                          : _saveServices,
                                       child: _isSaving
-                                          ? const CircularProgressIndicator(color: Colors.white)
-                                          : Text('SAVE CHANGES', style: AppTextStyles.buttonText),
+                                          ? const CircularProgressIndicator(
+                                              color: Colors.white,
+                                            )
+                                          : Text(
+                                              'SAVE CHANGES',
+                                              style: AppTextStyles.buttonText,
+                                            ),
                                     ),
                                   ),
-                                  const SizedBox(height: AppDimensions.paddingM),
+                                  const SizedBox(
+                                    height: AppDimensions.paddingM,
+                                  ),
                                   SizedBox(
                                     width: double.infinity,
                                     height: AppDimensions.buttonHeight,
@@ -199,11 +227,13 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
                                       onPressed: () => Navigator.pop(context),
                                       style: OutlinedButton.styleFrom(
                                         side: const BorderSide(
-                                            color: AppColors.purpleButtonBorder),
+                                          color: AppColors.purpleButtonBorder,
+                                        ),
                                         backgroundColor: AppColors.purpleButton,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
-                                              AppDimensions.radiusL),
+                                            AppDimensions.radiusL,
+                                          ),
                                         ),
                                       ),
                                       child: Text(
@@ -215,7 +245,9 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(height: AppDimensions.paddingL),
+                                  const SizedBox(
+                                    height: AppDimensions.paddingL,
+                                  ),
                                 ],
                               ),
                             ),

@@ -6,40 +6,43 @@ import '../config/api_config.dart';
 class AIService {
   static const String _apiKey = ApiConfig.groqApiKey;
   static const String _baseUrl =
-    'https://api.groq.com/openai/v1/chat/completions';
+      'https://api.groq.com/openai/v1/chat/completions';
 
   Future<String> _generate(String prompt) async {
-  try {
-    final response = await http.post(
-      Uri.parse(_baseUrl),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $_apiKey',
-      },
-      body: jsonEncode({
-        'model': 'llama-3.3-70b-versatile',
-        'messages': [
-          {'role': 'user', 'content': prompt}
-        ],
-        'max_tokens': 1000,
-        'temperature': 0.7,
-      }),
-    );
+    try {
+      final response = await http.post(
+        Uri.parse(_baseUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_apiKey',
+        },
+        body: jsonEncode({
+          'model': 'llama-3.3-70b-versatile',
+          'messages': [
+            {'role': 'user', 'content': prompt},
+          ],
+          'max_tokens': 1000,
+          'temperature': 0.7,
+        }),
+      );
 
-    debugPrint('Groq status: ${response.statusCode}');
-    debugPrint('Groq body: ${response.body}');
+      debugPrint('Groq status: ${response.statusCode}');
+      debugPrint('Groq body: ${response.body}');
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['choices'][0]['message']['content'];
-    } else {
-      throw Exception('Groq API failed: ${response.statusCode} ${response.body}');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['choices'][0]['message']['content'];
+      } else {
+        throw Exception(
+          'Groq API failed: ${response.statusCode} ${response.body}',
+        );
+      }
+    } catch (e) {
+      debugPrint('Groq error: $e');
+      rethrow;
     }
-  } catch (e) {
-    debugPrint('Groq error: $e');
-    rethrow;
   }
-}
+
   // chat support
   Future<String> getChatResponse({
     required String userMessage,
@@ -47,8 +50,10 @@ class AIService {
   }) async {
     try {
       final history = conversationHistory
-          .map((m) =>
-              '${m['role'] == 'user' ? 'User' : 'Assistant'}: ${m['content']}')
+          .map(
+            (m) =>
+                '${m['role'] == 'user' ? 'User' : 'Assistant'}: ${m['content']}',
+          )
           .join('\n');
 
       final prompt =
@@ -107,8 +112,10 @@ User Profile:
 Return ONLY the JSON object, no markdown, no extra text.''';
 
       final text = await _generate(prompt);
-      final cleaned =
-          text.replaceAll('```json', '').replaceAll('```', '').trim();
+      final cleaned = text
+          .replaceAll('```json', '')
+          .replaceAll('```', '')
+          .trim();
       return jsonDecode(cleaned);
     } catch (e) {
       debugPrint('Match score error: $e');
@@ -118,7 +125,7 @@ Return ONLY the JSON object, no markdown, no extra text.''';
         'reasons': [
           'Skills align with job requirements',
           'Location is compatible',
-          'Experience level matches'
+          'Experience level matches',
         ],
         'tip': 'Add more skills to your profile to improve your match score',
       };
@@ -169,8 +176,10 @@ Return ONLY a JSON array of exactly 25 question strings, no markdown, no extra t
 Example: ["Question 1?", "Question 2?", ...]''';
 
       final text = await _generate(prompt);
-      final cleaned =
-          text.replaceAll('```json', '').replaceAll('```', '').trim();
+      final cleaned = text
+          .replaceAll('```json', '')
+          .replaceAll('```', '')
+          .trim();
       final List<dynamic> allQuestions = jsonDecode(cleaned);
       final List<String> questions = allQuestions.cast<String>();
 

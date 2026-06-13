@@ -32,7 +32,6 @@ class JobseekerHomeScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: AppDimensions.paddingL),
 
-                  
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -64,7 +63,9 @@ class JobseekerHomeScreen extends StatelessWidget {
                                 height: 36,
                                 decoration: BoxDecoration(
                                   color: AppColors.primaryNavy,
-                                  borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                                  borderRadius: BorderRadius.circular(
+                                    AppDimensions.radiusS,
+                                  ),
                                 ),
                                 child: const Icon(
                                   Icons.smart_toy_outlined,
@@ -80,8 +81,10 @@ class JobseekerHomeScreen extends StatelessWidget {
                                 radius: 20,
                                 backgroundColor: AppColors.primaryNavy,
                                 child: Text(
-                                  authProvider.user?.displayName?.isNotEmpty == true
-                                      ? authProvider.user!.displayName![0].toUpperCase()
+                                  authProvider.user?.displayName?.isNotEmpty ==
+                                          true
+                                      ? authProvider.user!.displayName![0]
+                                            .toUpperCase()
                                       : 'Z',
                                   style: AppTextStyles.bodyMedium.copyWith(
                                     color: Colors.white,
@@ -97,7 +100,6 @@ class JobseekerHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    
                     Container(
                       height: 44,
                       padding: const EdgeInsets.symmetric(
@@ -111,8 +113,10 @@ class JobseekerHomeScreen extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.menu,
-                              color: AppColors.textSecondary),
+                          const Icon(
+                            Icons.menu,
+                            color: AppColors.textSecondary,
+                          ),
                           const SizedBox(width: AppDimensions.paddingS),
                           Expanded(
                             child: TextField(
@@ -124,15 +128,16 @@ class JobseekerHomeScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const Icon(Icons.search,
-                              color: AppColors.textSecondary),
+                          const Icon(
+                            Icons.search,
+                            color: AppColors.textSecondary,
+                          ),
                         ],
                       ),
                     ),
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    
                     Text(
                       'Recent Job List',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -173,26 +178,32 @@ class JobseekerHomeScreen extends StatelessWidget {
                         return Column(
                           children: jobs
                               .take(3)
-                              .map((job) => Padding(
-                                    padding: const EdgeInsets.only(
-                                        bottom: AppDimensions.paddingM),
-                                    child: _JobCard(
-                                      title: job.title,
-                                      company: job.companyName,
-                                      location: job.location,
-                                      type: job.workplaceType,
-                                      jobType: job.employmentType,
-                                      onTap: () => context.push('/jobseeker/job-detail', extra: {
-                                         'title': job.title,
-                                         'companyName': job.companyName,
-                                         'location': job.location,
-                                         'workplaceType': job.workplaceType,
-                                         'employmentType': job.employmentType,
-                                         'description': job.description,
-                                        }),
-                                      onSave: () {},
+                              .map(
+                                (job) => Padding(
+                                  padding: const EdgeInsets.only(
+                                    bottom: AppDimensions.paddingM,
+                                  ),
+                                  child: _JobCard(
+                                    title: job.title,
+                                    company: job.companyName,
+                                    location: job.location,
+                                    type: job.workplaceType,
+                                    jobType: job.employmentType,
+                                    onTap: () => context.push(
+                                      '/jobseeker/job-detail',
+                                      extra: {
+                                        'title': job.title,
+                                        'companyName': job.companyName,
+                                        'location': job.location,
+                                        'workplaceType': job.workplaceType,
+                                        'employmentType': job.employmentType,
+                                        'description': job.description,
+                                      },
                                     ),
-                                  ))
+                                    onSave: () {},
+                                  ),
+                                ),
+                              )
                               .toList(),
                         );
                       },
@@ -210,21 +221,34 @@ class JobseekerHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                  
                     StreamBuilder<List<JobModel>>(
                       stream: jobService.getActiveJobs(),
                       builder: (context, snapshot) {
                         final allJobs = snapshot.data ?? [];
-                        
-                        
-                        final jobCount = allJobs.where((j) => j.employmentType.toLowerCase() != 'internship').length;
-                        final internshipCount = allJobs.where((j) => j.employmentType.toLowerCase() == 'internship').length;
+
+                        final jobCount = allJobs
+                            .where(
+                              (j) =>
+                                  j.employmentType.toLowerCase() !=
+                                  'internship',
+                            )
+                            .length;
+                        final internshipCount = allJobs
+                            .where(
+                              (j) =>
+                                  j.employmentType.toLowerCase() ==
+                                  'internship',
+                            )
+                            .length;
 
                         return Row(
                           children: [
                             Expanded(
                               child: GestureDetector(
-                                onTap: () => context.push('/jobseeker/search', extra: 'Jobs'),
+                                onTap: () => context.push(
+                                  '/jobseeker/search',
+                                  extra: 'Jobs',
+                                ),
                                 child: Container(
                                   padding: const EdgeInsets.all(
                                     AppDimensions.paddingM,
@@ -236,12 +260,16 @@ class JobseekerHomeScreen extends StatelessWidget {
                                     ),
                                   ),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      const Icon(Icons.work_outline,
-                                          color: Colors.white),
+                                      const Icon(
+                                        Icons.work_outline,
+                                        color: Colors.white,
+                                      ),
                                       const SizedBox(
-                                          height: AppDimensions.paddingS),
+                                        height: AppDimensions.paddingS,
+                                      ),
                                       Text(
                                         '$jobCount',
                                         style: AppTextStyles.heading3.copyWith(
@@ -265,7 +293,10 @@ class JobseekerHomeScreen extends StatelessWidget {
 
                             Expanded(
                               child: GestureDetector(
-                                onTap: () => context.push('/jobseeker/search', extra: 'Internships'),
+                                onTap: () => context.push(
+                                  '/jobseeker/search',
+                                  extra: 'Internships',
+                                ),
                                 child: Container(
                                   padding: const EdgeInsets.all(
                                     AppDimensions.paddingM,
@@ -277,12 +308,16 @@ class JobseekerHomeScreen extends StatelessWidget {
                                     ),
                                   ),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      const Icon(Icons.school_outlined,
-                                          color: Colors.white),
+                                      const Icon(
+                                        Icons.school_outlined,
+                                        color: Colors.white,
+                                      ),
                                       const SizedBox(
-                                          height: AppDimensions.paddingS),
+                                        height: AppDimensions.paddingS,
+                                      ),
                                       Text(
                                         '$internshipCount',
                                         style: AppTextStyles.heading3.copyWith(
@@ -309,8 +344,7 @@ class JobseekerHomeScreen extends StatelessWidget {
                     const SizedBox(height: AppDimensions.paddingL),
 
                     GestureDetector(
-                      onTap: () =>
-                          context.go('/jobseeker/service-providers'),
+                      onTap: () => context.go('/jobseeker/service-providers'),
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(AppDimensions.paddingL),

@@ -11,10 +11,12 @@ class StudentInternshipListScreen extends StatefulWidget {
   const StudentInternshipListScreen({super.key, this.category});
 
   @override
-  State<StudentInternshipListScreen> createState() => _StudentInternshipListScreenState();
+  State<StudentInternshipListScreen> createState() =>
+      _StudentInternshipListScreenState();
 }
 
-class _StudentInternshipListScreenState extends State<StudentInternshipListScreen> {
+class _StudentInternshipListScreenState
+    extends State<StudentInternshipListScreen> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
 
@@ -33,7 +35,6 @@ class _StudentInternshipListScreenState extends State<StudentInternshipListScree
           children: [
             const SizedBox(height: AppDimensions.paddingL),
 
-         
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
@@ -41,7 +42,7 @@ class _StudentInternshipListScreenState extends State<StudentInternshipListScree
               child: Row(
                 children: [
                   GestureDetector(
-                    onTap: () => context.pop(), 
+                    onTap: () => context.pop(),
                     child: const Icon(
                       Icons.arrow_back,
                       color: AppColors.textPrimary,
@@ -56,8 +57,9 @@ class _StudentInternshipListScreenState extends State<StudentInternshipListScree
                       ),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius:
-                            BorderRadius.circular(AppDimensions.radiusFull),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusFull,
+                        ),
                       ),
                       child: Row(
                         children: [
@@ -69,7 +71,9 @@ class _StudentInternshipListScreenState extends State<StudentInternshipListScree
                           Expanded(
                             child: TextField(
                               controller: _searchController,
-                              onChanged: (val) => setState(() => _searchQuery = val.toLowerCase()),
+                              onChanged: (val) => setState(
+                                () => _searchQuery = val.toLowerCase(),
+                              ),
                               decoration: InputDecoration(
                                 hintText: 'Search internships',
                                 hintStyle: AppTextStyles.bodySmall,
@@ -92,7 +96,6 @@ class _StudentInternshipListScreenState extends State<StudentInternshipListScree
 
             const SizedBox(height: AppDimensions.paddingL),
 
-            
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
@@ -100,7 +103,9 @@ class _StudentInternshipListScreenState extends State<StudentInternshipListScree
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  widget.category != null ? '${widget.category} Internships' : 'All Internships',
+                  widget.category != null
+                      ? '${widget.category} Internships'
+                      : 'All Internships',
                   style: AppTextStyles.heading3.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -111,7 +116,6 @@ class _StudentInternshipListScreenState extends State<StudentInternshipListScree
 
             const SizedBox(height: AppDimensions.paddingM),
 
-         
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -125,19 +129,23 @@ class _StudentInternshipListScreenState extends State<StudentInternshipListScree
                   }
 
                   if (snapshot.hasError) {
-                    return const Center(child: Text('Error loading internships.'));
+                    return const Center(
+                      child: Text('Error loading internships.'),
+                    );
                   }
 
                   final docs = snapshot.data?.docs ?? [];
 
-                 
                   final filteredInternships = docs.where((doc) {
                     final data = doc.data() as Map<String, dynamic>;
                     final title = data['title']?.toString().toLowerCase() ?? '';
-                    final cat = data['category']?.toString().toLowerCase() ?? '';
+                    final cat =
+                        data['category']?.toString().toLowerCase() ?? '';
 
                     bool matchesSearch = title.contains(_searchQuery);
-                    bool matchesCategory = widget.category == null || cat == widget.category!.toLowerCase();
+                    bool matchesCategory =
+                        widget.category == null ||
+                        cat == widget.category!.toLowerCase();
 
                     return matchesSearch && matchesCategory;
                   }).toList();
@@ -146,7 +154,9 @@ class _StudentInternshipListScreenState extends State<StudentInternshipListScree
                     return Center(
                       child: Text(
                         'No internships found.',
-                        style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     );
                   }
@@ -159,22 +169,26 @@ class _StudentInternshipListScreenState extends State<StudentInternshipListScree
                     itemBuilder: (context, index) {
                       final doc = filteredInternships[index];
                       final data = doc.data() as Map<String, dynamic>;
-                      
-                      final jobDataForDetail = {
-                        'id': doc.id,
-                        ...data,
-                      };
+
+                      final jobDataForDetail = {'id': doc.id, ...data};
 
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: AppDimensions.paddingM),
+                        padding: const EdgeInsets.only(
+                          bottom: AppDimensions.paddingM,
+                        ),
                         child: _InternshipCard(
                           title: data['title'] ?? 'Internship',
                           company: data['companyName'] ?? 'Unknown Company',
-                          location: data['location'] ?? 'Location not specified',
+                          location:
+                              data['location'] ?? 'Location not specified',
                           type: data['workplaceType'] ?? 'On-site',
-                          duration: data['duration'] ?? 'Duration not specified',
+                          duration:
+                              data['duration'] ?? 'Duration not specified',
                           logoUrl: data['logoUrl'],
-                          onTap: () => context.push('/student/internship-detail', extra: jobDataForDetail),
+                          onTap: () => context.push(
+                            '/student/internship-detail',
+                            extra: jobDataForDetail,
+                          ),
                         ),
                       );
                     },
@@ -230,12 +244,19 @@ class _InternshipCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: AppColors.inputFill,
                     borderRadius: BorderRadius.circular(AppDimensions.radiusS),
-                    image: logoUrl != null 
-                        ? DecorationImage(image: NetworkImage(logoUrl!), fit: BoxFit.cover)
+                    image: logoUrl != null
+                        ? DecorationImage(
+                            image: NetworkImage(logoUrl!),
+                            fit: BoxFit.cover,
+                          )
                         : null,
                   ),
                   child: logoUrl == null
-                      ? const Icon(Icons.business, color: AppColors.textSecondary, size: 20)
+                      ? const Icon(
+                          Icons.business,
+                          color: AppColors.textSecondary,
+                          size: 20,
+                        )
                       : null,
                 ),
                 const Icon(

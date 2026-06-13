@@ -37,9 +37,10 @@ class StudentMessagesScreen extends StatelessWidget {
                 children: [
                   const SizedBox(height: AppDimensions.paddingL),
 
-                  
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.paddingL,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -70,7 +71,9 @@ class StudentMessagesScreen extends StatelessWidget {
                   const SizedBox(height: AppDimensions.paddingM),
 
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.paddingL,
+                    ),
                     child: Container(
                       height: 44,
                       padding: const EdgeInsets.symmetric(
@@ -106,7 +109,6 @@ class StudentMessagesScreen extends StatelessWidget {
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                
                   Expanded(
                     child: StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
@@ -115,12 +117,21 @@ class StudentMessagesScreen extends StatelessWidget {
                           .orderBy('updatedAt', descending: true)
                           .snapshots(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator(color: AppColors.primaryNavy));
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.primaryNavy,
+                            ),
+                          );
                         }
 
                         if (snapshot.hasError) {
-                          return Center(child: Text('Error loading messages: ${snapshot.error}'));
+                          return Center(
+                            child: Text(
+                              'Error loading messages: ${snapshot.error}',
+                            ),
+                          );
                         }
 
                         final chatDocs = snapshot.data?.docs ?? [];
@@ -129,22 +140,29 @@ class StudentMessagesScreen extends StatelessWidget {
                           return Center(
                             child: Text(
                               'No messages yet.',
-                              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
                             ),
                           );
                         }
 
                         return ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppDimensions.paddingL,
+                          ),
                           itemCount: chatDocs.length,
                           itemBuilder: (context, index) {
-                            final chatData = chatDocs[index].data() as Map<String, dynamic>;
+                            final chatData =
+                                chatDocs[index].data() as Map<String, dynamic>;
                             final chatId = chatDocs[index].id;
-                            
-                            final usersMap = chatData['users'] as Map<String, dynamic>? ?? {};
+
+                            final usersMap =
+                                chatData['users'] as Map<String, dynamic>? ??
+                                {};
                             String otherUserId = '';
                             String otherUserName = 'Unknown User';
-                            
+
                             usersMap.forEach((uid, info) {
                               if (uid != currentUserId) {
                                 otherUserId = uid;
@@ -152,10 +170,13 @@ class StudentMessagesScreen extends StatelessWidget {
                               }
                             });
 
-                            final lastMessage = chatData['lastMessage'] ?? 'Started a chat';
-                            final updatedAt = chatData['updatedAt'] as Timestamp?;
-                            
-                            final unreadCount = chatData['unread_$currentUserId'] ?? 0;
+                            final lastMessage =
+                                chatData['lastMessage'] ?? 'Started a chat';
+                            final updatedAt =
+                                chatData['updatedAt'] as Timestamp?;
+
+                            final unreadCount =
+                                chatData['unread_$currentUserId'] ?? 0;
                             final hasUnread = unreadCount > 0;
 
                             return _MessageTile(
@@ -164,15 +185,19 @@ class StudentMessagesScreen extends StatelessWidget {
                               time: _formatTimestamp(updatedAt),
                               hasUnread: hasUnread,
                               onTap: () {
-                                FirebaseFirestore.instance.collection('chats').doc(chatId).update({
-                                  'unread_$currentUserId': 0,
-                                });
+                                FirebaseFirestore.instance
+                                    .collection('chats')
+                                    .doc(chatId)
+                                    .update({'unread_$currentUserId': 0});
 
-                                context.push('/student/chat', extra: {
-                                  'chatId': chatId,
-                                  'receiverId': otherUserId,
-                                  'receiverName': otherUserName,
-                                });
+                                context.push(
+                                  '/student/chat',
+                                  extra: {
+                                    'chatId': chatId,
+                                    'receiverId': otherUserId,
+                                    'receiverName': otherUserName,
+                                  },
+                                );
                               },
                             );
                           },
@@ -248,8 +273,12 @@ class _MessageTile extends StatelessWidget {
                   Text(
                     message,
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: hasUnread ? AppColors.textPrimary : AppColors.textSecondary,
-                      fontWeight: hasUnread ? FontWeight.bold : FontWeight.normal,
+                      color: hasUnread
+                          ? AppColors.textPrimary
+                          : AppColors.textSecondary,
+                      fontWeight: hasUnread
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

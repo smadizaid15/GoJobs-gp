@@ -27,7 +27,6 @@ class JobseekerServiceProvidersScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    
                     Row(
                       children: [
                         GestureDetector(
@@ -50,30 +49,38 @@ class JobseekerServiceProvidersScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                  
                     StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection('users')
                           .where('userType', isEqualTo: 'freelancer')
                           .snapshots(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         }
 
                         if (snapshot.hasError) {
-                          return const Center(child: Text('Error loading providers.'));
+                          return const Center(
+                            child: Text('Error loading providers.'),
+                          );
                         }
 
                         final providers = snapshot.data?.docs ?? [];
 
                         if (providers.isEmpty) {
                           return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingXL),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: AppDimensions.paddingXL,
+                            ),
                             child: Center(
                               child: Text(
                                 'No service providers available yet.',
-                                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                               ),
                             ),
                           );
@@ -84,25 +91,39 @@ class JobseekerServiceProvidersScreen extends StatelessWidget {
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: providers.length,
                           itemBuilder: (context, index) {
-                            final data = providers[index].data() as Map<String, dynamic>;
-                            
-                            final name = data['fullName']?.toString() ?? data['displayName']?.toString() ?? 'Freelancer';
-                            final profession = data['category']?.toString() ?? data['profession']?.toString() ?? 'Service Provider';
-                            final description = data['aboutMe']?.toString() ?? data['description']?.toString() ?? 'Available for hire.';
-                            final profileImageUrl = data['profileImageUrl']?.toString() ?? data['logoUrl']?.toString();
+                            final data =
+                                providers[index].data() as Map<String, dynamic>;
+
+                            final name =
+                                data['fullName']?.toString() ??
+                                data['displayName']?.toString() ??
+                                'Freelancer';
+                            final profession =
+                                data['category']?.toString() ??
+                                data['profession']?.toString() ??
+                                'Service Provider';
+                            final description =
+                                data['aboutMe']?.toString() ??
+                                data['description']?.toString() ??
+                                'Available for hire.';
+                            final profileImageUrl =
+                                data['profileImageUrl']?.toString() ??
+                                data['logoUrl']?.toString();
 
                             return Padding(
-                              padding: const EdgeInsets.only(bottom: AppDimensions.paddingM),
+                              padding: const EdgeInsets.only(
+                                bottom: AppDimensions.paddingM,
+                              ),
                               child: _ServiceProviderCard(
                                 name: name,
                                 profession: profession,
                                 description: description,
                                 imageUrl: profileImageUrl,
-                                time: 'Available now', 
-                                onViewProfile: () {
-                                  
-                                },
-                                onMessage: () => context.push('/jobseeker/chat-from-providers'),
+                                time: 'Available now',
+                                onViewProfile: () {},
+                                onMessage: () => context.push(
+                                  '/jobseeker/chat-from-providers',
+                                ),
                               ),
                             );
                           },
@@ -179,8 +200,8 @@ class _ServiceProviderCard extends StatelessWidget {
               CircleAvatar(
                 radius: 24,
                 backgroundColor: AppColors.inputFill,
-                backgroundImage: imageUrl != null && imageUrl!.isNotEmpty 
-                    ? NetworkImage(imageUrl!) 
+                backgroundImage: imageUrl != null && imageUrl!.isNotEmpty
+                    ? NetworkImage(imageUrl!)
                     : null,
                 child: imageUrl == null || imageUrl!.isEmpty
                     ? Text(
@@ -241,7 +262,9 @@ class _ServiceProviderCard extends StatelessWidget {
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.primaryNavy),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusFull,
+                      ),
                     ),
                   ),
                   child: Text(
@@ -259,7 +282,9 @@ class _ServiceProviderCard extends StatelessWidget {
                   onPressed: onMessage,
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusFull,
+                      ),
                     ),
                   ),
                   child: Text(

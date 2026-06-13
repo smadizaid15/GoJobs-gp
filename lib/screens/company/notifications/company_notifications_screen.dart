@@ -13,19 +13,21 @@ class CompanyNotificationsScreen extends StatefulWidget {
   const CompanyNotificationsScreen({super.key});
 
   @override
-  State<CompanyNotificationsScreen> createState() => _CompanyNotificationsScreenState();
+  State<CompanyNotificationsScreen> createState() =>
+      _CompanyNotificationsScreenState();
 }
 
-class _CompanyNotificationsScreenState extends State<CompanyNotificationsScreen> {
-  String _currentFilter = 'All'; 
+class _CompanyNotificationsScreenState
+    extends State<CompanyNotificationsScreen> {
+  String _currentFilter = 'All';
 
   Future<void> _markAsReadAndNavigate(String docId, String? route) async {
     try {
-      
-      await FirebaseFirestore.instance.collection('notifications').doc(docId).update({
-        'isRead': true,
-      });
-      
+      await FirebaseFirestore.instance
+          .collection('notifications')
+          .doc(docId)
+          .update({'isRead': true});
+
       if (route != null && route.isNotEmpty && mounted) {
         context.go(route);
       }
@@ -48,23 +50,31 @@ class _CompanyNotificationsScreenState extends State<CompanyNotificationsScreen>
                 children: [
                   const SizedBox(height: AppDimensions.paddingL),
 
-                
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.paddingL,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
                           child: Container(
                             height: 44,
-                            padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingM),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppDimensions.paddingM,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                              borderRadius: BorderRadius.circular(
+                                AppDimensions.radiusFull,
+                              ),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.menu, color: AppColors.textSecondary),
+                                const Icon(
+                                  Icons.menu,
+                                  color: AppColors.textSecondary,
+                                ),
                                 const SizedBox(width: AppDimensions.paddingS),
                                 Expanded(
                                   child: TextField(
@@ -76,7 +86,10 @@ class _CompanyNotificationsScreenState extends State<CompanyNotificationsScreen>
                                     ),
                                   ),
                                 ),
-                                const Icon(Icons.search, color: AppColors.textSecondary),
+                                const Icon(
+                                  Icons.search,
+                                  color: AppColors.textSecondary,
+                                ),
                               ],
                             ),
                           ),
@@ -89,11 +102,18 @@ class _CompanyNotificationsScreenState extends State<CompanyNotificationsScreen>
                             height: 40,
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                              borderRadius: BorderRadius.circular(
+                                AppDimensions.radiusS,
+                              ),
                             ),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(AppDimensions.radiusS),
-                              child: Image.asset('assets/images/company_logo.png', fit: BoxFit.contain),
+                              borderRadius: BorderRadius.circular(
+                                AppDimensions.radiusS,
+                              ),
+                              child: Image.asset(
+                                'assets/images/company_logo.png',
+                                fit: BoxFit.contain,
+                              ),
                             ),
                           ),
                         ),
@@ -103,24 +123,35 @@ class _CompanyNotificationsScreenState extends State<CompanyNotificationsScreen>
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                  
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.paddingL,
+                    ),
                     child: Row(
                       children: [
                         GestureDetector(
                           onTap: () => setState(() => _currentFilter = 'All'),
-                          child: _FilterTab(label: 'All', isSelected: _currentFilter == 'All'),
+                          child: _FilterTab(
+                            label: 'All',
+                            isSelected: _currentFilter == 'All',
+                          ),
                         ),
                         const SizedBox(width: AppDimensions.paddingS),
                         GestureDetector(
                           onTap: () => setState(() => _currentFilter = 'Jobs'),
-                          child: _FilterTab(label: 'Jobs', isSelected: _currentFilter == 'Jobs'),
+                          child: _FilterTab(
+                            label: 'Jobs',
+                            isSelected: _currentFilter == 'Jobs',
+                          ),
                         ),
                         const SizedBox(width: AppDimensions.paddingS),
                         GestureDetector(
-                          onTap: () => setState(() => _currentFilter = 'Messages'),
-                          child: _FilterTab(label: 'Messages', isSelected: _currentFilter == 'Messages'),
+                          onTap: () =>
+                              setState(() => _currentFilter = 'Messages'),
+                          child: _FilterTab(
+                            label: 'Messages',
+                            isSelected: _currentFilter == 'Messages',
+                          ),
                         ),
                       ],
                     ),
@@ -128,40 +159,46 @@ class _CompanyNotificationsScreenState extends State<CompanyNotificationsScreen>
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                  
                   Expanded(
                     child: StreamBuilder<QuerySnapshot>(
-                      
                       stream: FirebaseFirestore.instance
                           .collection('notifications')
                           .where('recipientId', isEqualTo: currentUserId)
                           .snapshots(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         }
 
                         if (snapshot.hasError) {
-                          return const Center(child: Text('Error loading notifications'));
+                          return const Center(
+                            child: Text('Error loading notifications'),
+                          );
                         }
 
                         var docs = snapshot.data?.docs ?? [];
 
-                       
                         if (_currentFilter != 'All') {
                           docs = docs.where((doc) {
-                            final type = (doc.data() as Map)['type']?.toString() ?? '';
-                            if (_currentFilter == 'Jobs') return type == 'job' || type == 'application';
-                            if (_currentFilter == 'Messages') return type == 'message';
+                            final type =
+                                (doc.data() as Map)['type']?.toString() ?? '';
+                            if (_currentFilter == 'Jobs')
+                              return type == 'job' || type == 'application';
+                            if (_currentFilter == 'Messages')
+                              return type == 'message';
                             return true;
                           }).toList();
                         }
 
-                    
                         final sortedDocs = docs.toList();
                         sortedDocs.sort((a, b) {
-                          final aTime = (a.data() as Map)['createdAt'] as Timestamp?;
-                          final bTime = (b.data() as Map)['createdAt'] as Timestamp?;
+                          final aTime =
+                              (a.data() as Map)['createdAt'] as Timestamp?;
+                          final bTime =
+                              (b.data() as Map)['createdAt'] as Timestamp?;
                           if (aTime == null || bTime == null) return 0;
                           return bTime.compareTo(aTime);
                         });
@@ -171,11 +208,17 @@ class _CompanyNotificationsScreenState extends State<CompanyNotificationsScreen>
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.notifications_none, color: AppColors.textSecondary, size: 60),
+                                const Icon(
+                                  Icons.notifications_none,
+                                  color: AppColors.textSecondary,
+                                  size: 60,
+                                ),
                                 const SizedBox(height: AppDimensions.paddingM),
                                 Text(
                                   'No new notifications',
-                                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                                 ),
                               ],
                             ),
@@ -183,21 +226,28 @@ class _CompanyNotificationsScreenState extends State<CompanyNotificationsScreen>
                         }
 
                         return ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppDimensions.paddingL,
+                          ),
                           itemCount: sortedDocs.length,
                           itemBuilder: (context, index) {
-                            final data = sortedDocs[index].data() as Map<String, dynamic>;
+                            final data =
+                                sortedDocs[index].data()
+                                    as Map<String, dynamic>;
                             final docId = sortedDocs[index].id;
-                            
-                            final title = data['title']?.toString() ?? 'Notification';
+
+                            final title =
+                                data['title']?.toString() ?? 'Notification';
                             final subtitle = data['subtitle']?.toString() ?? '';
                             final actionLabel = data['actionLabel']?.toString();
                             final route = data['route']?.toString();
                             final isRead = data['isRead'] as bool? ?? false;
-                            
+
                             final createdAt = data['createdAt'] as Timestamp?;
-                            final timeString = createdAt != null 
-                                ? DateFormat('MMM dd, hh:mm a').format(createdAt.toDate())
+                            final timeString = createdAt != null
+                                ? DateFormat(
+                                    'MMM dd, hh:mm a',
+                                  ).format(createdAt.toDate())
                                 : '';
 
                             return _NotificationItem(
@@ -205,7 +255,9 @@ class _CompanyNotificationsScreenState extends State<CompanyNotificationsScreen>
                               subtitle: '$subtitle\n$timeString',
                               actionLabel: actionLabel,
                               isRead: isRead,
-                              onAction: actionLabel != null ? () => _markAsReadAndNavigate(docId, route) : null,
+                              onAction: actionLabel != null
+                                  ? () => _markAsReadAndNavigate(docId, route)
+                                  : null,
                             );
                           },
                         );
@@ -232,7 +284,10 @@ class _FilterTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingM, vertical: AppDimensions.paddingXS),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppDimensions.paddingM,
+        vertical: AppDimensions.paddingXS,
+      ),
       decoration: BoxDecoration(
         color: isSelected ? AppColors.primaryNavy : Colors.white,
         borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
@@ -291,11 +346,16 @@ class _NotificationItem extends StatelessWidget {
               children: [
                 RichText(
                   text: TextSpan(
-                    style: AppTextStyles.bodySmall.copyWith(color: AppColors.textPrimary),
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
                     children: [
                       TextSpan(
                         text: '$title : ',
-                        style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                        style: AppTextStyles.bodySmall.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
                       TextSpan(text: subtitle),
                     ],
@@ -306,14 +366,22 @@ class _NotificationItem extends StatelessWidget {
                   GestureDetector(
                     onTap: onAction,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingM, vertical: AppDimensions.paddingXS),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimensions.paddingM,
+                        vertical: AppDimensions.paddingXS,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.primaryNavy,
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusFull,
+                        ),
                       ),
                       child: Text(
                         actionLabel!,
-                        style: AppTextStyles.bodySmall.copyWith(color: Colors.white, fontSize: 10),
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: Colors.white,
+                          fontSize: 10,
+                        ),
                       ),
                     ),
                   ),

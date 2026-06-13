@@ -3,13 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../../models/job_model.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../widgets/student_bottom_nav.dart';
 import '../../../services/job_service.dart';
-
 
 class StudentSavedScreen extends StatelessWidget {
   const StudentSavedScreen({super.key});
@@ -41,7 +39,11 @@ class StudentSavedScreen extends StatelessWidget {
                 stream: jobService.getSavedJobIds(currentUserId),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator(color: AppColors.primaryNavy));
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryNavy,
+                      ),
+                    );
                   }
 
                   final savedJobIds = snapshot.data ?? [];
@@ -73,7 +75,9 @@ class StudentSavedScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: AppDimensions.paddingXL),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingXL),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppDimensions.paddingXL,
+                          ),
                           child: SizedBox(
                             width: double.infinity,
                             height: AppDimensions.buttonHeight,
@@ -100,7 +104,7 @@ class StudentSavedScreen extends StatelessWidget {
                         jobId: savedJobIds[index],
                         userId: currentUserId,
                         jobService: jobService,
-                        isStudent: true, 
+                        isStudent: true,
                       );
                     },
                   );
@@ -136,7 +140,7 @@ class _LiveSavedJobCard extends StatelessWidget {
         if (!snapshot.hasData) return const SizedBox.shrink();
 
         final doc = snapshot.data!;
-        
+
         if (!doc.exists) {
           return _DisabledJobCard(
             title: 'Unavailable',
@@ -155,7 +159,6 @@ class _LiveSavedJobCard extends StatelessWidget {
             title: jobData['title']?.toString() ?? 'Closed',
             message: 'This position is no longer active.',
             onRemove: () {
-              
               jobService.toggleSavedJob(userId, jobId);
             },
           );
@@ -164,7 +167,9 @@ class _LiveSavedJobCard extends StatelessWidget {
         return GestureDetector(
           onTap: () {
             final fullJobData = {'id': doc.id, ...jobData};
-            final route = isStudent ? '/student/job-detail' : '/jobseeker/job-detail';
+            final route = isStudent
+                ? '/student/job-detail'
+                : '/jobseeker/job-detail';
             context.push(route, extra: fullJobData);
           },
           child: Container(
@@ -191,7 +196,10 @@ class _LiveSavedJobCard extends StatelessWidget {
                     color: AppColors.inputFill,
                     borderRadius: BorderRadius.circular(AppDimensions.radiusS),
                   ),
-                  child: const Icon(Icons.business, color: AppColors.textSecondary),
+                  child: const Icon(
+                    Icons.business,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
                 const SizedBox(width: AppDimensions.paddingM),
                 Expanded(
@@ -225,7 +233,6 @@ class _LiveSavedJobCard extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    
                     jobService.toggleSavedJob(userId, jobId);
                   },
                   child: const Icon(

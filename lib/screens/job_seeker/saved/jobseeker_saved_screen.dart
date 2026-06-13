@@ -10,7 +10,6 @@ import '../../../widgets/jobseeker_bottom_nav.dart';
 import '../../../services/job_service.dart';
 import '../../../models/job_model.dart';
 
-
 class JobseekerSavedScreen extends StatelessWidget {
   const JobseekerSavedScreen({super.key});
 
@@ -24,7 +23,7 @@ class JobseekerSavedScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFFF0F0F5),
         elevation: 0,
-        automaticallyImplyLeading: false, 
+        automaticallyImplyLeading: false,
         title: Text(
           'Saved Jobs',
           style: AppTextStyles.heading3.copyWith(
@@ -41,7 +40,11 @@ class JobseekerSavedScreen extends StatelessWidget {
                 stream: jobService.getSavedJobIds(currentUserId),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator(color: AppColors.primaryNavy));
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryNavy,
+                      ),
+                    );
                   }
 
                   final savedJobIds = snapshot.data ?? [];
@@ -73,7 +76,9 @@ class JobseekerSavedScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: AppDimensions.paddingXL),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingXL),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppDimensions.paddingXL,
+                          ),
                           child: SizedBox(
                             width: double.infinity,
                             height: AppDimensions.buttonHeight,
@@ -134,7 +139,7 @@ class _LiveSavedJobCard extends StatelessWidget {
         if (!snapshot.hasData) return const SizedBox.shrink();
 
         final doc = snapshot.data!;
-        
+
         if (!doc.exists) {
           return _DisabledJobCard(
             title: 'Unavailable',
@@ -157,7 +162,9 @@ class _LiveSavedJobCard extends StatelessWidget {
         return GestureDetector(
           onTap: () {
             final fullJobData = {'id': doc.id, ...jobData};
-            final route = isStudent ? '/student/job-detail' : '/jobseeker/job-detail';
+            final route = isStudent
+                ? '/student/job-detail'
+                : '/jobseeker/job-detail';
             context.push(route, extra: fullJobData);
           },
           child: Container(
@@ -184,7 +191,10 @@ class _LiveSavedJobCard extends StatelessWidget {
                     color: AppColors.inputFill,
                     borderRadius: BorderRadius.circular(AppDimensions.radiusS),
                   ),
-                  child: const Icon(Icons.business, color: AppColors.textSecondary),
+                  child: const Icon(
+                    Icons.business,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
                 const SizedBox(width: AppDimensions.paddingM),
                 Expanded(

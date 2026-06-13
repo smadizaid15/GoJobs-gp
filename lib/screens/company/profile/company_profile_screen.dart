@@ -21,7 +21,6 @@ class CompanyProfileScreen extends StatefulWidget {
 class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
   final _jobService = JobService();
 
-  
   Future<void> _toggleJobStatus(String jobId, bool isNowActive) async {
     try {
       await FirebaseFirestore.instance.collection('jobs').doc(jobId).update({
@@ -30,7 +29,10 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error updating job status: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text('Error updating job status: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     }
@@ -39,7 +41,7 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
-    
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
@@ -49,22 +51,33 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                   
                     StreamBuilder<DocumentSnapshot>(
-                      stream: FirebaseFirestore.instance.collection('users').doc(currentUserId).snapshots(),
+                      stream: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(currentUserId)
+                          .snapshots(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return Container(
                             width: double.infinity,
                             height: 250,
                             color: AppColors.primaryNavy,
-                            child: const Center(child: CircularProgressIndicator(color: Colors.white)),
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            ),
                           );
                         }
 
-                        final data = snapshot.data?.data() as Map<String, dynamic>? ?? {};
-                        final companyName = data['companyName']?.toString() ?? 'Your Company';
-                        final location = data['location']?.toString() ?? 'Location not set';
+                        final data =
+                            snapshot.data?.data() as Map<String, dynamic>? ??
+                            {};
+                        final companyName =
+                            data['companyName']?.toString() ?? 'Your Company';
+                        final location =
+                            data['location']?.toString() ?? 'Location not set';
                         final logoUrl = data['logoUrl']?.toString();
 
                         return Container(
@@ -72,50 +85,73 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
                           padding: const EdgeInsets.all(AppDimensions.paddingL),
                           decoration: const BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [AppColors.primaryNavy, Color(0xFF1a1850)],
+                              colors: [
+                                AppColors.primaryNavy,
+                                Color(0xFF1a1850),
+                              ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
                             borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(AppDimensions.radiusXL),
-                              bottomRight: Radius.circular(AppDimensions.radiusXL),
+                              bottomLeft: Radius.circular(
+                                AppDimensions.radiusXL,
+                              ),
+                              bottomRight: Radius.circular(
+                                AppDimensions.radiusXL,
+                              ),
                             ),
                           ),
                           child: Column(
                             children: [
-                             
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   GestureDetector(
                                     onTap: () => context.go('/company/home'),
-                                    child: const Icon(Icons.share_outlined, color: Colors.white),
+                                    child: const Icon(
+                                      Icons.share_outlined,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                   GestureDetector(
-                                    onTap: () => context.go('/company/settings'),
-                                    child: const Icon(Icons.settings_outlined, color: Colors.white),
+                                    onTap: () =>
+                                        context.go('/company/settings'),
+                                    child: const Icon(
+                                      Icons.settings_outlined,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ],
                               ),
 
                               const SizedBox(height: AppDimensions.paddingM),
 
-                              
                               Container(
                                 width: 80,
                                 height: 80,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
-                                  borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                                  borderRadius: BorderRadius.circular(
+                                    AppDimensions.radiusL,
+                                  ),
                                 ),
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                                  borderRadius: BorderRadius.circular(
+                                    AppDimensions.radiusL,
+                                  ),
                                   child: logoUrl != null && logoUrl.isNotEmpty
                                       ? Image.network(
                                           logoUrl,
                                           fit: BoxFit.cover,
-                                          errorBuilder: (context, error, stackTrace) =>
-                                              const Icon(Icons.business, size: 40, color: AppColors.textSecondary),
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  const Icon(
+                                                    Icons.business,
+                                                    size: 40,
+                                                    color:
+                                                        AppColors.textSecondary,
+                                                  ),
                                         )
                                       : Image.asset(
                                           'assets/images/company_logo.png',
@@ -126,7 +162,6 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
 
                               const SizedBox(height: AppDimensions.paddingM),
 
-                              
                               Text(
                                 companyName,
                                 style: AppTextStyles.heading3.copyWith(
@@ -137,14 +172,16 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
 
                               Text(
                                 location,
-                                style: AppTextStyles.bodySmall.copyWith(color: Colors.white70),
+                                style: AppTextStyles.bodySmall.copyWith(
+                                  color: Colors.white70,
+                                ),
                               ),
 
                               const SizedBox(height: AppDimensions.paddingM),
 
-                             
                               GestureDetector(
-                                onTap: () => context.go('/company/edit-profile'),
+                                onTap: () =>
+                                    context.go('/company/edit-profile'),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: AppDimensions.paddingL,
@@ -152,7 +189,9 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
                                   ),
                                   decoration: BoxDecoration(
                                     color: Colors.white24,
-                                    borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                                    borderRadius: BorderRadius.circular(
+                                      AppDimensions.radiusFull,
+                                    ),
                                     border: Border.all(color: Colors.white54),
                                   ),
                                   child: Row(
@@ -160,10 +199,18 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
                                     children: [
                                       Text(
                                         'Edit profile',
-                                        style: AppTextStyles.bodySmall.copyWith(color: Colors.white),
+                                        style: AppTextStyles.bodySmall.copyWith(
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                      const SizedBox(width: AppDimensions.paddingXS),
-                                      const Icon(Icons.edit_outlined, color: Colors.white, size: 16),
+                                      const SizedBox(
+                                        width: AppDimensions.paddingXS,
+                                      ),
+                                      const Icon(
+                                        Icons.edit_outlined,
+                                        color: Colors.white,
+                                        size: 16,
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -176,19 +223,24 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                   
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimensions.paddingL,
+                      ),
                       child: Column(
                         children: [
                           Row(
                             children: [
                               Expanded(
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingS),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: AppDimensions.paddingS,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: AppColors.companyGold,
-                                    borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                                    borderRadius: BorderRadius.circular(
+                                      AppDimensions.radiusS,
+                                    ),
                                   ),
                                   child: Center(
                                     child: Text(
@@ -204,12 +256,17 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
                               const SizedBox(width: AppDimensions.paddingS),
                               Expanded(
                                 child: GestureDetector(
-                                  onTap: () => context.go('/company/applicants'),
+                                  onTap: () =>
+                                      context.go('/company/applicants'),
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingS),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: AppDimensions.paddingS,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: AppColors.primaryNavy,
-                                      borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                                      borderRadius: BorderRadius.circular(
+                                        AppDimensions.radiusS,
+                                      ),
                                     ),
                                     child: Center(
                                       child: Text(
@@ -228,14 +285,18 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
 
                           const SizedBox(height: AppDimensions.paddingM),
 
-                        
                           StreamBuilder<List<JobModel>>(
                             stream: _jobService.getCompanyJobs(currentUserId),
                             builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
                                 return const Padding(
-                                  padding: EdgeInsets.all(AppDimensions.paddingL),
-                                  child: Center(child: CircularProgressIndicator()),
+                                  padding: EdgeInsets.all(
+                                    AppDimensions.paddingL,
+                                  ),
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
                                 );
                               }
 
@@ -243,11 +304,15 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
 
                               if (jobs.isEmpty) {
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingXL),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: AppDimensions.paddingXL,
+                                  ),
                                   child: Center(
                                     child: Text(
                                       'No jobs posted yet.',
-                                      style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                                      style: AppTextStyles.bodyMedium.copyWith(
+                                        color: AppColors.textSecondary,
+                                      ),
                                     ),
                                   ),
                                 );
@@ -273,20 +338,24 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
 
                           const SizedBox(height: AppDimensions.paddingL),
 
-                      
                           Row(
                             children: [
                               Expanded(
                                 child: OutlinedButton(
-                                  onPressed: () => context.go('/company/add-job'),
+                                  onPressed: () =>
+                                      context.go('/company/add-job'),
                                   style: OutlinedButton.styleFrom(
-                                    side: const BorderSide(color: AppColors.companyGold),
+                                    side: const BorderSide(
+                                      color: AppColors.companyGold,
+                                    ),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                                      borderRadius: BorderRadius.circular(
+                                        AppDimensions.radiusS,
+                                      ),
                                     ),
                                   ),
                                   child: Text(
-                                    'POST NEW', 
+                                    'POST NEW',
                                     style: AppTextStyles.bodySmall.copyWith(
                                       color: AppColors.companyGold,
                                       fontWeight: FontWeight.w600,
@@ -299,9 +368,13 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
                                 child: OutlinedButton(
                                   onPressed: () => context.go('/company/jobs'),
                                   style: OutlinedButton.styleFrom(
-                                    side: const BorderSide(color: AppColors.companyGold),
+                                    side: const BorderSide(
+                                      color: AppColors.companyGold,
+                                    ),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                                      borderRadius: BorderRadius.circular(
+                                        AppDimensions.radiusS,
+                                      ),
                                     ),
                                   ),
                                   child: Text(
@@ -353,7 +426,9 @@ class _JobItem extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textPrimary,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ),

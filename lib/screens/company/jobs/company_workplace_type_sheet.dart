@@ -12,13 +12,15 @@ class CompanyWorkplaceTypeSheet extends StatefulWidget {
       _CompanyWorkplaceTypeSheetState();
 }
 
-class _CompanyWorkplaceTypeSheetState
-    extends State<CompanyWorkplaceTypeSheet> {
+class _CompanyWorkplaceTypeSheetState extends State<CompanyWorkplaceTypeSheet> {
   String _selected = 'On-site';
 
   final List<Map<String, String>> _types = [
     {'title': 'On-site', 'subtitle': 'Employees come to work'},
-    {'title': 'Hybrid', 'subtitle': 'Employees work directly on site or off site'},
+    {
+      'title': 'Hybrid',
+      'subtitle': 'Employees work directly on site or off site',
+    },
     {'title': 'Remote', 'subtitle': 'Employees working off site'},
   ];
 
@@ -31,7 +33,6 @@ class _CompanyWorkplaceTypeSheetState
           children: [
             const SizedBox(height: AppDimensions.paddingL),
 
-            
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
@@ -59,7 +60,6 @@ class _CompanyWorkplaceTypeSheetState
 
             const SizedBox(height: AppDimensions.paddingXL),
 
-           
             Text(
               'Choose the type of workplace',
               style: AppTextStyles.heading3.copyWith(
@@ -81,7 +81,6 @@ class _CompanyWorkplaceTypeSheetState
 
             const SizedBox(height: AppDimensions.paddingXL),
 
-           
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(
