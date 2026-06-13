@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
@@ -8,24 +11,36 @@ import '../../../widgets/jobseeker_bottom_nav.dart';
 class JobseekerMessagesScreen extends StatelessWidget {
   const JobseekerMessagesScreen({super.key});
 
+  String _formatTimestamp(Timestamp? timestamp) {
+    if (timestamp == null) return '';
+    final now = DateTime.now();
+    final date = timestamp.toDate();
+    final diff = now.difference(date);
+
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    if (diff.inDays == 1) return 'Yesterday';
+    return '${date.day}/${date.month}';
+  }
+
   @override
   Widget build(BuildContext context) {
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingL,
-                ),
-                child: Column(
-                  children: [
-                    const SizedBox(height: AppDimensions.paddingL),
+              child: Column(
+                children: [
+                  const SizedBox(height: AppDimensions.paddingL),
 
-                    // Title 
-                    Row(
+                  // Title 
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
@@ -50,11 +65,14 @@ class JobseekerMessagesScreen extends StatelessWidget {
                         ),
                       ],
                     ),
+                  ),
 
-                    const SizedBox(height: AppDimensions.paddingM),
+                  const SizedBox(height: AppDimensions.paddingM),
 
-                    // Search 
-                    Container(
+                  // Search 
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                    child: Container(
                       height: 44,
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppDimensions.paddingM,
@@ -85,59 +103,87 @@ class JobseekerMessagesScreen extends StatelessWidget {
                         ],
                       ),
                     ),
+                  ),
 
-                    const SizedBox(height: AppDimensions.paddingM),
+                  const SizedBox(height: AppDimensions.paddingM),
 
-                    _MessageTile(
-                      name: 'Ahmad medhat',
-                      message: 'Oh yes, please send your CV/Res...',
-                      time: '5m ago',
-                      hasUnread: true,
-                      onTap: () => context.push('/jobseeker/chat'),
-                    ),
-                    _MessageTile(
-                      name: 'Mustafa mahmoud',
-                      message: 'Hello sir, Good Morning',
-                      time: '30m ago',
-                      hasUnread: false,
-                      onTap: () => context.push('/jobseeker/chat'),
-                    ),
-                    _MessageTile(
-                      name: 'Zaid smadi',
-                      message: 'I saw the UI/UX Designer vacancy...',
-                      time: '09:30 am',
-                      hasUnread: false,
-                      onTap: () => context.push('/jobseeker/chat'),
-                    ),
-                    _MessageTile(
-                      name: 'Fares masaadeh',
-                      message: 'I saw the UI/UX Designer vacancy...',
-                      time: '01:00 pm',
-                      hasUnread: false,
-                      onTap: () => context.push('/jobseeker/chat'),
-                      isDeleted: true,
-                    ),
-                    _MessageTile(
-                      name: 'Wael Ahmad',
-                      message: 'I saw the UI/UX Designer vacancy...',
-                      time: '08:00 pm',
-                      hasUnread: false,
-                      onTap: () => context.push('/jobseeker/chat'),
-                    ),
-                    _MessageTile(
-                      name: 'Talal bataineh',
-                      message: 'I saw the UI/UX Designer vacancy...',
-                      time: 'Yesterday',
-                      hasUnread: false,
-                      onTap: () => context.push('/jobseeker/chat'),
-                    ),
+                  // LIVE Message list
+                  Expanded(
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('chats')
+                          .where('participants', arrayContains: currentUserId)
+                          .orderBy('updatedAt', descending: true)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange));
+                        }
 
-                    const SizedBox(height: AppDimensions.paddingXL),
-                  ],
-                ),
+                        if (snapshot.hasError) {
+                          return Center(child: Text('Error loading messages: ${snapshot.error}'));
+                        }
+
+                        final chatDocs = snapshot.data?.docs ?? [];
+
+                        if (chatDocs.isEmpty) {
+                          return Center(
+                            child: Text(
+                              'No messages yet.',
+                              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                            ),
+                          );
+                        }
+
+                        return ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                          itemCount: chatDocs.length,
+                          itemBuilder: (context, index) {
+                            final chatData = chatDocs[index].data() as Map<String, dynamic>;
+                            final chatId = chatDocs[index].id;
+                            
+                            final usersMap = chatData['users'] as Map<String, dynamic>? ?? {};
+                            String otherUserId = '';
+                            String otherUserName = 'Unknown User';
+                            
+                            usersMap.forEach((uid, info) {
+                              if (uid != currentUserId) {
+                                otherUserId = uid;
+                                otherUserName = info['name'] ?? 'Unknown User';
+                              }
+                            });
+
+                            final lastMessage = chatData['lastMessage'] ?? 'Started a chat';
+                            final updatedAt = chatData['updatedAt'] as Timestamp?;
+                            
+                            final unreadCount = chatData['unread_$currentUserId'] ?? 0;
+                            final hasUnread = unreadCount > 0;
+
+                            return _MessageTile(
+                              name: otherUserName,
+                              message: lastMessage,
+                              time: _formatTimestamp(updatedAt),
+                              hasUnread: hasUnread,
+                              onTap: () {
+                                FirebaseFirestore.instance.collection('chats').doc(chatId).update({
+                                  'unread_$currentUserId': 0,
+                                });
+
+                                context.push('/jobseeker/chat', extra: {
+                                  'chatId': chatId,
+                                  'receiverId': otherUserId,
+                                  'receiverName': otherUserName,
+                                });
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
-
             const JobseekerBottomNav(currentIndex: 3),
           ],
         ),
@@ -180,7 +226,7 @@ class _MessageTile extends StatelessWidget {
               radius: 24,
               backgroundColor: AppColors.inputFill,
               child: Text(
-                name[0],
+                name.isNotEmpty ? name[0].toUpperCase() : 'U',
                 style: AppTextStyles.bodyLarge.copyWith(
                   color: AppColors.textSecondary,
                   fontWeight: FontWeight.bold,
@@ -202,7 +248,8 @@ class _MessageTile extends StatelessWidget {
                   Text(
                     message,
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                      color: hasUnread ? AppColors.textPrimary : AppColors.textSecondary,
+                      fontWeight: hasUnread ? FontWeight.bold : FontWeight.normal,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

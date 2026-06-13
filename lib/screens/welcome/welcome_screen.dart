@@ -104,13 +104,18 @@ class _RoleCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  title,
-                  style: AppTextStyles.heading3.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    title,
+                    style: AppTextStyles.heading3.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                const SizedBox(width: AppDimensions.paddingS),
                 const Icon(
                   Icons.arrow_forward_ios,
                   color: Colors.white,
@@ -133,10 +138,12 @@ class _RoleCard extends StatelessWidget {
 
         const SizedBox(height: AppDimensions.paddingS),
 
-        // Buttons centered
+        // Buttons safely wrapped to prevent overflow
         Center(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            spacing: AppDimensions.paddingS,
+            runSpacing: AppDimensions.paddingS,
             children: [
               OutlinedButton(
                 onPressed: onSignUp,
@@ -158,7 +165,6 @@ class _RoleCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: AppDimensions.paddingS),
               OutlinedButton(
                 onPressed: onLogin,
                 style: OutlinedButton.styleFrom(

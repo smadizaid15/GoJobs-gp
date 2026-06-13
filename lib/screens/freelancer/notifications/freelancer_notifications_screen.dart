@@ -1,30 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../widgets/freelancer_bottom_nav.dart';
 
-class FreelancerNotificationsScreen extends StatelessWidget {
+class FreelancerNotificationsScreen extends StatefulWidget {
   const FreelancerNotificationsScreen({super.key});
 
   @override
+  State<FreelancerNotificationsScreen> createState() => _FreelancerNotificationsScreenState();
+}
+
+class _FreelancerNotificationsScreenState extends State<FreelancerNotificationsScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String? _profileImageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      final doc = await _firestore.collection('users').doc(user.uid).get();
+      if (doc.exists) {
+        setState(() {
+          _profileImageUrl = doc.data()?['profileImageUrl'] ?? doc.data()?['logoUrl'];
+        });
+      }
+    }
+  }
+
+  Future<void> _markAsRead(String docId) async {
+    await _firestore.collection('notifications').doc(docId).update({'isRead': true});
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final currentUserId = _auth.currentUser?.uid;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingL,
-                ),
-                child: Column(
-                  children: [
-                    const SizedBox(height: AppDimensions.paddingL),
+              child: Column(
+                children: [
+                  const SizedBox(height: AppDimensions.paddingL),
 
-                    Row(
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
@@ -35,66 +69,90 @@ class FreelancerNotificationsScreen extends StatelessWidget {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () =>
-                              context.go('/freelancer/profile'),
+                          onTap: () => context.go('/freelancer/profile'),
                           child: CircleAvatar(
                             radius: 20,
                             backgroundColor: AppColors.primaryNavy,
-                            child: Text(
-                              'Z',
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                            backgroundImage: _profileImageUrl != null ? NetworkImage(_profileImageUrl!) : null,
+                            child: _profileImageUrl == null
+                                ? Text(
+                                    'F',
+                                    style: AppTextStyles.bodyMedium.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+                                : null,
                           ),
                         ),
                       ],
                     ),
+                  ),
 
-                    const SizedBox(height: AppDimensions.paddingM),
+                  const SizedBox(height: AppDimensions.paddingM),
 
-                    _NotificationItem(
-                      title: 'New Job Request',
-                      subtitle:
-                          'Kitchen leaking problem in Irbid, petra st.',
-                      actionLabel: 'View',
-                      onAction: () =>
-                          context.go('/freelancer/home'),
-                      isRead: false,
+                  // LIVE NOTIFICATIONS FEED
+                  Expanded(
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: _firestore
+                          .collection('notifications')
+                          .where('userId', isEqualTo: currentUserId)
+                          .orderBy('createdAt', descending: true)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+
+                        if (snapshot.hasError) {
+                          return const Center(child: Text('Error loading notifications'));
+                        }
+
+                        final docs = snapshot.data?.docs ?? [];
+
+                        if (docs.isEmpty) {
+                          return Center(
+                            child: Text(
+                              'You have no notifications',
+                              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                            ),
+                          );
+                        }
+
+                        return ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                          itemCount: docs.length,
+                          itemBuilder: (context, index) {
+                            final doc = docs[index];
+                            final data = doc.data() as Map<String, dynamic>;
+
+                            return GestureDetector(
+                              onTap: () {
+                                if (!(data['isRead'] as bool? ?? false)) {
+                                  _markAsRead(doc.id);
+                                }
+                              },
+                              child: _NotificationItem(
+                                title: data['title'] ?? 'Notification',
+                                subtitle: data['message'] ?? '',
+                                actionLabel: data['actionLabel'],
+                                isRead: data['isRead'] ?? false,
+                                onAction: data['actionRoute'] != null 
+                                    ? () {
+                                        _markAsRead(doc.id);
+                                        context.go(data['actionRoute']);
+                                      } 
+                                    : null,
+                              ),
+                            );
+                          },
+                        );
+                      },
                     ),
-
-                    _NotificationItem(
-                      title: 'Job Accepted',
-                      subtitle:
-                          'You accepted bathroom leaking problem in Irbid',
-                      onAction: null,
-                      isRead: true,
-                    ),
-
-                    _NotificationItem(
-                      title: 'New Message',
-                      subtitle: 'Ahmad medhat sent you a message',
-                      actionLabel: 'Reply',
-                      onAction: () =>
-                          context.go('/freelancer/messages'),
-                      isRead: false,
-                    ),
-
-                    _NotificationItem(
-                      title: 'Job Completed',
-                      subtitle:
-                          'You completed bathroom leaking problem',
-                      onAction: null,
-                      isRead: true,
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingXL),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-
             const FreelancerBottomNav(currentIndex: -1),
           ],
         ),
@@ -136,9 +194,7 @@ class _NotificationItem extends StatelessWidget {
             height: 8,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isRead
-                  ? Colors.transparent
-                  : AppColors.primaryOrange,
+              color: isRead ? Colors.transparent : AppColors.primaryOrange,
             ),
           ),
           const SizedBox(width: AppDimensions.paddingS),
@@ -148,9 +204,7 @@ class _NotificationItem extends StatelessWidget {
               children: [
                 RichText(
                   text: TextSpan(
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textPrimary,
-                    ),
+                    style: AppTextStyles.bodySmall.copyWith(color: AppColors.textPrimary),
                     children: [
                       TextSpan(
                         text: '$title : ',
@@ -174,8 +228,7 @@ class _NotificationItem extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: AppColors.primaryNavy,
-                        borderRadius: BorderRadius.circular(
-                            AppDimensions.radiusFull),
+                        borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                       ),
                       child: Text(
                         actionLabel!,

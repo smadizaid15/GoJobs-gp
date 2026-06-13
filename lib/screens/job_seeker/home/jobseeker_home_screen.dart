@@ -19,7 +19,6 @@ class JobseekerHomeScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
-      
       body: SafeArea(
         child: Column(
           children: [
@@ -46,13 +45,6 @@ class JobseekerHomeScreen extends StatelessWidget {
                                 color: AppColors.textSecondary,
                               ),
                             ),
-                            Text(
-                              '${authProvider.user?.displayName ?? 'User'}.',
-                              style: AppTextStyles.heading3.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
                           ],
                         ),
                         Row(
@@ -66,22 +58,22 @@ class JobseekerHomeScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: AppDimensions.paddingS),
                             GestureDetector(
-                             onTap: () => context.push('/ai-chat'),
+                              onTap: () => context.push('/ai-chat'),
                               child: Container(
-                               width: 36,
-                               height: 36,
-                               decoration: BoxDecoration(
-                                 color: AppColors.primaryNavy,
-                                 borderRadius: BorderRadius.circular(AppDimensions.radiusS),
-                                  ),
-                                  child: const Icon(
-                                    Icons.smart_toy_outlined,
-                                    color: Colors.white,
-                                    size: 18,
-                                    ),
-                                  ),
-                               ),
-                         const SizedBox(width: AppDimensions.paddingS),
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryNavy,
+                                  borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                                ),
+                                child: const Icon(
+                                  Icons.smart_toy_outlined,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: AppDimensions.paddingS),
                             GestureDetector(
                               onTap: () => context.go('/jobseeker/profile'),
                               child: CircleAvatar(
@@ -140,6 +132,7 @@ class JobseekerHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
+                    // Recent Job List Section
                     Text(
                       'Recent Job List',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -217,88 +210,100 @@ class JobseekerHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () => context.go('/jobseeker/search'),
-                            child: Container(
-                              padding: const EdgeInsets.all(
-                                AppDimensions.paddingM,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.primaryNavy,
-                                borderRadius: BorderRadius.circular(
-                                  AppDimensions.radiusL,
+                    // Dynamic Counters Section
+                    StreamBuilder<List<JobModel>>(
+                      stream: jobService.getActiveJobs(),
+                      builder: (context, snapshot) {
+                        final allJobs = snapshot.data ?? [];
+                        
+                        // Count general full-time/part-time jobs vs specific internships
+                        final jobCount = allJobs.where((j) => j.employmentType.toLowerCase() != 'internship').length;
+                        final internshipCount = allJobs.where((j) => j.employmentType.toLowerCase() == 'internship').length;
+
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => context.push('/jobseeker/search', extra: 'Jobs'),
+                                child: Container(
+                                  padding: const EdgeInsets.all(
+                                    AppDimensions.paddingM,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primaryNavy,
+                                    borderRadius: BorderRadius.circular(
+                                      AppDimensions.radiusL,
+                                    ),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Icon(Icons.work_outline,
+                                          color: Colors.white),
+                                      const SizedBox(
+                                          height: AppDimensions.paddingS),
+                                      Text(
+                                        '$jobCount',
+                                        style: AppTextStyles.heading3.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Jobs',
+                                        style: AppTextStyles.bodySmall.copyWith(
+                                          color: Colors.white70,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Icon(Icons.work_outline,
-                                      color: Colors.white),
-                                  const SizedBox(
-                                      height: AppDimensions.paddingS),
-                                  Text(
-                                    '4.5k',
-                                    style: AppTextStyles.heading3.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Jobs/Internships',
-                                    style: AppTextStyles.bodySmall.copyWith(
-                                      color: Colors.white70,
-                                    ),
-                                  ),
-                                ],
-                              ),
                             ),
-                          ),
-                        ),
 
-                        const SizedBox(width: AppDimensions.paddingM),
+                            const SizedBox(width: AppDimensions.paddingM),
 
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () => context.go('/jobseeker/search'),
-                            child: Container(
-                              padding: const EdgeInsets.all(
-                                AppDimensions.paddingM,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF6C63FF),
-                                borderRadius: BorderRadius.circular(
-                                  AppDimensions.radiusL,
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => context.push('/jobseeker/search', extra: 'Internships'),
+                                child: Container(
+                                  padding: const EdgeInsets.all(
+                                    AppDimensions.paddingM,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF6C63FF),
+                                    borderRadius: BorderRadius.circular(
+                                      AppDimensions.radiusL,
+                                    ),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Icon(Icons.school_outlined,
+                                          color: Colors.white),
+                                      const SizedBox(
+                                          height: AppDimensions.paddingS),
+                                      Text(
+                                        '$internshipCount',
+                                        style: AppTextStyles.heading3.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Internships',
+                                        style: AppTextStyles.bodySmall.copyWith(
+                                          color: Colors.white70,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Icon(Icons.school_outlined,
-                                      color: Colors.white),
-                                  const SizedBox(
-                                      height: AppDimensions.paddingS),
-                                  Text(
-                                    '3k+',
-                                    style: AppTextStyles.heading3.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Internships',
-                                    style: AppTextStyles.bodySmall.copyWith(
-                                      color: Colors.white70,
-                                    ),
-                                  ),
-                                ],
-                              ),
                             ),
-                          ),
-                        ),
-                      ],
+                          ],
+                        );
+                      },
                     ),
 
                     const SizedBox(height: AppDimensions.paddingL),
@@ -343,7 +348,6 @@ class JobseekerHomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-
             const JobseekerBottomNav(currentIndex: 0),
           ],
         ),

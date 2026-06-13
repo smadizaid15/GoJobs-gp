@@ -1,15 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../widgets/jobseeker_bottom_nav.dart';
 
-class JobseekerNotificationsScreen extends StatelessWidget {
+class JobseekerNotificationsScreen extends StatefulWidget {
   const JobseekerNotificationsScreen({super.key});
 
   @override
+  State<JobseekerNotificationsScreen> createState() => _JobseekerNotificationsScreenState();
+}
+
+class _JobseekerNotificationsScreenState extends State<JobseekerNotificationsScreen> {
+  String _selectedFilter = 'All';
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _markAsReadAndNavigate(String docId, String? route) {
+    FirebaseFirestore.instance.collection('notifications').doc(docId).update({
+      'isRead': true,
+    });
+    if (route != null && route.isNotEmpty) {
+      context.push(route);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
@@ -42,13 +71,17 @@ class JobseekerNotificationsScreen extends StatelessWidget {
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.menu,
-                                    color: AppColors.textSecondary),
-                                const SizedBox(
-                                    width: AppDimensions.paddingS),
+                                const Icon(Icons.menu, color: AppColors.textSecondary),
+                                const SizedBox(width: AppDimensions.paddingS),
                                 Expanded(
                                   child: TextField(
-                                    decoration: InputDecoration(
+                                    controller: _searchController,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _searchQuery = value;
+                                      });
+                                    },
+                                    decoration:  InputDecoration(
                                       hintText: 'Search',
                                       hintStyle: AppTextStyles.bodySmall,
                                       border: InputBorder.none,
@@ -56,23 +89,29 @@ class JobseekerNotificationsScreen extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                const Icon(Icons.search,
-                                    color: AppColors.textSecondary),
+                                _searchQuery.isNotEmpty
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _searchController.clear();
+                                            _searchQuery = '';
+                                          });
+                                        },
+                                        child: const Icon(Icons.clear, color: AppColors.textSecondary),
+                                      )
+                                    : const Icon(Icons.search, color: AppColors.textSecondary),
                               ],
                             ),
                           ),
                         ),
-
                         const SizedBox(width: AppDimensions.paddingM),
-
                         GestureDetector(
-                          onTap: () =>
-                              context.go('/jobseeker/profile'),
+                          onTap: () => context.go('/jobseeker/profile'),
                           child: CircleAvatar(
                             radius: 20,
                             backgroundColor: AppColors.primaryNavy,
                             child: Text(
-                              'Z',
+                              'Z', // Could be dynamic if pulling from authProvider
                               style: AppTextStyles.bodyMedium.copyWith(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -88,12 +127,11 @@ class JobseekerNotificationsScreen extends StatelessWidget {
                     // Filter 
                     Row(
                       children: [
-                        _FilterTab(label: 'All', isSelected: true),
+                        _buildFilterTab('All'),
                         const SizedBox(width: AppDimensions.paddingS),
-                        _FilterTab(label: 'Jobs', isSelected: false),
+                        _buildFilterTab('Jobs'),
                         const SizedBox(width: AppDimensions.paddingS),
-                        _FilterTab(
-                            label: 'Messages', isSelected: false),
+                        _buildFilterTab('Messages'),
                         const Spacer(),
                         Text(
                           'Filter',
@@ -106,60 +144,95 @@ class JobseekerNotificationsScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    _NotificationItem(
-                      title: 'Intern',
-                      subtitle:
-                          'new opportunity in Amman, Jordan',
-                      actionLabel: 'View job',
-                      onAction: () =>
-                          context.push('/jobseeker/job-detail'),
-                      isRead: false,
-                    ),
+                    // LIVE Notifications from Firestore
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('notifications')
+                          .where('userId', isEqualTo: currentUserId)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Padding(
+                            padding: EdgeInsets.only(top: 50),
+                            child: Center(child: CircularProgressIndicator(color: AppColors.primaryNavy)),
+                          );
+                        }
 
-                    _NotificationItem(
-                      title: 'UI/Ux',
-                      subtitle: 'new opportunity in Irbid, Jordan',
-                      actionLabel: 'View job',
-                      onAction: () =>
-                          context.push('/jobseeker/job-detail'),
-                      isRead: false,
-                    ),
+                        if (snapshot.hasError) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 50),
+                            child: Center(child: Text('Error: ${snapshot.error}')),
+                          );
+                        }
 
-                    _NotificationItem(
-                      title: 'Your monday jobs report',
-                      subtitle:
-                          '5 companies are hiring for Web developer roles this week. View more insights',
-                      onAction: null,
-                      isRead: true,
-                    ),
+                        // Extract and sort manually to avoid needing a composite index
+                        final docs = snapshot.data?.docs ?? [];
+                        docs.sort((a, b) {
+                          final tA = (a.data() as Map<String, dynamic>)['createdAt'] as Timestamp?;
+                          final tB = (b.data() as Map<String, dynamic>)['createdAt'] as Timestamp?;
+                          if (tA == null && tB == null) return 0;
+                          if (tA == null) return 1;
+                          if (tB == null) return -1;
+                          return tB.compareTo(tA);
+                        });
 
-                    _NotificationItem(
-                      title: 'Talent management',
-                      subtitle:
-                          'new opportunity in Irbid, Jordan',
-                      actionLabel: 'View job',
-                      onAction: () =>
-                          context.push('/jobseeker/job-detail'),
-                      isRead: false,
-                    ),
+                        final filteredDocs = docs.where((doc) {
+                          final data = doc.data() as Map<String, dynamic>;
+                          final type = data['type']?.toString().toLowerCase() ?? '';
+                          final title = data['title']?.toString().toLowerCase() ?? '';
+                          final subtitle = (data['message'] ?? data['subtitle'])?.toString().toLowerCase() ?? '';
 
-                    _NotificationItem(
-                      title: 'Public relations',
-                      subtitle:
-                          'new opportunity in Amman, Jordan',
-                      actionLabel: 'View job',
-                      onAction: () =>
-                          context.push('/jobseeker/job-detail'),
-                      isRead: false,
-                    ),
+                          bool matchesFilter = true;
+                          if (_selectedFilter == 'Jobs') {
+                            matchesFilter = type == 'job' || type == 'application';
+                          } else if (_selectedFilter == 'Messages') {
+                            matchesFilter = type == 'message' || type == 'chat';
+                          }
 
-                    _NotificationItem(
-                      title: 'Checkout different workshops',
-                      subtitle:
-                          'and interactive courses around you, press discover down below!',
-                      actionLabel: 'Discover',
-                      onAction: () {},
-                      isRead: true,
+                          bool matchesSearch = true;
+                          if (_searchQuery.isNotEmpty) {
+                            matchesSearch = title.contains(_searchQuery.toLowerCase()) || 
+                                            subtitle.contains(_searchQuery.toLowerCase());
+                          }
+
+                          return matchesFilter && matchesSearch;
+                        }).toList();
+
+                        if (filteredDocs.isEmpty) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 50),
+                            child: Center(
+                              child: Text(
+                                'No notifications found.',
+                                style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                              ),
+                            ),
+                          );
+                        }
+
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: filteredDocs.length,
+                          itemBuilder: (context, index) {
+                            final doc = filteredDocs[index];
+                            final data = doc.data() as Map<String, dynamic>;
+                            
+                            return GestureDetector(
+                              onTap: () => _markAsReadAndNavigate(doc.id, data['actionRoute'] ?? data['route']),
+                              child: _NotificationItem(
+                                title: data['title'] ?? 'Notification',
+                                subtitle: data['message'] ?? data['subtitle'] ?? '',
+                                actionLabel: data['actionLabel'],
+                                onAction: data['actionLabel'] != null 
+                                  ? () => _markAsReadAndNavigate(doc.id, data['actionRoute'] ?? data['route'])
+                                  : null,
+                                isRead: data['isRead'] ?? false,
+                              ),
+                            );
+                          },
+                        );
+                      },
                     ),
 
                     const SizedBox(height: AppDimensions.paddingXL),
@@ -167,38 +240,36 @@ class JobseekerNotificationsScreen extends StatelessWidget {
                 ),
               ),
             ),
-
             const JobseekerBottomNav(currentIndex: -1),
           ],
         ),
       ),
     );
   }
-}
 
-class _FilterTab extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-
-  const _FilterTab({required this.label, required this.isSelected});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppDimensions.paddingM,
-        vertical: AppDimensions.paddingXS,
-      ),
-      decoration: BoxDecoration(
-        color: isSelected ? AppColors.primaryNavy : Colors.white,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
-      ),
-      child: Text(
-        label,
-        style: AppTextStyles.bodySmall.copyWith(
-          color: isSelected ? Colors.white : AppColors.textSecondary,
-          fontWeight:
-              isSelected ? FontWeight.w600 : FontWeight.normal,
+  Widget _buildFilterTab(String label) {
+    final isSelected = _selectedFilter == label;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedFilter = label;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppDimensions.paddingM,
+          vertical: AppDimensions.paddingXS,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primaryNavy : Colors.white,
+          borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+        ),
+        child: Text(
+          label,
+          style: AppTextStyles.bodySmall.copyWith(
+            color: isSelected ? Colors.white : AppColors.textSecondary,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+          ),
         ),
       ),
     );
@@ -238,14 +309,10 @@ class _NotificationItem extends StatelessWidget {
             height: 8,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isRead
-                  ? Colors.transparent
-                  : AppColors.primaryOrange,
+              color: isRead ? Colors.transparent : AppColors.primaryOrange,
             ),
           ),
-
           const SizedBox(width: AppDimensions.paddingS),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,8 +334,7 @@ class _NotificationItem extends StatelessWidget {
                     ],
                   ),
                 ),
-
-                if (actionLabel != null) ...[
+                if (actionLabel != null && actionLabel!.isNotEmpty) ...[
                   const SizedBox(height: AppDimensions.paddingS),
                   GestureDetector(
                     onTap: onAction,

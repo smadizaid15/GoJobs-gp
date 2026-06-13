@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
@@ -8,13 +11,79 @@ class JobseekerAboutMeScreen extends StatefulWidget {
   const JobseekerAboutMeScreen({super.key});
 
   @override
-  State<JobseekerAboutMeScreen> createState() =>
-      _JobseekerAboutMeScreenState();
+  State<JobseekerAboutMeScreen> createState() => _JobseekerAboutMeScreenState();
 }
 
-class _JobseekerAboutMeScreenState
-    extends State<JobseekerAboutMeScreen> {
+class _JobseekerAboutMeScreenState extends State<JobseekerAboutMeScreen> {
   final _aboutController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  bool _isLoading = true;
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadExistingData();
+  }
+
+  Future<void> _loadExistingData() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      try {
+        final doc = await _firestore.collection('users').doc(user.uid).get();
+        if (doc.exists && doc.data() != null) {
+          setState(() {
+            _aboutController.text = doc.data()!['aboutMe']?.toString() ?? '';
+          });
+        }
+      } catch (e) {
+        debugPrint("Error loading About Me: $e");
+      }
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _saveData() async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      await _firestore.collection('users').doc(user.uid).update({
+        'aboutMe': _aboutController.text.trim(),
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Profile updated successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        context.pop(); // Go back to the profile screen
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to save: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -37,7 +106,7 @@ class _JobseekerAboutMeScreenState
               const SizedBox(height: AppDimensions.paddingL),
 
               GestureDetector(
-                onTap: () => context.go('/jobseeker/profile'),
+                onTap: () => context.pop(),
                 child: const Icon(
                   Icons.arrow_back,
                   color: AppColors.textPrimary,
@@ -56,29 +125,31 @@ class _JobseekerAboutMeScreenState
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // About me text 
-              Container(
-                width: double.infinity,
-                height: 200,
-                padding: const EdgeInsets.all(AppDimensions.paddingM),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius:
-                      BorderRadius.circular(AppDimensions.radiusM),
-                ),
-                child: TextField(
-                  controller: _aboutController,
-                  maxLines: null,
-                  decoration: InputDecoration(
-                    hintText: 'Tell me about you.',
-                    hintStyle: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+              // About me text
+              if (_isLoading)
+                const Center(child: CircularProgressIndicator())
+              else
+                Container(
+                  width: double.infinity,
+                  height: 200,
+                  padding: const EdgeInsets.all(AppDimensions.paddingM),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                  ),
+                  child: TextField(
+                    controller: _aboutController,
+                    maxLines: null,
+                    decoration: InputDecoration(
+                      hintText: 'Tell me about you.',
+                      hintStyle: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                      border: InputBorder.none,
+                      filled: false,
                     ),
-                    border: InputBorder.none,
-                    filled: false,
                   ),
                 ),
-              ),
 
               const Spacer(),
 
@@ -86,10 +157,14 @@ class _JobseekerAboutMeScreenState
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
-                  onPressed: () =>
-                      context.go('/jobseeker/profile'),
-                  child: Text('SAVE',
-                      style: AppTextStyles.buttonText),
+                  onPressed: _isSaving ? null : _saveData,
+                  child: _isSaving
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : Text('SAVE', style: AppTextStyles.buttonText),
                 ),
               ),
 

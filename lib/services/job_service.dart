@@ -4,7 +4,6 @@ import '../models/job_model.dart';
 class JobService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // post job
   Future<void> postJob({
     required String companyId,
     required String companyName,
@@ -13,78 +12,93 @@ class JobService {
     required String workplaceType,
     required String employmentType,
     required String description,
+    String? salary,
+    String? companyLogo, 
+    List<String>? jobImages, // <-- NEW: Accepts the list of photo URLs
   }) async {
-    await _firestore.collection('jobs').add({
-      'companyId': companyId,
-      'companyName': companyName,
-      'title': title,
-      'location': location,
-      'workplaceType': workplaceType,
-      'employmentType': employmentType,
-      'description': description,
-      'isActive': true,
-      'createdAt': FieldValue.serverTimestamp(),
+    try {
+      await _firestore.collection('jobs').add({
+        'companyId': companyId,
+        'companyName': companyName,
+        'title': title,
+        'location': location,
+        'workplaceType': workplaceType,
+        'employmentType': employmentType,
+        'description': description,
+        'salary': salary, 
+        'companyLogo': companyLogo, 
+        'jobImages': jobImages ?? [], // <-- NEW: Saves them to Firebase
+        'isActive': true,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      throw Exception('Failed to post job: $e');
+    }
+  }
+
+  Stream<List<JobModel>> getActiveJobs() {
+    return _firestore
+        .collection('jobs')
+        .where('isActive', isEqualTo: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return JobModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+      }).toList();
     });
   }
 
-  // get active jobs
-  Stream<List<JobModel>> getActiveJobs() {
-  return _firestore
-      .collection('jobs')
-      .where('isActive', isEqualTo: true)
-      .snapshots()
-      .map((snapshot) =>
-          snapshot.docs.map((doc) => JobModel.fromFirestore(doc)).toList());
-}
+  Future<void> toggleSavedJob(String userId, String jobId) async {
+    final docRef = _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('saved_jobs')
+        .doc(jobId);
+        
+    final doc = await docRef.get();
+    if (doc.exists) {
+      await docRef.delete(); 
+    } else {
+      await docRef.set({
+        'jobId': jobId,
+        'savedAt': FieldValue.serverTimestamp(),
+      }); 
+    }
+  }
 
-  //get company jobs
+  Stream<List<String>> getSavedJobIds(String userId) {
+    return _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('saved_jobs')
+        .orderBy('savedAt', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.id).toList());
+  }
+
+  Stream<DocumentSnapshot> getLiveJobStream(String jobId) {
+    return _firestore.collection('jobs').doc(jobId).snapshots();
+    
+  }
+  // Get all jobs for a specific company
   Stream<List<JobModel>> getCompanyJobs(String companyId) {
     return _firestore
         .collection('jobs')
         .where('companyId', isEqualTo: companyId)
-        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => JobModel.fromFirestore(doc)).toList());
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return JobModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+      }).toList();
+    });
   }
 
-  //delete job
+  // Delete a job from the database
   Future<void> deleteJob(String jobId) async {
-    await _firestore.collection('jobs').doc(jobId).update({
-      'isActive': false,
-    });
-  }
-
-  // update job
-  Future<void> updateJob({
-    required String jobId,
-    required String title,
-    required String location,
-    required String workplaceType,
-    required String employmentType,
-    required String description,
-  }) async {
-    await _firestore.collection('jobs').doc(jobId).update({
-      'title': title,
-      'location': location,
-      'workplaceType': workplaceType,
-      'employmentType': employmentType,
-      'description': description,
-    });
-  }
-
-  // search jobs
-  Future<List<JobModel>> searchJobs(String query) async {
-    final snapshot = await _firestore
-        .collection('jobs')
-        .where('isActive', isEqualTo: true)
-        .get();
-
-    return snapshot.docs
-        .map((doc) => JobModel.fromFirestore(doc))
-        .where((job) =>
-            job.title.toLowerCase().contains(query.toLowerCase()) ||
-            job.location.toLowerCase().contains(query.toLowerCase()))
-        .toList();
+    try {
+      await _firestore.collection('jobs').doc(jobId).delete();
+    } catch (e) {
+      throw Exception('Failed to delete job: $e');
+    }
   }
 }

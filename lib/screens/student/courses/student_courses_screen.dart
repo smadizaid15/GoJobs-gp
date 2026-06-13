@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
@@ -15,6 +17,7 @@ class StudentCoursesScreen extends StatefulWidget {
 class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
   final _searchController = TextEditingController();
   final _locationController = TextEditingController();
+  String _searchQuery = '';
   int _selectedFilter = 0;
   final List<String> _filters = ['All', 'Online', 'On-Site', 'Free'];
 
@@ -32,7 +35,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Search 
+            // Header & Search Box
             Container(
               padding: const EdgeInsets.all(AppDimensions.paddingL),
               decoration: const BoxDecoration(
@@ -44,7 +47,6 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
               ),
               child: Column(
                 children: [
-                  // Back and title
                   Row(
                     children: [
                       GestureDetector(
@@ -64,10 +66,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: AppDimensions.paddingM),
-
-                  // Search 
                   Container(
                     height: 48,
                     padding: const EdgeInsets.symmetric(
@@ -75,8 +74,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusM),
+                      borderRadius: BorderRadius.circular(AppDimensions.radiusM),
                     ),
                     child: Row(
                       children: [
@@ -85,43 +83,9 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                         Expanded(
                           child: TextField(
                             controller: _searchController,
+                            onChanged: (val) => setState(() => _searchQuery = val.toLowerCase()),
                             decoration: InputDecoration(
-                              hintText: 'Python course',
-                              hintStyle: AppTextStyles.bodySmall,
-                              border: InputBorder.none,
-                              filled: false,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: AppDimensions.paddingS),
-
-                  // Location 
-                  Container(
-                    height: 48,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppDimensions.paddingM,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusM),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.location_on_outlined,
-                          color: AppColors.primaryOrange,
-                        ),
-                        const SizedBox(width: AppDimensions.paddingS),
-                        Expanded(
-                          child: TextField(
-                            controller: _locationController,
-                            decoration: InputDecoration(
-                              hintText: 'Irbid',
+                              hintText: 'Search for Python, UI/UX...',
                               hintStyle: AppTextStyles.bodySmall,
                               border: InputBorder.none,
                               filled: false,
@@ -181,54 +145,86 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
 
             const SizedBox(height: AppDimensions.paddingM),
 
-            // Course list
+            // Live Course List from Firebase
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingL,
-                ),
-                children: [
-                  _CourseCard(
-                    title: 'Data science with python',
-                    company: 'wowie inc',
-                    location: 'Online',
-                    tags: ['Python', 'On-site', 'Sci-kit/pandas'],
-                    price: 'JOD 250/course',
-                    isPaid: true,
-                    onTap: () => context.go('/student/course-detail'),
-                  ),
-                  const SizedBox(height: AppDimensions.paddingM),
-                  _CourseCard(
-                    title: 'Ai using python',
-                    company: 'Dribble inc',
-                    location: 'Amman, Jordan',
-                    tags: ['Python', 'On-site', 'ML/DL'],
-                    price: 'Free',
-                    isPaid: false,
-                    onTap: () => context.go('/student/course-detail'),
-                  ),
-                  const SizedBox(height: AppDimensions.paddingM),
-                  _CourseCard(
-                    title: 'UI/UX Design Fundamentals',
-                    company: 'Design Hub',
-                    location: 'Online',
-                    tags: ['Figma', 'Online', 'Design'],
-                    price: 'JOD 150/course',
-                    isPaid: true,
-                    onTap: () => context.go('/student/course-detail'),
-                  ),
-                  const SizedBox(height: AppDimensions.paddingM),
-                  _CourseCard(
-                    title: 'Web Development Bootcamp',
-                    company: 'Tech Academy',
-                    location: 'Irbid, Jordan',
-                    tags: ['HTML', 'CSS', 'JavaScript'],
-                    price: 'Free',
-                    isPaid: false,
-                    onTap: () => context.go('/student/course-detail'),
-                  ),
-                  const SizedBox(height: AppDimensions.paddingXL),
-                ],
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance.collection('courses').snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.hasError) {
+                    return const Center(child: Text('Error loading courses.'));
+                  }
+
+                  final docs = snapshot.data?.docs ?? [];
+
+                  if (docs.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No courses available right now.',
+                        style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                      ),
+                    );
+                  }
+
+                  // Apply search and filter logic
+                  final filteredCourses = docs.where((doc) {
+                    final data = doc.data() as Map<String, dynamic>;
+                    final title = data['title']?.toString().toLowerCase() ?? '';
+                    final isFree = data['isFree'] as bool? ?? false;
+                    final isOnline = data['isOnline'] as bool? ?? false;
+
+                    // Search query match
+                    bool matchesSearch = title.contains(_searchQuery);
+
+                    // Filter match
+                    bool matchesFilter = true;
+                    if (_filters[_selectedFilter] == 'Free') matchesFilter = isFree;
+                    if (_filters[_selectedFilter] == 'Online') matchesFilter = isOnline;
+                    if (_filters[_selectedFilter] == 'On-Site') matchesFilter = !isOnline;
+
+                    return matchesSearch && matchesFilter;
+                  }).toList();
+
+                  if (filteredCourses.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No courses match your filter.',
+                        style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                    itemCount: filteredCourses.length,
+                    itemBuilder: (context, index) {
+                      final doc = filteredCourses[index];
+                      final data = doc.data() as Map<String, dynamic>;
+                      
+                      final courseDataForDetail = {
+                        'id': doc.id,
+                        ...data,
+                      };
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: AppDimensions.paddingM),
+                        child: _CourseCard(
+                          title: data['title'] ?? 'Unknown Course',
+                          company: data['companyName'] ?? 'Unknown Institution',
+                          location: (data['isOnline'] as bool? ?? false) ? 'Online' : (data['location'] ?? 'On-site'),
+                          tags: List<String>.from(data['tags'] ?? []),
+                          price: (data['isFree'] as bool? ?? false) ? 'Free' : (data['price'] ?? 'Paid'),
+                          isPaid: !(data['isFree'] as bool? ?? false),
+                          logoUrl: data['logoUrl'],
+                          onTap: () => context.push('/student/course-detail', extra: courseDataForDetail),
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ),
 
@@ -247,6 +243,7 @@ class _CourseCard extends StatelessWidget {
   final List<String> tags;
   final String price;
   final bool isPaid;
+  final String? logoUrl;
   final VoidCallback onTap;
 
   const _CourseCard({
@@ -256,6 +253,7 @@ class _CourseCard extends StatelessWidget {
     required this.tags,
     required this.price,
     required this.isPaid,
+    this.logoUrl,
     required this.onTap,
   });
 
@@ -275,20 +273,19 @@ class _CourseCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Company logo placeholder
                 Container(
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
                     color: AppColors.inputFill,
-                    borderRadius:
-                        BorderRadius.circular(AppDimensions.radiusS),
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                    image: logoUrl != null 
+                        ? DecorationImage(image: NetworkImage(logoUrl!), fit: BoxFit.cover)
+                        : null,
                   ),
-                  child: const Icon(
-                    Icons.business,
-                    color: AppColors.textSecondary,
-                    size: 20,
-                  ),
+                  child: logoUrl == null 
+                      ? const Icon(Icons.business, color: AppColors.textSecondary, size: 20)
+                      : null,
                 ),
                 const Icon(
                   Icons.bookmark_border,
@@ -316,7 +313,6 @@ class _CourseCard extends StatelessWidget {
 
             const SizedBox(height: AppDimensions.paddingS),
 
-            // Tags
             Wrap(
               spacing: AppDimensions.paddingXS,
               children: tags.map((tag) {
@@ -327,8 +323,7 @@ class _CourseCard extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: AppColors.inputFill,
-                    borderRadius:
-                        BorderRadius.circular(AppDimensions.radiusFull),
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                   ),
                   child: Text(
                     tag,
@@ -343,14 +338,11 @@ class _CourseCard extends StatelessWidget {
 
             const SizedBox(height: AppDimensions.paddingS),
 
-            // Price
             Text(
               price,
               style: AppTextStyles.bodyMedium.copyWith(
                 fontWeight: FontWeight.bold,
-                color: isPaid
-                    ? AppColors.textPrimary
-                    : AppColors.primaryOrange,
+                color: isPaid ? AppColors.textPrimary : AppColors.primaryOrange,
               ),
             ),
           ],

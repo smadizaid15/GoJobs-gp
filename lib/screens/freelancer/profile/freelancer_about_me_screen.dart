@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
@@ -12,9 +15,63 @@ class FreelancerAboutMeScreen extends StatefulWidget {
       _FreelancerAboutMeScreenState();
 }
 
-class _FreelancerAboutMeScreenState
-    extends State<FreelancerAboutMeScreen> {
+class _FreelancerAboutMeScreenState extends State<FreelancerAboutMeScreen> {
   final _aboutController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  
+  bool _isLoading = true;
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadExistingData();
+  }
+
+  Future<void> _loadExistingData() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      try {
+        final doc = await _firestore.collection('users').doc(user.uid).get();
+        if (doc.exists && doc.data() != null) {
+          setState(() {
+            _aboutController.text = doc.data()!['aboutMe']?.toString() ?? '';
+          });
+        }
+      } catch (e) {
+        debugPrint("Error loading About Me: $e");
+      }
+    }
+    setState(() => _isLoading = false);
+  }
+
+  Future<void> _saveData() async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    setState(() => _isSaving = true);
+
+    try {
+      await _firestore.collection('users').doc(user.uid).update({
+        'aboutMe': _aboutController.text.trim(),
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Description updated!'), backgroundColor: Colors.green),
+        );
+        context.go('/freelancer/profile');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save: $e'), backgroundColor: AppColors.error),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -27,10 +84,10 @@ class _FreelancerAboutMeScreenState
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppDimensions.paddingL,
-          ),
+        child: _isLoading 
+        ? const Center(child: CircularProgressIndicator())
+        : Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -38,10 +95,7 @@ class _FreelancerAboutMeScreenState
 
               GestureDetector(
                 onTap: () => context.go('/freelancer/profile'),
-                child: const Icon(
-                  Icons.arrow_back,
-                  color: AppColors.textPrimary,
-                ),
+                child: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
               ),
 
               const SizedBox(height: AppDimensions.paddingL),
@@ -62,17 +116,14 @@ class _FreelancerAboutMeScreenState
                 padding: const EdgeInsets.all(AppDimensions.paddingM),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius:
-                      BorderRadius.circular(AppDimensions.radiusM),
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusM),
                 ),
                 child: TextField(
                   controller: _aboutController,
                   maxLines: null,
                   decoration: InputDecoration(
-                    hintText: 'Tell me about you.',
-                    hintStyle: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+                    hintText: 'Tell potential clients about your skills and experience.',
+                    hintStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
                     border: InputBorder.none,
                     filled: false,
                   ),
@@ -85,98 +136,10 @@ class _FreelancerAboutMeScreenState
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
-                  onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(
-                              AppDimensions.radiusXL),
-                        ),
-                      ),
-                      builder: (context) => Padding(
-                        padding: const EdgeInsets.all(
-                            AppDimensions.paddingXL),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 4,
-                              decoration: BoxDecoration(
-                                color: AppColors.divider,
-                                borderRadius: BorderRadius.circular(
-                                    AppDimensions.radiusFull),
-                              ),
-                            ),
-                            const SizedBox(
-                                height: AppDimensions.paddingL),
-                            Text(
-                              'Save Changes ?',
-                              style: AppTextStyles.heading3.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(
-                                height: AppDimensions.paddingS),
-                            Text(
-                              'Are you sure you want to change what you entered?',
-                              style: AppTextStyles.bodySmall.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(
-                                height: AppDimensions.paddingL),
-                            SizedBox(
-                              width: double.infinity,
-                              height: AppDimensions.buttonHeight,
-                              child: ElevatedButton(
-                                onPressed: () => context
-                                    .go('/freelancer/profile'),
-                                child: Text('SAVE CHANGES',
-                                    style:
-                                        AppTextStyles.buttonText),
-                              ),
-                            ),
-                            const SizedBox(
-                                height: AppDimensions.paddingM),
-                            SizedBox(
-                              width: double.infinity,
-                              height: AppDimensions.buttonHeight,
-                              child: OutlinedButton(
-                                onPressed: () =>
-                                    Navigator.pop(context),
-                                style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(
-                                      color: AppColors
-                                          .purpleButtonBorder),
-                                  backgroundColor:
-                                      AppColors.purpleButton,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                            AppDimensions.radiusL),
-                                  ),
-                                ),
-                                child: Text(
-                                  'CONTINUE EDITING',
-                                  style:
-                                      AppTextStyles.bodySmall.copyWith(
-                                    color: AppColors.primaryNavy,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                                height: AppDimensions.paddingL),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                  child: Text('SAVE', style: AppTextStyles.buttonText),
+                  onPressed: _isSaving ? null : _saveData,
+                  child: _isSaving 
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text('SAVE CHANGES', style: AppTextStyles.buttonText),
                 ),
               ),
 

@@ -1,15 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart'; // Make sure this is in your pubspec.yaml
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../widgets/freelancer_bottom_nav.dart';
 
-class FreelancerHomeScreen extends StatelessWidget {
+class FreelancerHomeScreen extends StatefulWidget {
   const FreelancerHomeScreen({super.key});
 
   @override
+  State<FreelancerHomeScreen> createState() => _FreelancerHomeScreenState();
+}
+
+class _FreelancerHomeScreenState extends State<FreelancerHomeScreen> {
+  String _freelancerName = 'Loading...';
+  String? _profileImageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFreelancerProfile();
+  }
+
+  Future<void> _loadFreelancerProfile() async {
+    try {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid != null) {
+        final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+        if (doc.exists && doc.data() != null) {
+          final data = doc.data()!;
+          setState(() {
+            _freelancerName = data['fullName']?.toString() ?? data['displayName']?.toString() ?? 'Freelancer';
+            _profileImageUrl = data['profileImageUrl']?.toString() ?? data['logoUrl']?.toString();
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint("Error loading profile: $e");
+    }
+  }
+
+  Future<void> _updateRequestStatus(String requestId, String status) async {
+    try {
+      await FirebaseFirestore.instance.collection('freelancer_requests').doc(requestId).update({
+        'status': status,
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(status == 'accepted' ? 'Request Accepted!' : 'Request Declined'),
+            backgroundColor: status == 'accepted' ? Colors.green : AppColors.error,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint("Error updating request: $e");
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
@@ -33,7 +89,7 @@ class FreelancerHomeScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Zaid Smadi.',
+                              '$_freelancerName.',
                               style: AppTextStyles.heading3.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
@@ -45,10 +101,8 @@ class FreelancerHomeScreen extends StatelessWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.primaryOrange
-                                    .withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(
-                                    AppDimensions.radiusFull),
+                                color: AppColors.primaryOrange.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                               ),
                               child: Text(
                                 'Freelance',
@@ -63,44 +117,40 @@ class FreelancerHomeScreen extends StatelessWidget {
                         Row(
                           children: [
                             GestureDetector(
-                              onTap: () =>
-                                  context.go('/freelancer/settings'),
-                              child: const Icon(
-                                Icons.settings_outlined,
-                                color: AppColors.textPrimary,
+                              onTap: () => context.go('/freelancer/settings'),
+                              child: const Icon(Icons.settings_outlined, color: AppColors.textPrimary),
+                            ),
+                            const SizedBox(width: AppDimensions.paddingS),
+                            GestureDetector(
+                              onTap: () => context.push('/ai-chat'),
+                              child: Container(
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryNavy,
+                                  borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                                ),
+                                child: const Icon(Icons.smart_toy_outlined, color: Colors.white, size: 18),
                               ),
                             ),
                             const SizedBox(width: AppDimensions.paddingS),
                             GestureDetector(
-                            onTap: () => context.push('/ai-chat'),
-                            child: Container(
-                             width: 36,
-                             height: 36,
-                           decoration: BoxDecoration(
-                              color: AppColors.primaryNavy,
-                              borderRadius: BorderRadius.circular(AppDimensions.radiusS),
-                           ),
-                             child: const Icon(
-                              Icons.smart_toy_outlined,
-                              color: Colors.white,
-                              size: 18,
-                            ),
-                         ),
-                        ),
-                      const SizedBox(width: AppDimensions.paddingS),
-                            GestureDetector(
-                              onTap: () =>
-                                  context.go('/freelancer/profile'),
+                              onTap: () => context.go('/freelancer/profile'),
                               child: CircleAvatar(
                                 radius: 20,
                                 backgroundColor: AppColors.primaryNavy,
-                                child: Text(
-                                  'Z',
-                                  style: AppTextStyles.bodyMedium.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                                backgroundImage: _profileImageUrl != null && _profileImageUrl!.isNotEmpty
+                                    ? NetworkImage(_profileImageUrl!)
+                                    : null,
+                                child: _profileImageUrl == null || _profileImageUrl!.isEmpty
+                                    ? Text(
+                                        _freelancerName.isNotEmpty ? _freelancerName[0].toUpperCase() : 'F',
+                                        style: AppTextStyles.bodyMedium.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      )
+                                    : null,
                               ),
                             ),
                           ],
@@ -120,44 +170,68 @@ class FreelancerHomeScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    _PendingJobCard(
-                      title: 'Kitchen leaking problem',
-                      location: 'Irbid, petra st.',
-                      description:
-                          'The kitchen is leaking and we need help fixing it!',
-                      postedDate: 'Posted on 11/09/25',
-                      onAccept: () {},
-                      onDecline: () {},
-                      onMessage: () =>
-                          context.push('/freelancer/chat'),
-                    ),
+                    // LIVE REQUESTS FEED
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('freelancer_requests')
+                          .where('freelancerId', isEqualTo: currentUserId)
+                          .where('status', isEqualTo: 'pending') // Only show pending requests
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
 
-                    const SizedBox(height: AppDimensions.paddingM),
+                        if (snapshot.hasError) {
+                          return const Center(child: Text('Error loading requests.'));
+                        }
 
-                    _PendingJobCard(
-                      title: 'Bathroom leaking problem',
-                      location: 'Irbid, rahbat.',
-                      description:
-                          'The bathroom is leaking and we need help fixing it!',
-                      postedDate: 'Posted on 24/09/25',
-                      onAccept: () {},
-                      onDecline: () {},
-                      onMessage: () =>
-                          context.push('/freelancer/chat'),
-                    ),
+                        final requests = snapshot.data?.docs ?? [];
 
-                    const SizedBox(height: AppDimensions.paddingM),
+                        if (requests.isEmpty) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingXL),
+                            child: Center(
+                              child: Text(
+                                'No pending requests right now.',
+                                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                              ),
+                            ),
+                          );
+                        }
 
-                    _PendingJobCard(
-                      title: 'Bathroom leaking problem',
-                      location: 'Irbid, rahbat.',
-                      description:
-                          'The bathroom is leaking and we need help fixing it!',
-                      postedDate: 'Posted on 24/09/25',
-                      onAccept: () {},
-                      onDecline: () {},
-                      onMessage: () =>
-                          context.push('/freelancer/chat'),
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: requests.length,
+                          itemBuilder: (context, index) {
+                            final requestData = requests[index].data() as Map<String, dynamic>;
+                            final requestId = requests[index].id;
+                            
+                            final title = requestData['title']?.toString() ?? 'Service Request';
+                            final location = requestData['location']?.toString() ?? 'Location not specified';
+                            final description = requestData['description']?.toString() ?? 'No details provided.';
+                            
+                            final createdAt = requestData['createdAt'] as Timestamp?;
+                            final dateString = createdAt != null 
+                                ? 'Posted on ${DateFormat('dd/MM/yy').format(createdAt.toDate())}' 
+                                : 'Recently';
+
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: AppDimensions.paddingM),
+                              child: _PendingJobCard(
+                                title: title,
+                                location: location,
+                                description: description,
+                                postedDate: dateString,
+                                onAccept: () => _updateRequestStatus(requestId, 'accepted'),
+                                onDecline: () => _updateRequestStatus(requestId, 'declined'),
+                                onMessage: () => context.push('/freelancer/chat'), // Pass client ID in future
+                              ),
+                            );
+                          },
+                        );
+                      },
                     ),
 
                     const SizedBox(height: AppDimensions.paddingXL),
@@ -165,7 +239,6 @@ class FreelancerHomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-
             const FreelancerBottomNav(currentIndex: 0),
           ],
         ),
@@ -256,8 +329,7 @@ class _PendingJobCard extends StatelessWidget {
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.primaryNavy),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusFull),
+                      borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                     ),
                   ),
                   child: Text(
@@ -275,8 +347,7 @@ class _PendingJobCard extends StatelessWidget {
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.divider),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusFull),
+                      borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                     ),
                   ),
                   child: Text(
@@ -293,8 +364,7 @@ class _PendingJobCard extends StatelessWidget {
                   onPressed: onMessage,
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusFull),
+                      borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                     ),
                   ),
                   child: Text(

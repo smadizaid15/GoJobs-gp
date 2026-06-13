@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
@@ -17,11 +20,10 @@ class _JobseekerLanguageScreenState
   bool _showSearch = false;
   String _search = '';
   final _searchController = TextEditingController();
+  bool _isLoading = true;
+  bool _isSaving = false;
 
-  final List<Map<String, String>> _languages = [
-    {'name': 'Arabic', 'level': 'First language', 'flag': '🇸🇦'},
-    {'name': 'English', 'level': 'Level 8', 'flag': '🇬🇧'},
-  ];
+  List<Map<String, dynamic>> _languages = [];
 
   final List<Map<String, String>> _allLanguages = [
     {'name': 'Arabic', 'flag': '🇸🇦'},
@@ -35,6 +37,60 @@ class _JobseekerLanguageScreenState
     {'name': 'Japanese', 'flag': '🇯🇵'},
     {'name': 'Korean', 'flag': '🇰🇷'},
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguages();
+  }
+
+  Future<void> _loadLanguages() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        if (doc.exists && doc.data() != null) {
+          final data = doc.data()!;
+          if (data['languages'] != null) {
+            setState(() {
+              _languages = List<Map<String, dynamic>>.from(data['languages']);
+            });
+          }
+        }
+      } catch (e) {
+        debugPrint("Error loading languages: $e");
+      }
+    }
+    setState(() => _isLoading = false);
+  }
+
+  Future<void> _saveLanguages() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    setState(() => _isSaving = true);
+
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        'languages': _languages,
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Languages saved!'), backgroundColor: Colors.green),
+        );
+        context.pop();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save: $e'), backgroundColor: AppColors.error),
+        );
+      }
+    } finally {
+      setState(() => _isSaving = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -53,7 +109,9 @@ class _JobseekerLanguageScreenState
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: _isLoading 
+        ? const Center(child: CircularProgressIndicator()) 
+        : SingleChildScrollView(
           padding: const EdgeInsets.symmetric(
             horizontal: AppDimensions.paddingL,
           ),
@@ -64,7 +122,7 @@ class _JobseekerLanguageScreenState
 
               //go back 
               GestureDetector(
-                onTap: () => context.go('/jobseeker/profile'),
+                onTap: () => context.pop(),
                 child: const Icon(
                   Icons.arrow_back,
                   color: AppColors.textPrimary,
@@ -125,7 +183,7 @@ class _JobseekerLanguageScreenState
                   child: Row(
                     children: [
                       Text(
-                        lang['flag']!,
+                        lang['flag'] ?? '🌐',
                         style: const TextStyle(fontSize: 24),
                       ),
                       const SizedBox(width: AppDimensions.paddingM),
@@ -135,7 +193,7 @@ class _JobseekerLanguageScreenState
                               CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${lang['name']} (${lang['level']})',
+                              '${lang['name']} (${lang['level'] ?? 'Basic'})',
                               style: AppTextStyles.bodyMedium
                                   .copyWith(
                                 fontWeight: FontWeight.bold,
@@ -143,7 +201,7 @@ class _JobseekerLanguageScreenState
                               ),
                             ),
                             Text(
-                              'Oral: Level 10\nWritten: Level 10',
+                              'Added to profile',
                               style: AppTextStyles.bodySmall
                                   .copyWith(
                                 color: AppColors.textSecondary,
@@ -201,7 +259,7 @@ class _JobseekerLanguageScreenState
                           onChanged: (val) =>
                               setState(() => _search = val),
                           decoration: InputDecoration(
-                            hintText: 'Search skills',
+                            hintText: 'Search language',
                             hintStyle: AppTextStyles.bodySmall,
                             border: InputBorder.none,
                             filled: false,
@@ -223,7 +281,7 @@ class _JobseekerLanguageScreenState
                         setState(() {
                           _languages.add({
                             'name': lang['name']!,
-                            'level': 'Level 1',
+                            'level': 'Fluent',
                             'flag': lang['flag']!,
                           });
                           _showSearch = false;
@@ -280,10 +338,10 @@ class _JobseekerLanguageScreenState
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
-                  onPressed: () =>
-                      context.go('/jobseeker/profile'),
-                  child: Text('SAVE',
-                      style: AppTextStyles.buttonText),
+                  onPressed: _isSaving ? null : _saveLanguages,
+                  child: _isSaving 
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text('SAVE', style: AppTextStyles.buttonText),
                 ),
               ),
 

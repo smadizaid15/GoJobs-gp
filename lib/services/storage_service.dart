@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:file_picker/file_picker.dart' as fp;
 import 'package:image_picker/image_picker.dart';
 
 class StorageService {
@@ -9,8 +9,9 @@ class StorageService {
   // pick and upload cv
   Future<String?> pickAndUploadCV(String userId) async {
     try {
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
+      // THE FIX: Removed .platform here
+      final result = await fp.FilePicker.pickFiles(
+        type: fp.FileType.custom,
         allowedExtensions: ['pdf', 'doc', 'docx'],
       );
 
