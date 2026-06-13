@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart'; // Make sure this is in your pubspec.yaml
+import 'package:intl/intl.dart'; 
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -81,7 +81,7 @@ class _FreelancerHomeScreenState extends State<FreelancerHomeScreen> {
                   children: [
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Top bar
+                  
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -170,12 +170,12 @@ class _FreelancerHomeScreenState extends State<FreelancerHomeScreen> {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // LIVE REQUESTS FEED
+                 
                     StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection('freelancer_requests')
                           .where('freelancerId', isEqualTo: currentUserId)
-                          .where('status', isEqualTo: 'pending') // Only show pending requests
+                          .where('status', isEqualTo: 'pending')
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -226,7 +226,7 @@ class _FreelancerHomeScreenState extends State<FreelancerHomeScreen> {
                                 postedDate: dateString,
                                 onAccept: () => _updateRequestStatus(requestId, 'accepted'),
                                 onDecline: () => _updateRequestStatus(requestId, 'declined'),
-                                onMessage: () => context.push('/freelancer/chat'), // Pass client ID in future
+                                onMessage: () => context.push('/freelancer/chat'), 
                               ),
                             );
                           },

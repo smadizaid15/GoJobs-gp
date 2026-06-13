@@ -91,7 +91,7 @@ class _FreelancerNotificationsScreenState extends State<FreelancerNotificationsS
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                  // LIVE NOTIFICATIONS FEED
+                 
                   Expanded(
                     child: StreamBuilder<QuerySnapshot>(
                       stream: _firestore

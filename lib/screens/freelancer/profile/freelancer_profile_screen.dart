@@ -19,7 +19,7 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isSubmitting = false;
 
-  // Toggle availability status in Firestore
+
   Future<void> _toggleAvailability(bool value) async {
     final user = _auth.currentUser;
     if (user == null) return;
@@ -88,7 +88,7 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        // Header Container
+                       
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(AppDimensions.paddingL),
@@ -102,7 +102,7 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Top Navigation Icons
+                             
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
@@ -125,7 +125,7 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
 
                               const SizedBox(height: AppDimensions.paddingM),
 
-                              // Profile Avatar & Badges Row
+                             
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
@@ -169,7 +169,7 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
                                     ],
                                   ),
                                   
-                                  // Live Marketplace Toggle Switch
+                                
                                   Column(
                                     children: [
                                       Text(
@@ -204,7 +204,7 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
 
                               const SizedBox(height: AppDimensions.paddingM),
 
-                              // Dynamic Name Display
+                            
                               Text(
                                 displayName,
                                 style: AppTextStyles.heading3.copyWith(
@@ -213,7 +213,7 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
                                 ),
                               ),
 
-                              // Dynamic Location Display
+                           
                               Text(
                                 location,
                                 style: AppTextStyles.bodySmall.copyWith(
@@ -223,7 +223,7 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
 
                               const SizedBox(height: AppDimensions.paddingM),
 
-                              // Edit Profile Button Action
+                              
                               GestureDetector(
                                 onTap: () => context.go('/freelancer/edit-profile'),
                                 child: Container(
@@ -271,7 +271,7 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
 
                         const SizedBox(height: AppDimensions.paddingL),
 
-                        // Management Sections Navigation
+                       
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: AppDimensions.paddingL,

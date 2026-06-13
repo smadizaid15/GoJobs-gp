@@ -20,7 +20,7 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
 
   final List<String> _jobTypes = ['Full time', 'Part time', 'Remote'];
   
-  // Basic lists for the dropdown menus
+ 
   final List<String> _categories = ['Design', 'Technology', 'Business', 'Marketing'];
   final Map<String, List<String>> _subCategories = {
     'Design': ['UI/UX Design', 'Graphic Design', 'Motion Graphics'],
@@ -44,7 +44,7 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Back + title
+          
               Row(
                 children: [
                   GestureDetector(
@@ -67,7 +67,7 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Category Dropdown
+           
               _FilterSection(
                 title: 'Category',
                 isExpanded: true,
@@ -85,7 +85,7 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
                     onChanged: (newValue) {
                       setState(() {
                         _selectedCategory = newValue!;
-                        // Reset subcategory when category changes
+                        
                         _selectedSubCategory = _subCategories[_selectedCategory]!.first;
                       });
                     },
@@ -95,7 +95,7 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Sub Category Dropdown
+            
               _FilterSection(
                 title: 'Sub Category',
                 isExpanded: false,
@@ -121,7 +121,7 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Location Dropdown
+              
               _FilterSection(
                 title: 'Location',
                 isExpanded: false,
@@ -147,7 +147,7 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Salary
+          
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -201,7 +201,7 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Job Type
+              
               Text(
                 'Job Type',
                 style: AppTextStyles.bodyMedium.copyWith(
@@ -244,13 +244,13 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Search button
+           
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Send the selected data back to the search screen!
+                    
                     context.pop({
                       'category': _selectedCategory,
                       'subCategory': _selectedSubCategory,

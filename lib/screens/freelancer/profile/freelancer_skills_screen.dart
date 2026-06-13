@@ -139,7 +139,7 @@ class _FreelancerSkillsScreenState extends State<FreelancerSkillsScreen> {
 
                         const SizedBox(height: AppDimensions.paddingM),
 
-                        // Search bar
+                        
                         Container(
                           height: 48,
                           padding: const EdgeInsets.symmetric(
@@ -185,7 +185,7 @@ class _FreelancerSkillsScreenState extends State<FreelancerSkillsScreen> {
                     ),
                   ),
 
-                  // Skills 
+                 
                   Expanded(
                     child: ListView.builder(
                       padding: const EdgeInsets.symmetric(
@@ -239,7 +239,7 @@ class _FreelancerSkillsScreenState extends State<FreelancerSkillsScreen> {
                     ),
                   ),
 
-                  // Selected skills
+                  
                   if (_selectedSkills.isNotEmpty) ...[
                     Container(
                       width: double.infinity,

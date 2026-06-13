@@ -31,7 +31,7 @@ class _JobseekerMyApplicationScreenState extends State<JobseekerMyApplicationScr
   Future<void> _fetchRealApplicationDetails() async {
     try {
       final currentUserId = FirebaseAuth.instance.currentUser?.uid;
-      // THE FIX: We perfectly match the "unknown_job" safety net we used when saving
+      
       final currentJobId = widget.job?['id'] ?? 'unknown_job'; 
 
       if (currentUserId != null) {
@@ -42,7 +42,7 @@ class _JobseekerMyApplicationScreenState extends State<JobseekerMyApplicationScr
             .get();
 
         if (snapshot.docs.isNotEmpty) {
-          // Sort the list in Dart to guarantee we grab the NEWEST application
+          
           final docs = snapshot.docs;
           docs.sort((a, b) {
             final aTime = a.data()['appliedAt'] as Timestamp?;
@@ -85,7 +85,7 @@ class _JobseekerMyApplicationScreenState extends State<JobseekerMyApplicationScr
 
     try {
       final Uri url = Uri.parse(_actualCvUrl!);
-      // THE FIX: Removed external mode limit so Chrome web browser allows it to open safely
+      
       await launchUrl(url); 
     } catch (e) {
       print('Error opening CV link: $e');

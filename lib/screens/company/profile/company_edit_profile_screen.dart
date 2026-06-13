@@ -28,7 +28,7 @@ class _CompanyEditProfileScreenState extends State<CompanyEditProfileScreen> {
   bool _isLoading = true;
   bool _isSaving = false;
   String? _logoUrl;
-  Uint8List? _webImageBytes; // For web/mobile preview bytes safely
+  Uint8List? _webImageBytes; 
 
   @override
   void initState() {
@@ -46,7 +46,7 @@ class _CompanyEditProfileScreenState extends State<CompanyEditProfileScreen> {
     super.dispose();
   }
 
-  // Fetch current company profile from Firestore dynamically
+  
   Future<void> _loadCompanyData() async {
     try {
       final uid = FirebaseAuth.instance.currentUser?.uid;
@@ -72,7 +72,6 @@ class _CompanyEditProfileScreenState extends State<CompanyEditProfileScreen> {
     }
   }
 
-  // Handle Logo picking from Gallery
   Future<void> _handlePickLogo() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(
@@ -88,7 +87,7 @@ class _CompanyEditProfileScreenState extends State<CompanyEditProfileScreen> {
     }
   }
 
-  // Save modified profile fields and upload picture if picked
+  
   Future<void> _handleSaveProfile() async {
     if (_nameController.text.trim().isEmpty) {
       _showSnackBar('Company name cannot be empty', isError: true);
@@ -103,7 +102,7 @@ class _CompanyEditProfileScreenState extends State<CompanyEditProfileScreen> {
 
       String? updatedLogoUrl = _logoUrl;
 
-      // If a new logo was selected, upload it to Firebase Storage
+     
       if (_webImageBytes != null) {
         final storageRef = FirebaseStorage.instance
             .ref()
@@ -118,7 +117,7 @@ class _CompanyEditProfileScreenState extends State<CompanyEditProfileScreen> {
         updatedLogoUrl = await snapshot.ref.getDownloadURL();
       }
 
-      // Sync data changes directly to Firestore document
+     
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
         'companyName': _nameController.text.trim(),
         'category': _categoryController.text.trim(),
@@ -193,7 +192,7 @@ class _CompanyEditProfileScreenState extends State<CompanyEditProfileScreen> {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Dynamic Avatar/Logo Selector Section
+          
               Center(
                 child: GestureDetector(
                   onTap: _isSaving ? null : _handlePickLogo,
@@ -273,7 +272,7 @@ class _CompanyEditProfileScreenState extends State<CompanyEditProfileScreen> {
               TextField(
                 controller: _passwordController,
                 obscureText: true,
-                enabled: false, // Keeping it protected/obfuscated
+                enabled: false,
               ),
 
               const SizedBox(height: AppDimensions.paddingM),

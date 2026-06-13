@@ -31,7 +31,7 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: () => context.go('/student/home'), // Prevent infinite loop
+                    onTap: () => context.go('/student/home'), 
                     child: const Icon(Icons.close, color: AppColors.textPrimary),
                   ),
                   const Icon(Icons.more_vert, color: AppColors.textPrimary),
@@ -40,7 +40,7 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Company logo
+              
               Center(
                 child: Column(
                   children: [
@@ -71,7 +71,7 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Job title
+              
               Center(
                 child: Text(
                   title,
@@ -98,7 +98,6 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
 
               const Spacer(),
 
-              // Success 
               const Icon(
                 Icons.check_circle_outline,
                 color: AppColors.primaryOrange,
@@ -127,7 +126,7 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
 
               const Spacer(),
 
-              // View application 
+              
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
@@ -152,7 +151,7 @@ class StudentApplicationSuccessScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Back to home 
+            
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,

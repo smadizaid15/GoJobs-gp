@@ -53,7 +53,7 @@ class _JobseekerNotificationsScreenState extends State<JobseekerNotificationsScr
                   children: [
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Top bar
+                 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -111,7 +111,7 @@ class _JobseekerNotificationsScreenState extends State<JobseekerNotificationsScr
                             radius: 20,
                             backgroundColor: AppColors.primaryNavy,
                             child: Text(
-                              'Z', // Could be dynamic if pulling from authProvider
+                              'Z',
                               style: AppTextStyles.bodyMedium.copyWith(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -124,7 +124,7 @@ class _JobseekerNotificationsScreenState extends State<JobseekerNotificationsScr
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // Filter 
+                   
                     Row(
                       children: [
                         _buildFilterTab('All'),
@@ -144,7 +144,7 @@ class _JobseekerNotificationsScreenState extends State<JobseekerNotificationsScr
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // LIVE Notifications from Firestore
+                 
                     StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection('notifications')
@@ -165,7 +165,7 @@ class _JobseekerNotificationsScreenState extends State<JobseekerNotificationsScr
                           );
                         }
 
-                        // Extract and sort manually to avoid needing a composite index
+                        
                         final docs = snapshot.data?.docs ?? [];
                         docs.sort((a, b) {
                           final tA = (a.data() as Map<String, dynamic>)['createdAt'] as Timestamp?;

@@ -11,7 +11,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Safely extract data
+ 
     final data = jobData ?? {};
     final title = data['title']?.toString() ?? 'Internship';
     final company = data['companyName']?.toString() ?? 'Company';
@@ -33,7 +33,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              //go back 
+             
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,
@@ -49,7 +49,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Company logo and name
+              
               Center(
                 child: Column(
                   children: [
@@ -88,7 +88,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Title
+                    
                     Center(
                       child: Text(
                         title,
@@ -102,7 +102,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingS),
 
-                    // Location and type and duration
+                   
                     Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -133,7 +133,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // View company 
+                   
                     Center(
                       child: OutlinedButton(
                         onPressed: () {},
@@ -157,7 +157,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Job description
+                   
                     Text(
                       'Job Description',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -190,7 +190,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
                       const SizedBox(height: AppDimensions.paddingL),
                     ],
 
-                    // Location Map Placeholder
+                    
                     Text(
                       'Location',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -229,7 +229,6 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Information
                     Text(
                       'Informations',
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -247,7 +246,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingXL),
 
-                    // Apply - Pass the dynamic job info to the CV upload screen
+                  
                     SizedBox(
                       width: double.infinity,
                       height: AppDimensions.buttonHeight,

@@ -66,7 +66,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
   }
   Future<void> _countCourses() async {
     try {
-      // Assuming your courses are stored in a 'courses' collection
+    
       final snapshot = await _firestore.collection('courses').get();
       if (mounted) {
         setState(() {
@@ -95,7 +95,6 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                   children: [
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Top bar
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -170,7 +169,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // 50% off banner
+                    
                     Container(
                       width: double.infinity,
                       height: 130,
@@ -263,7 +262,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // Quick Actions Row
+                
                     Row(
                       children: [
                         Expanded(
@@ -333,7 +332,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                                   const SizedBox(
                                       height: AppDimensions.paddingS),
                                   Text(
-                                    '$_internshipCount+', // Dynamically count internships
+                                    '$_internshipCount+',
                                     style: AppTextStyles.heading3.copyWith(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -419,13 +418,13 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // LIVE INTERNSHIPS FEED
+                   
                     StreamBuilder<QuerySnapshot>(
                       stream: _firestore
                           .collection('jobs')
                           .where('jobType', isEqualTo: 'Internship')
                           .where('isActive', isEqualTo: true)
-                          .limit(5) // Just show the top 5 on the home screen
+                          .limit(5) 
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {

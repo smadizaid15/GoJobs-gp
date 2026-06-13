@@ -37,7 +37,7 @@ class FreelancerMessagesScreen extends StatelessWidget {
                 children: [
                   const SizedBox(height: AppDimensions.paddingL),
 
-                  // Title row
+                
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
                     child: Row(
@@ -69,7 +69,7 @@ class FreelancerMessagesScreen extends StatelessWidget {
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                  // Search 
+                 
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
                     child: Container(
@@ -107,7 +107,7 @@ class FreelancerMessagesScreen extends StatelessWidget {
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                  // LIVE Message list
+                  
                   Expanded(
                     child: StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance

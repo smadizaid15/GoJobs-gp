@@ -37,7 +37,7 @@ class StudentMessagesScreen extends StatelessWidget {
                 children: [
                   const SizedBox(height: AppDimensions.paddingL),
 
-                  // Title 
+                  
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
                     child: Row(
@@ -69,7 +69,6 @@ class StudentMessagesScreen extends StatelessWidget {
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                  // Search 
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
                     child: Container(
@@ -107,7 +106,7 @@ class StudentMessagesScreen extends StatelessWidget {
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                  // LIVE Message list
+                
                   Expanded(
                     child: StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance

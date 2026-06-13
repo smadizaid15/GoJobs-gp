@@ -26,7 +26,7 @@ class JobseekerSettingsScreen extends StatelessWidget {
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Back + title
+             
               Row(
                 children: [
                   GestureDetector(
@@ -93,7 +93,7 @@ class JobseekerSettingsScreen extends StatelessWidget {
 
                     const Divider(height: 1, color: AppColors.divider),
 
-                    // Switch to freelancer mode
+                    
                     _SettingsItem(
                       icon: Icons.swap_horiz,
                       label: 'Switch to Freelancer mode',

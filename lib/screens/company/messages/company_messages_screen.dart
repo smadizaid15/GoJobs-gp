@@ -37,7 +37,7 @@ class CompanyMessagesScreen extends StatelessWidget {
                 children: [
                   const SizedBox(height: AppDimensions.paddingL),
 
-                  // Title row
+                
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
                     child: Row(
@@ -69,7 +69,7 @@ class CompanyMessagesScreen extends StatelessWidget {
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                  // Search 
+                 
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
                     child: Container(
@@ -107,10 +107,10 @@ class CompanyMessagesScreen extends StatelessWidget {
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                  // LIVE Message list
+                  
                   Expanded(
                     child: StreamBuilder<QuerySnapshot>(
-                      // Query the chats collection where the current user is a participant
+                      
                       stream: FirebaseFirestore.instance
                           .collection('chats')
                           .where('participants', arrayContains: currentUserId)
@@ -143,7 +143,7 @@ class CompanyMessagesScreen extends StatelessWidget {
                             final chatData = chatDocs[index].data() as Map<String, dynamic>;
                             final chatId = chatDocs[index].id;
                             
-                            // Extract the OTHER user's info
+                            
                             final usersMap = chatData['users'] as Map<String, dynamic>? ?? {};
                             String otherUserId = '';
                             String otherUserName = 'Unknown User';
@@ -158,7 +158,7 @@ class CompanyMessagesScreen extends StatelessWidget {
                             final lastMessage = chatData['lastMessage'] ?? 'Started a chat';
                             final updatedAt = chatData['updatedAt'] as Timestamp?;
                             
-                            // Basic unread logic (can be expanded later)
+                            
                             final unreadCount = chatData['unread_$currentUserId'] ?? 0;
                             final hasUnread = unreadCount > 0;
 
@@ -168,12 +168,12 @@ class CompanyMessagesScreen extends StatelessWidget {
                               time: _formatTimestamp(updatedAt),
                               hasUnread: hasUnread,
                               onTap: () {
-                                // Clear unread dot when tapped
+                              
                                 FirebaseFirestore.instance.collection('chats').doc(chatId).update({
                                   'unread_$currentUserId': 0,
                                 });
 
-                                // Pass data to the chat room
+                                
                                 context.push('/company/chat', extra: {
                                   'chatId': chatId,
                                   'receiverId': otherUserId,

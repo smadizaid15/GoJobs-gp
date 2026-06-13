@@ -142,7 +142,6 @@ class _LiveSavedJobCard extends StatelessWidget {
             title: 'Unavailable',
             message: 'This posting was removed.',
             onRemove: () {
-              // Replaced Arrow Function with Block Function to fix Web Compiler Crash
               jobService.toggleSavedJob(userId, jobId);
             },
           );
@@ -156,7 +155,7 @@ class _LiveSavedJobCard extends StatelessWidget {
             title: jobData['title']?.toString() ?? 'Closed',
             message: 'This position is no longer active.',
             onRemove: () {
-              // Replaced Arrow Function with Block Function
+              
               jobService.toggleSavedJob(userId, jobId);
             },
           );
@@ -176,7 +175,7 @@ class _LiveSavedJobCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppDimensions.radiusL),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05), // Replaced withOpacity for Web safety
+                  color: Colors.black.withOpacity(0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -226,7 +225,7 @@ class _LiveSavedJobCard extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    // Replaced Arrow Function with Block Function
+                    
                     jobService.toggleSavedJob(userId, jobId);
                   },
                   child: const Icon(

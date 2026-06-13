@@ -27,7 +27,7 @@ class StudentServiceProvidersScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Back and title
+            
                     Row(
                       children: [
                         GestureDetector(
@@ -50,12 +50,12 @@ class StudentServiceProvidersScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // LIVE FREELANCER DIRECTORY
+                 
                     StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection('users')
                           .where('userType', isEqualTo: 'freelancer')
-                          .where('isAvailable', isEqualTo: true) // Only show active freelancers
+                          .where('isAvailable', isEqualTo: true) 
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -88,12 +88,12 @@ class StudentServiceProvidersScreen extends StatelessWidget {
                             final data = providers[index].data() as Map<String, dynamic>;
                             
                             final name = data['fullName']?.toString() ?? data['displayName']?.toString() ?? 'Freelancer';
-                            // Pull from the expertise/serviceType fields we wired up earlier
+                           
                             final profession = data['serviceType']?.toString() ?? data['category']?.toString() ?? 'Service Provider';
                             final description = data['aboutMe']?.toString() ?? data['expertiseDescription']?.toString() ?? 'Available for hire.';
                             final profileImageUrl = data['profileImageUrl']?.toString() ?? data['logoUrl']?.toString();
 
-                            // Optional: Calculate availability string based on their shift fields
+                            
                             final shiftStart = data['shiftStart']?.toString() ?? '';
                             final shiftEnd = data['shiftEnd']?.toString() ?? '';
                             final isOpen247 = data['isOpen24_7'] as bool? ?? false;
@@ -114,7 +114,7 @@ class StudentServiceProvidersScreen extends StatelessWidget {
                                 time: timeString,
                                 imageUrl: profileImageUrl,
                                 onViewProfile: () {
-                                  // Can route to a public portfolio view if you build one
+                                
                                 },
                                 onMessage: () => context.push('/student/chat-from-providers'),
                               ),
@@ -168,7 +168,7 @@ class _ServiceProviderCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Top row (time + more)
+         
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -189,7 +189,7 @@ class _ServiceProviderCard extends StatelessWidget {
 
           const SizedBox(height: AppDimensions.paddingS),
 
-          // Avatar and name and profession
+        
           Row(
             children: [
               CircleAvatar(
@@ -238,8 +238,7 @@ class _ServiceProviderCard extends StatelessWidget {
 
           const SizedBox(height: AppDimensions.paddingS),
 
-          // Description
-          Text(
+                  Text(
             description,
             style: AppTextStyles.bodySmall.copyWith(
               color: AppColors.textSecondary,
@@ -250,7 +249,7 @@ class _ServiceProviderCard extends StatelessWidget {
 
           const SizedBox(height: AppDimensions.paddingM),
 
-          // Buttons
+        
           Row(
             children: [
               Expanded(

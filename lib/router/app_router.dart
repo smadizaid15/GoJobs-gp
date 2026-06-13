@@ -150,17 +150,16 @@ class AppRouter {
       GoRoute(path: '/company/job-type', builder: (context, state) => const CompanyJobTypeSheet()),
       GoRoute(path: '/company/applicants', builder: (context, state) => const CompanyApplicantsScreen()),
       GoRoute(path: '/company/messages', builder: (context, state) => const CompanyMessagesScreen()),
-      GoRoute(
-  path: '/company/chat',
-  builder: (context, state) {
-    // Cast the extra data so the Chat Screen knows who it is talking to
-    final chatData = state.extra as Map<String, dynamic>?; 
-    return CompanyChatScreen(chatData: chatData);
-  },
-),
       GoRoute(path: '/company/notifications', builder: (context, state) => const CompanyNotificationsScreen()),
       GoRoute(path: '/company/settings', builder: (context, state) => const CompanySettingsScreen()),
       GoRoute(path: '/company/update-password', builder: (context, state) => const CompanyUpdatePasswordScreen()),
+      GoRoute(
+       path: '/company/chat',
+       builder: (context, state) {
+       final chatData = state.extra as Map<String, dynamic>?; 
+    return CompanyChatScreen(chatData: chatData);
+     },
+    ),
       GoRoute(
         path: '/company/applicant-detail',
         builder: (context, state) {
@@ -169,27 +168,14 @@ class AppRouter {
         },
       ),
 
+
+
       // JobSeeker
       GoRoute(path: '/jobseeker/home', builder: (context, state) => const JobseekerHomeScreen()),
-      
-      GoRoute(
-        path: '/jobseeker/search', 
-        builder: (context, state) {
-          final filter = state.extra as String?;
-          return JobseekerSearchScreen(initialFilter: filter);
-        }
-      ),
-
       GoRoute(path: '/jobseeker/filter', builder: (context, state) => const JobseekerFilterScreen()),
       GoRoute(path: '/jobseeker/saved', builder: (context, state) => const JobseekerSavedScreen()),
       GoRoute(path: '/jobseeker/messages', builder: (context, state) => const JobseekerMessagesScreen()),
-      GoRoute(
-  path: '/jobseeker/chat',
-  builder: (context, state) {
-    final chatData = state.extra as Map<String, dynamic>?; 
-    return JobseekerChatScreen(chatData: chatData);
-  },
-),
+      GoRoute(path: '/jobseeker/chat', builder: (context, state) => const JobseekerChatScreen()),
       GoRoute(path: '/jobseeker/notifications', builder: (context, state) => const JobseekerNotificationsScreen()),
       GoRoute(path: '/jobseeker/settings', builder: (context, state) => const JobseekerSettingsScreen()),
       GoRoute(path: '/jobseeker/update-password', builder: (context, state) => const JobseekerUpdatePasswordScreen()),
@@ -203,6 +189,13 @@ class AppRouter {
       GoRoute(path: '/jobseeker/resume', builder: (context, state) => const JobseekerResumeScreen()),
       GoRoute(path: '/jobseeker/service-providers', builder: (context, state) => const JobseekerServiceProvidersScreen()),
       GoRoute(path: '/jobseeker/chat-from-providers', builder: (context, state) => const JobseekerChatScreen()),
+      GoRoute(
+        path: '/jobseeker/search', 
+        builder: (context, state) {
+          final filter = state.extra as String?;
+          return JobseekerSearchScreen(initialFilter: filter);
+        }
+      ),
       GoRoute(
         path: '/jobseeker/job-detail',
         builder: (context, state) {
@@ -239,6 +232,7 @@ class AppRouter {
         },
       ),
 
+
       // Freelancer
       GoRoute(path: '/freelancer/home', builder: (context, state) => const FreelancerHomeScreen()),
       GoRoute(path: '/freelancer/profile', builder: (context, state) => const FreelancerProfileScreen()),
@@ -249,16 +243,16 @@ class AppRouter {
       GoRoute(path: '/freelancer/skills', builder: (context, state) => const FreelancerSkillsScreen()),
       GoRoute(path: '/freelancer/portfolio', builder: (context, state) => const FreelancerPortfolioScreen()),
       GoRoute(path: '/freelancer/messages', builder: (context, state) => const FreelancerMessagesScreen()),
-      GoRoute(
-  path: '/freelancer/chat',
-  builder: (context, state) {
-    final chatData = state.extra as Map<String, dynamic>?; 
-    return FreelancerChatScreen(chatData: chatData);
-  },
-),
       GoRoute(path: '/freelancer/notifications', builder: (context, state) => const FreelancerNotificationsScreen()),
       GoRoute(path: '/freelancer/settings', builder: (context, state) => const FreelancerSettingsScreen()),
-      
+      GoRoute(
+             path: '/freelancer/chat',
+             builder: (context, state) {
+             final chatData = state.extra as Map<String, dynamic>?; 
+             return FreelancerChatScreen(chatData: chatData);
+        },
+       ),
+     
 
       // Student
       GoRoute(path: '/student/home', builder: (context, state) => const StudentHomeScreen()),
@@ -266,13 +260,6 @@ class AppRouter {
       GoRoute(path: '/student/settings', builder: (context, state) => const StudentSettingsScreen()),
       GoRoute(path: '/student/update-password', builder: (context, state) => const StudentUpdatePasswordScreen()),
       GoRoute(path: '/student/messages', builder: (context, state) => const StudentMessagesScreen()),
-      GoRoute(
-  path: '/student/chat',
-  builder: (context, state) {
-    final chatData = state.extra as Map<String, dynamic>?; 
-    return StudentChatScreen(chatData: chatData);
-  },
-),
       GoRoute(path: '/student/saved', builder: (context, state) => const StudentSavedScreen()),
       GoRoute(path: '/student/profile', builder: (context, state) => const StudentProfileScreen()),
       GoRoute(path: '/student/courses', builder: (context, state) => const StudentCoursesScreen()),

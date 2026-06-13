@@ -26,7 +26,7 @@ class CompanySettingsScreen extends StatelessWidget {
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Back + title
+              
               Row(
                 children: [
                   GestureDetector(

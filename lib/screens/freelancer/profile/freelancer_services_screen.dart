@@ -58,8 +58,8 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Services updated!'), backgroundColor: Colors.green),
         );
-        Navigator.pop(context); // Close bottom sheet
-        context.go('/freelancer/profile'); // Go back to profile
+        Navigator.pop(context); 
+        context.go('/freelancer/profile'); 
       }
     } catch (e) {
       if (mounted) {

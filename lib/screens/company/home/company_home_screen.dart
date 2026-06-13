@@ -72,7 +72,7 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Company header 
+            
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(AppDimensions.paddingL),
@@ -132,7 +132,7 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                             ),
                           ),
                           const SizedBox(width: AppDimensions.paddingS),
-                          // ---> DYNAMIC LOGO BUILDER <---
+                          
                           GestureDetector(
                             onTap: () => context.go('/company/profile'),
                             child: StreamBuilder<DocumentSnapshot>(

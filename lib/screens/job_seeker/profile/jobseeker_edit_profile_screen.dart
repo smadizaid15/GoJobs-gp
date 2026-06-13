@@ -23,7 +23,7 @@ class _JobseekerEditProfileScreenState extends State<JobseekerEditProfileScreen>
   final _locationController = TextEditingController();
   bool _isMale = true;
   
-  // Phone dropdown state
+  
   String _selectedPhoneCode = '+962';
   final List<String> _phoneCodes = ['+962', '+971', '+966', '+1', '+44'];
 
@@ -62,7 +62,7 @@ class _JobseekerEditProfileScreenState extends State<JobseekerEditProfileScreen>
     setState(() => _isLoading = false);
   }
 
-  // NATIVE CALENDAR PICKER LOGIC
+  
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -84,7 +84,7 @@ class _JobseekerEditProfileScreenState extends State<JobseekerEditProfileScreen>
     );
     if (picked != null) {
       setState(() {
-        // Formats as DD/MM/YYYY
+        
         _dobController.text = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
       });
     }
@@ -101,7 +101,7 @@ class _JobseekerEditProfileScreenState extends State<JobseekerEditProfileScreen>
         'fullName': _nameController.text.trim(),
         'dob': _dobController.text.trim(),
         'email': _emailController.text.trim(),
-        'phoneCode': _selectedPhoneCode, // Save the dropdown code
+        'phoneCode': _selectedPhoneCode,
         'phone': _phoneController.text.trim(),
         'location': _locationController.text.trim(),
         'gender': _isMale ? 'Male' : 'Female',
@@ -170,8 +170,8 @@ class _JobseekerEditProfileScreenState extends State<JobseekerEditProfileScreen>
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(
                 controller: _dobController,
-                readOnly: true, // Prevents typing so they HAVE to use the calendar
-                onTap: () => _selectDate(context), // Opens the calendar
+                readOnly: true,
+                onTap: () => _selectDate(context), 
                 decoration: const InputDecoration(
                   hintText: 'Select your birthday',
                   suffixIcon: Icon(
@@ -213,7 +213,7 @@ class _JobseekerEditProfileScreenState extends State<JobseekerEditProfileScreen>
               const SizedBox(height: AppDimensions.paddingXS),
               Row(
                 children: [
-                  // DYNAMIC DROPDOWN FOR PHONE CODE
+                 
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingM),
                     decoration: BoxDecoration(

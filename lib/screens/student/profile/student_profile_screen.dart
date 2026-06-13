@@ -53,7 +53,6 @@ class StudentProfileScreen extends StatelessWidget {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        // Header
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(AppDimensions.paddingL),
@@ -67,7 +66,6 @@ class StudentProfileScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Top icons
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
@@ -90,7 +88,6 @@ class StudentProfileScreen extends StatelessWidget {
 
                               const SizedBox(height: AppDimensions.paddingM),
 
-                              // Profile pic
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child: CircleAvatar(
@@ -140,7 +137,6 @@ class StudentProfileScreen extends StatelessWidget {
 
                               const SizedBox(height: AppDimensions.paddingM),
 
-                              // Edit profile 
                               GestureDetector(
                                 onTap: () => context.go('/student/edit-profile'),
                                 child: Container(
@@ -180,7 +176,6 @@ class StudentProfileScreen extends StatelessWidget {
 
                         const SizedBox(height: AppDimensions.paddingL),
 
-                        // Profile info 
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: AppDimensions.paddingL,
@@ -188,7 +183,6 @@ class StudentProfileScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Back button
                               GestureDetector(
                                 onTap: () => context.go('/student/home'),
                                 child: const Icon(
@@ -281,7 +275,6 @@ class StudentProfileScreen extends StatelessWidget {
 
                               const SizedBox(height: AppDimensions.paddingXL),
 
-                              // Done Button
                               SizedBox(
                                 width: double.infinity,
                                 height: AppDimensions.buttonHeight,
@@ -334,7 +327,6 @@ class _ProfileField extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Expanded wrapper strictly kills the RenderFlex overflow error
           Expanded(
             child: Text(
               value, 

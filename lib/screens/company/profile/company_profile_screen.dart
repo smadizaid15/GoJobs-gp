@@ -21,7 +21,7 @@ class CompanyProfileScreen extends StatefulWidget {
 class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
   final _jobService = JobService();
 
-  // Toggle the job's active/closed status in Firestore
+  
   Future<void> _toggleJobStatus(String jobId, bool isNowActive) async {
     try {
       await FirebaseFirestore.instance.collection('jobs').doc(jobId).update({
@@ -49,7 +49,7 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    // LIVE HEADER DATA
+                   
                     StreamBuilder<DocumentSnapshot>(
                       stream: FirebaseFirestore.instance.collection('users').doc(currentUserId).snapshots(),
                       builder: (context, snapshot) {
@@ -83,7 +83,7 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
                           ),
                           child: Column(
                             children: [
-                              // Top icons
+                             
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
@@ -100,7 +100,7 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
 
                               const SizedBox(height: AppDimensions.paddingM),
 
-                              // Dynamic Logo
+                              
                               Container(
                                 width: 80,
                                 height: 80,
@@ -126,7 +126,7 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
 
                               const SizedBox(height: AppDimensions.paddingM),
 
-                              // Dynamic Name & Location
+                              
                               Text(
                                 companyName,
                                 style: AppTextStyles.heading3.copyWith(
@@ -142,7 +142,7 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
 
                               const SizedBox(height: AppDimensions.paddingM),
 
-                              // Edit profile 
+                             
                               GestureDetector(
                                 onTap: () => context.go('/company/edit-profile'),
                                 child: Container(
@@ -176,7 +176,7 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    // Profile tab toggles
+                   
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
                       child: Column(
@@ -228,7 +228,7 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
 
                           const SizedBox(height: AppDimensions.paddingM),
 
-                          // LIVE Job listings from Firebase
+                        
                           StreamBuilder<List<JobModel>>(
                             stream: _jobService.getCompanyJobs(currentUserId),
                             builder: (context, snapshot) {
@@ -273,7 +273,7 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
 
                           const SizedBox(height: AppDimensions.paddingL),
 
-                          // Action buttons
+                      
                           Row(
                             children: [
                               Expanded(
@@ -286,7 +286,7 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
                                     ),
                                   ),
                                   child: Text(
-                                    'POST NEW', // Shortened slightly to prevent overflow on small screens
+                                    'POST NEW', 
                                     style: AppTextStyles.bodySmall.copyWith(
                                       color: AppColors.companyGold,
                                       fontWeight: FontWeight.w600,

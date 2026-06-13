@@ -17,15 +17,15 @@ class CompanyNotificationsScreen extends StatefulWidget {
 }
 
 class _CompanyNotificationsScreenState extends State<CompanyNotificationsScreen> {
-  String _currentFilter = 'All'; // Can be 'All', 'Jobs', 'Messages', 'Applications'
+  String _currentFilter = 'All'; 
 
   Future<void> _markAsReadAndNavigate(String docId, String? route) async {
     try {
-      // Mark as read in Firebase
+      
       await FirebaseFirestore.instance.collection('notifications').doc(docId).update({
         'isRead': true,
       });
-      // Navigate if a route was provided
+      
       if (route != null && route.isNotEmpty && mounted) {
         context.go(route);
       }
@@ -48,7 +48,7 @@ class _CompanyNotificationsScreenState extends State<CompanyNotificationsScreen>
                 children: [
                   const SizedBox(height: AppDimensions.paddingL),
 
-                  // Top bar
+                
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
                     child: Row(
@@ -103,7 +103,7 @@ class _CompanyNotificationsScreenState extends State<CompanyNotificationsScreen>
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                  // Filter tabs
+                  
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
                     child: Row(
@@ -128,10 +128,10 @@ class _CompanyNotificationsScreenState extends State<CompanyNotificationsScreen>
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                  // LIVE Firebase Notifications
+                  
                   Expanded(
                     child: StreamBuilder<QuerySnapshot>(
-                      // Only fetch notifications sent to this specific company
+                      
                       stream: FirebaseFirestore.instance
                           .collection('notifications')
                           .where('recipientId', isEqualTo: currentUserId)
@@ -147,7 +147,7 @@ class _CompanyNotificationsScreenState extends State<CompanyNotificationsScreen>
 
                         var docs = snapshot.data?.docs ?? [];
 
-                        // 1. Filter locally based on the selected tab
+                       
                         if (_currentFilter != 'All') {
                           docs = docs.where((doc) {
                             final type = (doc.data() as Map)['type']?.toString() ?? '';
@@ -157,7 +157,7 @@ class _CompanyNotificationsScreenState extends State<CompanyNotificationsScreen>
                           }).toList();
                         }
 
-                        // 2. Sort locally by newest first (avoids needing a complex Firebase Index)
+                    
                         final sortedDocs = docs.toList();
                         sortedDocs.sort((a, b) {
                           final aTime = (a.data() as Map)['createdAt'] as Timestamp?;

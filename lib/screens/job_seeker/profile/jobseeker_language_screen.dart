@@ -120,7 +120,7 @@ class _JobseekerLanguageScreenState
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              //go back 
+              
               GestureDetector(
                 onTap: () => context.pop(),
                 child: const Icon(
@@ -131,7 +131,7 @@ class _JobseekerLanguageScreenState
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Title and Add button
+           
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -168,7 +168,7 @@ class _JobseekerLanguageScreenState
 
               const SizedBox(height: AppDimensions.paddingL),
 
-              // Languages
+             
               ..._languages.map((lang) {
                 return Container(
                   margin: const EdgeInsets.only(
@@ -224,7 +224,7 @@ class _JobseekerLanguageScreenState
                 );
               }),
 
-              // Search language
+              
               if (_showSearch) ...[
                 const SizedBox(height: AppDimensions.paddingM),
 
@@ -333,7 +333,7 @@ class _JobseekerLanguageScreenState
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Save 
+             
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,

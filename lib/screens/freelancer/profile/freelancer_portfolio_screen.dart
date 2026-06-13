@@ -74,7 +74,7 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
     setState(() {
       _existingImages.remove(imageUrl);
     });
-    // Instantly update Firestore to reflect deletion
+    
     final user = _auth.currentUser;
     if (user != null) {
       await _firestore.collection('users').doc(user.uid).update({
@@ -92,7 +92,7 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
     try {
       List<String> uploadedUrls = [];
 
-      // Upload new images to Firebase Storage
+     
       for (var image in _newSelectedImages) {
         final bytes = await image.readAsBytes();
         final fileName = '${DateTime.now().millisecondsSinceEpoch}_${image.name}';
@@ -103,10 +103,10 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
         uploadedUrls.add(url);
       }
 
-      // Combine existing images with newly uploaded ones
+     
       final finalImagesList = [..._existingImages, ...uploadedUrls];
 
-      // Update Firestore
+     
       await _firestore.collection('users').doc(user.uid).update({
         'portfolioImages': finalImagesList,
       });
@@ -205,7 +205,7 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
                     ),
                     itemCount: _existingImages.length + _newSelectedImages.length,
                     itemBuilder: (context, index) {
-                      // Render existing Firebase images
+                     
                       if (index < _existingImages.length) {
                         final imageUrl = _existingImages[index];
                         return Stack(
@@ -231,7 +231,7 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
                         );
                       }
                       
-                      // Render newly picked local images
+                      
                       final newImageIndex = index - _existingImages.length;
                       return FutureBuilder<Uint8List>(
                         future: _newSelectedImages[newImageIndex].readAsBytes(),

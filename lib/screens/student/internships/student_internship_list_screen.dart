@@ -33,7 +33,7 @@ class _StudentInternshipListScreenState extends State<StudentInternshipListScree
           children: [
             const SizedBox(height: AppDimensions.paddingL),
 
-            // Back and Search
+         
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
@@ -41,7 +41,7 @@ class _StudentInternshipListScreenState extends State<StudentInternshipListScree
               child: Row(
                 children: [
                   GestureDetector(
-                    onTap: () => context.pop(), // Safe routing
+                    onTap: () => context.pop(), 
                     child: const Icon(
                       Icons.arrow_back,
                       color: AppColors.textPrimary,
@@ -92,7 +92,7 @@ class _StudentInternshipListScreenState extends State<StudentInternshipListScree
 
             const SizedBox(height: AppDimensions.paddingL),
 
-            // title
+            
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
@@ -111,7 +111,7 @@ class _StudentInternshipListScreenState extends State<StudentInternshipListScree
 
             const SizedBox(height: AppDimensions.paddingM),
 
-            // LIVE Internship list
+         
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -130,7 +130,7 @@ class _StudentInternshipListScreenState extends State<StudentInternshipListScree
 
                   final docs = snapshot.data?.docs ?? [];
 
-                  // Apply local search and category filtering
+                 
                   final filteredInternships = docs.where((doc) {
                     final data = doc.data() as Map<String, dynamic>;
                     final title = data['title']?.toString().toLowerCase() ?? '';

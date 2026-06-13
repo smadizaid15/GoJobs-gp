@@ -148,7 +148,7 @@ class _FreelancerExpertiseScreenState extends State<FreelancerExpertiseScreen> {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // Shift times
+                   
                     Row(
                       children: [
                         Expanded(
@@ -182,7 +182,7 @@ class _FreelancerExpertiseScreenState extends State<FreelancerExpertiseScreen> {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    // Open 24/7 toggle
+                    
                     Row(
                       children: [
                         Switch(

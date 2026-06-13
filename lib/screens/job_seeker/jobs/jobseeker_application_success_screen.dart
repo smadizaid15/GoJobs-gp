@@ -7,7 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 
-// Changed to StatefulWidget to fetch the real CV name from Firebase
+
 class JobseekerApplicationSuccessScreen extends StatefulWidget {
   final Map<String, dynamic>? job;
 
@@ -30,7 +30,6 @@ class _JobseekerApplicationSuccessScreenState extends State<JobseekerApplication
  Future<void> _fetchRealApplicationDetails() async {
     try {
       final currentUserId = FirebaseAuth.instance.currentUser?.uid;
-      // THE FIX: Adding the safety net
       final currentJobId = widget.job?['id'] ?? 'unknown_job';
 
       if (currentUserId != null) {
@@ -41,7 +40,6 @@ class _JobseekerApplicationSuccessScreenState extends State<JobseekerApplication
             .get();
 
         if (snapshot.docs.isNotEmpty) {
-          // Sorting protects us from pulling an older test application
           final docs = snapshot.docs;
           docs.sort((a, b) {
             final aTime = a.data()['appliedAt'] as Timestamp?;

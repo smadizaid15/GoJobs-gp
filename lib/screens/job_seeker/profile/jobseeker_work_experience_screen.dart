@@ -93,7 +93,7 @@ class _JobseekerWorkExperienceScreenState
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              //go back 
+              
               GestureDetector(
                 onTap: () => context.pop(),
                 child: const Icon(
@@ -114,21 +114,21 @@ class _JobseekerWorkExperienceScreenState
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Job title
+              
               Text('Job title', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(controller: _jobTitleController),
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Company
+             
               Text('Company', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(controller: _companyController),
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Start and End date
+              
               Row(
                 children: [
                   Expanded(
@@ -170,7 +170,7 @@ class _JobseekerWorkExperienceScreenState
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Current position 
+             
               Row(
                 children: [
                   Checkbox(
@@ -190,7 +190,7 @@ class _JobseekerWorkExperienceScreenState
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Description
+             
               Text('Description', style: AppTextStyles.labelText),
               const SizedBox(height: AppDimensions.paddingXS),
               Container(
@@ -217,7 +217,7 @@ class _JobseekerWorkExperienceScreenState
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              // Save 
+              
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
@@ -231,7 +231,7 @@ class _JobseekerWorkExperienceScreenState
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              // Cancel (Changed from Remove for add screen logic)
+             
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,

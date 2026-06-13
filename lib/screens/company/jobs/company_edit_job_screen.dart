@@ -33,7 +33,7 @@ class _CompanyEditJobScreenState extends State<CompanyEditJobScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header
+          
             Padding(
               padding: const EdgeInsets.all(AppDimensions.paddingL),
               child: Row(
