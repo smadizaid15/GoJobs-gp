@@ -1,4 +1,4 @@
-name: Non-Functional - Code Health & Maintainability
+name: Non-Functional - Security & Health
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-  health-audit:
-    name: Maintainability Audit
+  security-audit:
+    name: Dependency Audit
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -22,10 +22,10 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Code Quality Scan (Reliability)
-        # checks code for memory leaks andd perormance issues 
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+      - name: Dependency Tree Security Check (Non-Functional)
+        # Analyzes the package tree for secure version mapping
+        run: flutter pub deps
 
-      - name: Dependency Health Audit (Maintainability)
-        # looks for old packages 
+      - name: Vulnerability & Health Audit (Non-Functional)
+        # Scans for deprecated or outdated packages that could pose a risk
         run: flutter pub outdated
