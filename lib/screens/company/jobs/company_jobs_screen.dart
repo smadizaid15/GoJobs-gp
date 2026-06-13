@@ -27,7 +27,6 @@ class CompanyJobsScreen extends StatelessWidget {
                 children: [
                   const SizedBox(height: AppDimensions.paddingL),
 
-                 
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppDimensions.paddingL,
@@ -62,11 +61,11 @@ class CompanyJobsScreen extends StatelessWidget {
 
                   const SizedBox(height: AppDimensions.paddingL),
 
-                 
                   Expanded(
                     child: StreamBuilder<List<JobModel>>(
                       stream: jobService.getCompanyJobs(
-                          authProvider.user?.uid ?? ''),
+                        authProvider.user?.uid ?? '',
+                      ),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -128,7 +127,8 @@ class CompanyJobsScreen extends StatelessWidget {
                             final job = jobs[index];
                             return Padding(
                               padding: const EdgeInsets.only(
-                                  bottom: AppDimensions.paddingM),
+                                bottom: AppDimensions.paddingM,
+                              ),
                               child: _JobCard(
                                 title: job.title,
                                 location: job.location,
@@ -225,8 +225,9 @@ class _JobCard extends StatelessWidget {
                     color: isActive
                         ? AppColors.companyGold.withValues(alpha: 0.15)
                         : AppColors.inputFill,
-                    borderRadius:
-                        BorderRadius.circular(AppDimensions.radiusFull),
+                    borderRadius: BorderRadius.circular(
+                      AppDimensions.radiusFull,
+                    ),
                   ),
                   child: Text(
                     status,

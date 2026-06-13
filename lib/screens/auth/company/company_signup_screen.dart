@@ -111,7 +111,10 @@ class _CompanySignupScreenState extends State<CompanySignupScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              Text('Company/Enterprise category', style: AppTextStyles.labelText),
+              Text(
+                'Company/Enterprise category',
+                style: AppTextStyles.labelText,
+              ),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(
                 controller: _categoryController,
@@ -140,8 +143,8 @@ class _CompanySignupScreenState extends State<CompanySignupScreen> {
                 decoration: InputDecoration(
                   hintText: '••••••••••',
                   suffixIcon: GestureDetector(
-                    onTap: () => setState(
-                        () => _obscurePassword = !_obscurePassword),
+                    onTap: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
                     child: Icon(
                       _obscurePassword
                           ? Icons.visibility_off_outlined
@@ -158,9 +161,7 @@ class _CompanySignupScreenState extends State<CompanySignupScreen> {
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(
                 controller: _licenseController,
-                decoration: const InputDecoration(
-                  hintText: '••••••••••',
-                ),
+                decoration: const InputDecoration(hintText: '••••••••••'),
                 obscureText: true,
               ),
 

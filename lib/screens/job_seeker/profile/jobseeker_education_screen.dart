@@ -15,8 +15,7 @@ class JobseekerEducationScreen extends StatefulWidget {
       _JobseekerEducationScreenState();
 }
 
-class _JobseekerEducationScreenState
-    extends State<JobseekerEducationScreen> {
+class _JobseekerEducationScreenState extends State<JobseekerEducationScreen> {
   final _levelController = TextEditingController();
   final _institutionController = TextEditingController();
   final _fieldController = TextEditingController();
@@ -32,7 +31,10 @@ class _JobseekerEducationScreenState
 
     if (_levelController.text.isEmpty || _institutionController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in required fields'), backgroundColor: AppColors.error),
+        const SnackBar(
+          content: Text('Please fill in required fields'),
+          backgroundColor: AppColors.error,
+        ),
       );
       return;
     }
@@ -45,25 +47,35 @@ class _JobseekerEducationScreenState
         'institution': _institutionController.text.trim(),
         'field': _fieldController.text.trim(),
         'startDate': _startDateController.text.trim(),
-        'endDate': _isCurrentPosition ? 'Present' : _endDateController.text.trim(),
+        'endDate': _isCurrentPosition
+            ? 'Present'
+            : _endDateController.text.trim(),
         'description': _descriptionController.text.trim(),
         'isCurrent': _isCurrentPosition,
       };
 
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-        'education': FieldValue.arrayUnion([newEducation]),
-      });
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update(
+        {
+          'education': FieldValue.arrayUnion([newEducation]),
+        },
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Education added!'), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text('Education added!'),
+            backgroundColor: Colors.green,
+          ),
         );
         context.pop();
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text('Failed to save: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -140,13 +152,14 @@ class _JobseekerEducationScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Start date',
-                            style: AppTextStyles.labelText),
-                        const SizedBox(
-                            height: AppDimensions.paddingXS),
+                        Text('Start date', style: AppTextStyles.labelText),
+                        const SizedBox(height: AppDimensions.paddingXS),
                         TextField(
-                            controller: _startDateController,
-                            decoration: const InputDecoration(hintText: 'MM/YYYY')),
+                          controller: _startDateController,
+                          decoration: const InputDecoration(
+                            hintText: 'MM/YYYY',
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -155,15 +168,15 @@ class _JobseekerEducationScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('End date',
-                            style: AppTextStyles.labelText),
-                        const SizedBox(
-                            height: AppDimensions.paddingXS),
+                        Text('End date', style: AppTextStyles.labelText),
+                        const SizedBox(height: AppDimensions.paddingXS),
                         TextField(
                           controller: _endDateController,
                           enabled: !_isCurrentPosition,
                           decoration: InputDecoration(
-                            hintText: _isCurrentPosition ? 'Present' : 'MM/YYYY',
+                            hintText: _isCurrentPosition
+                                ? 'Present'
+                                : 'MM/YYYY',
                           ),
                         ),
                       ],
@@ -179,8 +192,8 @@ class _JobseekerEducationScreenState
                   Checkbox(
                     value: _isCurrentPosition,
                     activeColor: AppColors.primaryNavy,
-                    onChanged: (val) => setState(
-                        () => _isCurrentPosition = val ?? false),
+                    onChanged: (val) =>
+                        setState(() => _isCurrentPosition = val ?? false),
                   ),
                   Text(
                     'This is my position now',
@@ -200,8 +213,7 @@ class _JobseekerEducationScreenState
                 padding: const EdgeInsets.all(AppDimensions.paddingM),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius:
-                      BorderRadius.circular(AppDimensions.radiusM),
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusM),
                 ),
                 child: TextField(
                   controller: _descriptionController,
@@ -238,11 +250,11 @@ class _JobseekerEducationScreenState
                 child: OutlinedButton(
                   onPressed: () => context.pop(),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(
-                        color: AppColors.purpleButtonBorder),
+                    side: const BorderSide(color: AppColors.purpleButtonBorder),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(
-                          AppDimensions.radiusL),
+                        AppDimensions.radiusL,
+                      ),
                     ),
                     backgroundColor: AppColors.purpleButton,
                   ),

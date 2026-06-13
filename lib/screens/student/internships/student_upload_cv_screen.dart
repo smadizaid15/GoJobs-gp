@@ -29,11 +29,15 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
     setState(() => _isApplying = true);
 
     try {
-      
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-      final userName = userDoc.data()?['fullName'] ?? userDoc.data()?['displayName'] ?? 'Student';
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      final userName =
+          userDoc.data()?['fullName'] ??
+          userDoc.data()?['displayName'] ??
+          'Student';
 
-      
       await FirebaseFirestore.instance.collection('applications').add({
         'userId': user.uid,
         'userName': userName,
@@ -47,13 +51,18 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
       });
 
       if (mounted) {
-        
-        context.pushReplacement('/student/application-success', extra: widget.jobData);
+        context.pushReplacement(
+          '/student/application-success',
+          extra: widget.jobData,
+        );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to apply: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text('Failed to apply: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -83,12 +92,14 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
 
               GestureDetector(
                 onTap: () => context.pop(),
-                child: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                child: const Icon(
+                  Icons.arrow_back,
+                  color: AppColors.textPrimary,
+                ),
               ),
 
               const SizedBox(height: AppDimensions.paddingL),
 
-           
               Center(
                 child: Column(
                   children: [
@@ -97,13 +108,22 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
                       height: 80,
                       decoration: BoxDecoration(
                         color: AppColors.inputFill,
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusL),
-                        image: logoUrl != null 
-                            ? DecorationImage(image: NetworkImage(logoUrl), fit: BoxFit.cover)
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusL,
+                        ),
+                        image: logoUrl != null
+                            ? DecorationImage(
+                                image: NetworkImage(logoUrl),
+                                fit: BoxFit.cover,
+                              )
                             : null,
                       ),
-                      child: logoUrl == null 
-                          ? const Icon(Icons.business, color: AppColors.textSecondary, size: 40)
+                      child: logoUrl == null
+                          ? const Icon(
+                              Icons.business,
+                              color: AppColors.textSecondary,
+                              size: 40,
+                            )
                           : null,
                     ),
                     const SizedBox(height: AppDimensions.paddingS),
@@ -119,7 +139,6 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-             
               Center(
                 child: Text(
                   title,
@@ -182,7 +201,6 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-             
               Row(
                 children: [
                   Expanded(
@@ -192,7 +210,9 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
                         padding: const EdgeInsets.all(AppDimensions.paddingM),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.radiusM,
+                          ),
                           border: Border.all(
                             color: AppColors.divider,
                             style: BorderStyle.solid,
@@ -227,7 +247,9 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
                         padding: const EdgeInsets.all(AppDimensions.paddingM),
                         decoration: BoxDecoration(
                           color: AppColors.purpleButton,
-                          borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.radiusM,
+                          ),
                           border: Border.all(
                             color: AppColors.purpleButtonBorder,
                           ),
@@ -328,7 +350,8 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
                 child: TextField(
                   maxLines: null,
                   decoration: InputDecoration(
-                    hintText: 'Explain why you are the right person for this job',
+                    hintText:
+                        'Explain why you are the right person for this job',
                     hintStyle: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -340,7 +363,6 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
@@ -357,9 +379,9 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
                     }
                     _submitApplication();
                   },
-                  child: _isApplying 
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text('APPLY NOW', style: AppTextStyles.buttonText),
+                  child: _isApplying
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text('APPLY NOW', style: AppTextStyles.buttonText),
                 ),
               ),
 

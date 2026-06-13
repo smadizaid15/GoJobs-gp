@@ -48,7 +48,6 @@ class StudentSettingsScreen extends StatelessWidget {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-              
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -152,10 +151,13 @@ class StudentSettingsScreen extends StatelessWidget {
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
                   onPressed: () async {
-                    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                    final authProvider = Provider.of<AuthProvider>(
+                      context,
+                      listen: false,
+                    );
                     await authProvider.logout();
                     if (context.mounted) context.go('/welcome');
-                   },
+                  },
                   child: Text('YES', style: AppTextStyles.buttonText),
                 ),
               ),
@@ -168,8 +170,9 @@ class StudentSettingsScreen extends StatelessWidget {
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.purpleButtonBorder),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusL),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusL,
+                      ),
                     ),
                     backgroundColor: AppColors.purpleButton,
                   ),

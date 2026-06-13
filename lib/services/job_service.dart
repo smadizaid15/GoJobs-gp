@@ -13,8 +13,8 @@ class JobService {
     required String employmentType,
     required String description,
     String? salary,
-    String? companyLogo, 
-    List<String>? jobImages, 
+    String? companyLogo,
+    List<String>? jobImages,
   }) async {
     try {
       await _firestore.collection('jobs').add({
@@ -25,9 +25,9 @@ class JobService {
         'workplaceType': workplaceType,
         'employmentType': employmentType,
         'description': description,
-        'salary': salary, 
-        'companyLogo': companyLogo, 
-        'jobImages': jobImages ?? [], 
+        'salary': salary,
+        'companyLogo': companyLogo,
+        'jobImages': jobImages ?? [],
         'isActive': true,
         'createdAt': FieldValue.serverTimestamp(),
       });
@@ -42,10 +42,10 @@ class JobService {
         .where('isActive', isEqualTo: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) {
-        return JobModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
-      }).toList();
-    });
+          return snapshot.docs.map((doc) {
+            return JobModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+          }).toList();
+        });
   }
 
   Future<void> toggleSavedJob(String userId, String jobId) async {
@@ -54,15 +54,15 @@ class JobService {
         .doc(userId)
         .collection('saved_jobs')
         .doc(jobId);
-        
+
     final doc = await docRef.get();
     if (doc.exists) {
-      await docRef.delete(); 
+      await docRef.delete();
     } else {
       await docRef.set({
         'jobId': jobId,
         'savedAt': FieldValue.serverTimestamp(),
-      }); 
+      });
     }
   }
 
@@ -78,22 +78,20 @@ class JobService {
 
   Stream<DocumentSnapshot> getLiveJobStream(String jobId) {
     return _firestore.collection('jobs').doc(jobId).snapshots();
-    
   }
- 
+
   Stream<List<JobModel>> getCompanyJobs(String companyId) {
     return _firestore
         .collection('jobs')
         .where('companyId', isEqualTo: companyId)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) {
-        return JobModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
-      }).toList();
-    });
+          return snapshot.docs.map((doc) {
+            return JobModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+          }).toList();
+        });
   }
 
-  
   Future<void> deleteJob(String jobId) async {
     try {
       await _firestore.collection('jobs').doc(jobId).delete();

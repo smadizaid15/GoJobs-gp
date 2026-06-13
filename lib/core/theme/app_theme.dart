@@ -78,9 +78,7 @@ class AppTheme {
     ),
     textTheme: GoogleFonts.poppinsTextTheme(
       ThemeData.dark().textTheme,
-    ).apply(
-      decoration: TextDecoration.none,
-    ),
+    ).apply(decoration: TextDecoration.none),
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.bgDark,
       elevation: 0,
@@ -115,7 +113,10 @@ class AppTheme {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-        borderSide: const BorderSide(color: AppColors.primaryOrange, width: 1.5),
+        borderSide: const BorderSide(
+          color: AppColors.primaryOrange,
+          width: 1.5,
+        ),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppDimensions.radiusM),

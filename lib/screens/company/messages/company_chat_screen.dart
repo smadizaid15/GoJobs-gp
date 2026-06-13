@@ -10,10 +10,7 @@ import '../../../core/theme/app_dimensions.dart';
 class CompanyChatScreen extends StatefulWidget {
   final Map<String, dynamic>? chatData;
 
-  const CompanyChatScreen({
-    super.key,
-    this.chatData,
-  });
+  const CompanyChatScreen({super.key, this.chatData});
 
   @override
   State<CompanyChatScreen> createState() => _CompanyChatScreenState();
@@ -22,7 +19,7 @@ class CompanyChatScreen extends StatefulWidget {
 class _CompanyChatScreenState extends State<CompanyChatScreen> {
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
-  
+
   late String _chatId;
   late String _receiverId;
   late String _receiverName;
@@ -30,7 +27,7 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
   @override
   void initState() {
     super.initState();
-    
+
     _chatId = widget.chatData?['chatId'] ?? '';
     _receiverId = widget.chatData?['receiverId'] ?? '';
     _receiverName = widget.chatData?['receiverName'] ?? 'Applicant';
@@ -66,22 +63,16 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
 
     final timestamp = FieldValue.serverTimestamp();
 
-    
     await FirebaseFirestore.instance
         .collection('chats')
         .doc(_chatId)
         .collection('messages')
-        .add({
-      'senderId': currentUserId,
-      'text': text,
-      'timestamp': timestamp,
-    });
+        .add({'senderId': currentUserId, 'text': text, 'timestamp': timestamp});
 
-    
     await FirebaseFirestore.instance.collection('chats').doc(_chatId).update({
       'lastMessage': text,
       'updatedAt': timestamp,
-      'unread_$_receiverId': FieldValue.increment(1), 
+      'unread_$_receiverId': FieldValue.increment(1),
     });
 
     _scrollToBottom();
@@ -96,7 +87,6 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
@@ -117,7 +107,9 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
                     radius: 18,
                     backgroundColor: AppColors.inputFill,
                     child: Text(
-                      _receiverName.isNotEmpty ? _receiverName[0].toUpperCase() : 'U',
+                      _receiverName.isNotEmpty
+                          ? _receiverName[0].toUpperCase()
+                          : 'U',
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.bold,
@@ -153,7 +145,6 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
               ),
             ),
 
-            
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -164,12 +155,15 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator(color: AppColors.companyGold));
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.companyGold,
+                      ),
+                    );
                   }
 
                   final messageDocs = snapshot.data?.docs ?? [];
-                  
-                  
+
                   _scrollToBottom();
 
                   if (messageDocs.isEmpty) {
@@ -188,22 +182,27 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
                     padding: const EdgeInsets.all(AppDimensions.paddingL),
                     itemCount: messageDocs.length,
                     itemBuilder: (context, index) {
-                      final data = messageDocs[index].data() as Map<String, dynamic>;
+                      final data =
+                          messageDocs[index].data() as Map<String, dynamic>;
                       final isMe = data['senderId'] == currentUserId;
-                      
-                     
+
                       final timestamp = data['timestamp'] as Timestamp?;
                       String timeString = 'Now';
                       if (timestamp != null) {
                         final date = timestamp.toDate();
-                        timeString = '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+                        timeString =
+                            '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
                       }
 
                       return _ChatBubble(
                         text: data['text'] ?? '',
                         time: timeString,
                         isMe: isMe,
-                        senderInitial: isMe ? 'M' : (_receiverName.isNotEmpty ? _receiverName[0].toUpperCase() : 'U'),
+                        senderInitial: isMe
+                            ? 'M'
+                            : (_receiverName.isNotEmpty
+                                  ? _receiverName[0].toUpperCase()
+                                  : 'U'),
                       );
                     },
                   );
@@ -211,7 +210,6 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
               ),
             ),
 
-            
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
@@ -220,7 +218,10 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
               color: Colors.white,
               child: Row(
                 children: [
-                  const Icon(Icons.attach_file_outlined, color: AppColors.textSecondary),
+                  const Icon(
+                    Icons.attach_file_outlined,
+                    color: AppColors.textSecondary,
+                  ),
                   const SizedBox(width: AppDimensions.paddingS),
                   Expanded(
                     child: TextField(
@@ -243,7 +244,11 @@ class _CompanyChatScreenState extends State<CompanyChatScreen> {
                         color: AppColors.companyGold,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.send, color: Colors.white, size: 18),
+                      child: const Icon(
+                        Icons.send,
+                        color: Colors.white,
+                        size: 18,
+                      ),
                     ),
                   ),
                 ],
@@ -274,8 +279,9 @@ class _ChatBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: AppDimensions.paddingM),
       child: Row(
-        mainAxisAlignment:
-            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isMe
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isMe) ...[
@@ -294,8 +300,9 @@ class _ChatBubble extends StatelessWidget {
             const SizedBox(width: AppDimensions.paddingS),
           ],
           Column(
-            crossAxisAlignment:
-                isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            crossAxisAlignment: isMe
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
             children: [
               Container(
                 constraints: BoxConstraints(

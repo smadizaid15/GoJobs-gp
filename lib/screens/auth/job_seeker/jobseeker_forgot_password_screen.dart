@@ -45,7 +45,9 @@ class _JobseekerForgotPasswordScreenState
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(authProvider.errorMessage ?? 'Failed to send reset email'),
+          content: Text(
+            authProvider.errorMessage ?? 'Failed to send reset email',
+          ),
           backgroundColor: AppColors.error,
         ),
       );
@@ -135,8 +137,9 @@ class _JobseekerForgotPasswordScreenState
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.purpleButtonBorder),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusL),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusL,
+                      ),
                     ),
                     backgroundColor: AppColors.purpleButton,
                   ),

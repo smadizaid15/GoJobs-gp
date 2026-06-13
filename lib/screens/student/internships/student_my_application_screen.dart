@@ -23,9 +23,10 @@ class StudentMyApplicationScreen extends StatelessWidget {
           children: [
             const SizedBox(height: AppDimensions.paddingL),
 
-           
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppDimensions.paddingL,
+              ),
               child: Row(
                 children: [
                   GestureDetector(
@@ -49,7 +50,6 @@ class StudentMyApplicationScreen extends StatelessWidget {
 
             const SizedBox(height: AppDimensions.paddingL),
 
-            
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -62,7 +62,9 @@ class StudentMyApplicationScreen extends StatelessWidget {
                   }
 
                   if (snapshot.hasError) {
-                    return const Center(child: Text('Error loading applications.'));
+                    return const Center(
+                      child: Text('Error loading applications.'),
+                    );
                   }
 
                   final docs = snapshot.data?.docs ?? [];
@@ -71,47 +73,62 @@ class StudentMyApplicationScreen extends StatelessWidget {
                     return Center(
                       child: Text(
                         'You haven\'t applied to any internships yet.',
-                        style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     );
                   }
 
-                  
                   docs.sort((a, b) {
-                    final aTime = (a.data() as Map<String, dynamic>)['appliedAt'] as Timestamp?;
-                    final bTime = (b.data() as Map<String, dynamic>)['appliedAt'] as Timestamp?;
+                    final aTime =
+                        (a.data() as Map<String, dynamic>)['appliedAt']
+                            as Timestamp?;
+                    final bTime =
+                        (b.data() as Map<String, dynamic>)['appliedAt']
+                            as Timestamp?;
                     if (aTime == null || bTime == null) return 0;
                     return bTime.compareTo(aTime);
                   });
 
                   return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.paddingL,
+                    ),
                     itemCount: docs.length,
                     itemBuilder: (context, index) {
                       final data = docs[index].data() as Map<String, dynamic>;
-                      
+
                       final title = data['jobTitle'] ?? 'Position';
                       final company = data['companyName'] ?? 'Company';
                       final location = data['location'] ?? 'Location';
                       final logoUrl = data['logoUrl'];
                       final status = data['status'] ?? 'Pending';
                       final appliedAt = data['appliedAt'] as Timestamp?;
-                      
+
                       String dateStr = 'Recently';
                       if (appliedAt != null) {
-                        dateStr = DateFormat('MMM dd, yyyy').format(appliedAt.toDate());
+                        dateStr = DateFormat(
+                          'MMM dd, yyyy',
+                        ).format(appliedAt.toDate());
                       }
 
                       Color statusColor = AppColors.primaryOrange;
-                      if (status.toLowerCase() == 'accepted') statusColor = Colors.green;
-                      if (status.toLowerCase() == 'rejected') statusColor = AppColors.error;
+                      if (status.toLowerCase() == 'accepted')
+                        statusColor = Colors.green;
+                      if (status.toLowerCase() == 'rejected')
+                        statusColor = AppColors.error;
 
                       return Container(
-                        margin: const EdgeInsets.only(bottom: AppDimensions.paddingM),
+                        margin: const EdgeInsets.only(
+                          bottom: AppDimensions.paddingM,
+                        ),
                         padding: const EdgeInsets.all(AppDimensions.paddingM),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.radiusL,
+                          ),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,41 +143,60 @@ class StudentMyApplicationScreen extends StatelessWidget {
                                       height: 40,
                                       decoration: BoxDecoration(
                                         color: AppColors.inputFill,
-                                        borderRadius: BorderRadius.circular(AppDimensions.radiusS),
-                                        image: logoUrl != null 
-                                            ? DecorationImage(image: NetworkImage(logoUrl), fit: BoxFit.cover)
+                                        borderRadius: BorderRadius.circular(
+                                          AppDimensions.radiusS,
+                                        ),
+                                        image: logoUrl != null
+                                            ? DecorationImage(
+                                                image: NetworkImage(logoUrl),
+                                                fit: BoxFit.cover,
+                                              )
                                             : null,
                                       ),
                                       child: logoUrl == null
-                                          ? const Icon(Icons.business, color: AppColors.textSecondary, size: 20)
+                                          ? const Icon(
+                                              Icons.business,
+                                              color: AppColors.textSecondary,
+                                              size: 20,
+                                            )
                                           : null,
                                     ),
-                                    const SizedBox(width: AppDimensions.paddingM),
+                                    const SizedBox(
+                                      width: AppDimensions.paddingM,
+                                    ),
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           title,
-                                          style: AppTextStyles.bodyMedium.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            color: AppColors.textPrimary,
-                                          ),
+                                          style: AppTextStyles.bodyMedium
+                                              .copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: AppColors.textPrimary,
+                                              ),
                                         ),
                                         Text(
                                           company,
-                                          style: AppTextStyles.bodySmall.copyWith(
-                                            color: AppColors.textSecondary,
-                                          ),
+                                          style: AppTextStyles.bodySmall
+                                              .copyWith(
+                                                color: AppColors.textSecondary,
+                                              ),
                                         ),
                                       ],
                                     ),
                                   ],
                                 ),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: statusColor.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                                    borderRadius: BorderRadius.circular(
+                                      AppDimensions.radiusFull,
+                                    ),
                                   ),
                                   child: Text(
                                     status,
@@ -180,11 +216,16 @@ class StudentMyApplicationScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   location,
-                                  style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                                  style: AppTextStyles.bodySmall.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                                 ),
                                 Text(
                                   'Applied: $dateStr',
-                                  style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary, fontSize: 10),
+                                  style: AppTextStyles.bodySmall.copyWith(
+                                    color: AppColors.textSecondary,
+                                    fontSize: 10,
+                                  ),
                                 ),
                               ],
                             ),

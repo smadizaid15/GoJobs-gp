@@ -26,7 +26,6 @@ class CompanySettingsScreen extends StatelessWidget {
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-              
               Row(
                 children: [
                   GestureDetector(
@@ -52,8 +51,7 @@ class CompanySettingsScreen extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius:
-                      BorderRadius.circular(AppDimensions.radiusL),
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusL),
                 ),
                 child: Column(
                   children: [
@@ -78,8 +76,7 @@ class CompanySettingsScreen extends StatelessWidget {
                     _SettingsItem(
                       icon: Icons.lock_outline,
                       label: 'Password',
-                      onTap: () =>
-                          context.go('/company/update-password'),
+                      onTap: () => context.go('/company/update-password'),
                     ),
 
                     const Divider(height: 1, color: AppColors.divider),
@@ -134,8 +131,7 @@ class CompanySettingsScreen extends StatelessWidget {
                 height: 4,
                 decoration: BoxDecoration(
                   color: AppColors.divider,
-                  borderRadius:
-                      BorderRadius.circular(AppDimensions.radiusFull),
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                 ),
               ),
               const SizedBox(height: AppDimensions.paddingL),
@@ -158,9 +154,12 @@ class CompanySettingsScreen extends StatelessWidget {
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
                   onPressed: () async {
-                   final authProvider = Provider.of<AuthProvider>(context, listen: false);
-                   await authProvider.logout();
-                   if (context.mounted) context.go('/welcome');
+                    final authProvider = Provider.of<AuthProvider>(
+                      context,
+                      listen: false,
+                    );
+                    await authProvider.logout();
+                    if (context.mounted) context.go('/welcome');
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.companyGold,
@@ -175,11 +174,11 @@ class CompanySettingsScreen extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(
-                        color: AppColors.purpleButtonBorder),
+                    side: const BorderSide(color: AppColors.purpleButtonBorder),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusL),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusL,
+                      ),
                     ),
                     backgroundColor: AppColors.purpleButton,
                   ),

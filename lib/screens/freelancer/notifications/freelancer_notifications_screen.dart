@@ -12,10 +12,12 @@ class FreelancerNotificationsScreen extends StatefulWidget {
   const FreelancerNotificationsScreen({super.key});
 
   @override
-  State<FreelancerNotificationsScreen> createState() => _FreelancerNotificationsScreenState();
+  State<FreelancerNotificationsScreen> createState() =>
+      _FreelancerNotificationsScreenState();
 }
 
-class _FreelancerNotificationsScreenState extends State<FreelancerNotificationsScreen> {
+class _FreelancerNotificationsScreenState
+    extends State<FreelancerNotificationsScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? _profileImageUrl;
@@ -32,14 +34,17 @@ class _FreelancerNotificationsScreenState extends State<FreelancerNotificationsS
       final doc = await _firestore.collection('users').doc(user.uid).get();
       if (doc.exists) {
         setState(() {
-          _profileImageUrl = doc.data()?['profileImageUrl'] ?? doc.data()?['logoUrl'];
+          _profileImageUrl =
+              doc.data()?['profileImageUrl'] ?? doc.data()?['logoUrl'];
         });
       }
     }
   }
 
   Future<void> _markAsRead(String docId) async {
-    await _firestore.collection('notifications').doc(docId).update({'isRead': true});
+    await _firestore.collection('notifications').doc(docId).update({
+      'isRead': true,
+    });
   }
 
   @override
@@ -57,7 +62,9 @@ class _FreelancerNotificationsScreenState extends State<FreelancerNotificationsS
                   const SizedBox(height: AppDimensions.paddingL),
 
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.paddingL,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -73,7 +80,9 @@ class _FreelancerNotificationsScreenState extends State<FreelancerNotificationsS
                           child: CircleAvatar(
                             radius: 20,
                             backgroundColor: AppColors.primaryNavy,
-                            backgroundImage: _profileImageUrl != null ? NetworkImage(_profileImageUrl!) : null,
+                            backgroundImage: _profileImageUrl != null
+                                ? NetworkImage(_profileImageUrl!)
+                                : null,
                             child: _profileImageUrl == null
                                 ? Text(
                                     'F',
@@ -91,7 +100,6 @@ class _FreelancerNotificationsScreenState extends State<FreelancerNotificationsS
 
                   const SizedBox(height: AppDimensions.paddingM),
 
-                 
                   Expanded(
                     child: StreamBuilder<QuerySnapshot>(
                       stream: _firestore
@@ -100,12 +108,17 @@ class _FreelancerNotificationsScreenState extends State<FreelancerNotificationsS
                           .orderBy('createdAt', descending: true)
                           .snapshots(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         }
 
                         if (snapshot.hasError) {
-                          return const Center(child: Text('Error loading notifications'));
+                          return const Center(
+                            child: Text('Error loading notifications'),
+                          );
                         }
 
                         final docs = snapshot.data?.docs ?? [];
@@ -114,13 +127,17 @@ class _FreelancerNotificationsScreenState extends State<FreelancerNotificationsS
                           return Center(
                             child: Text(
                               'You have no notifications',
-                              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
                             ),
                           );
                         }
 
                         return ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppDimensions.paddingL,
+                          ),
                           itemCount: docs.length,
                           itemBuilder: (context, index) {
                             final doc = docs[index];
@@ -137,11 +154,11 @@ class _FreelancerNotificationsScreenState extends State<FreelancerNotificationsS
                                 subtitle: data['message'] ?? '',
                                 actionLabel: data['actionLabel'],
                                 isRead: data['isRead'] ?? false,
-                                onAction: data['actionRoute'] != null 
+                                onAction: data['actionRoute'] != null
                                     ? () {
                                         _markAsRead(doc.id);
                                         context.go(data['actionRoute']);
-                                      } 
+                                      }
                                     : null,
                               ),
                             );
@@ -204,7 +221,9 @@ class _NotificationItem extends StatelessWidget {
               children: [
                 RichText(
                   text: TextSpan(
-                    style: AppTextStyles.bodySmall.copyWith(color: AppColors.textPrimary),
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
                     children: [
                       TextSpan(
                         text: '$title : ',
@@ -228,7 +247,9 @@ class _NotificationItem extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: AppColors.primaryNavy,
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusFull,
+                        ),
                       ),
                       child: Text(
                         actionLabel!,

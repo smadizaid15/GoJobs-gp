@@ -36,7 +36,10 @@ class _FreelancerExpertiseScreenState extends State<FreelancerExpertiseScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        final doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
         if (doc.exists && doc.data() != null) {
           final data = doc.data()!;
           setState(() {
@@ -62,25 +65,34 @@ class _FreelancerExpertiseScreenState extends State<FreelancerExpertiseScreen> {
     setState(() => _isSaving = true);
 
     try {
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-        'serviceType': _serviceTypeController.text.trim(),
-        'expertiseDescription': _descriptionController.text.trim(),
-        'shiftStart': _shiftStartController.text.trim(),
-        'shiftEnd': _shiftEndController.text.trim(),
-        'additionalInfo': _additionalController.text.trim(),
-        'isOpen24_7': _isOpen24_7,
-      });
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .update({
+            'serviceType': _serviceTypeController.text.trim(),
+            'expertiseDescription': _descriptionController.text.trim(),
+            'shiftStart': _shiftStartController.text.trim(),
+            'shiftEnd': _shiftEndController.text.trim(),
+            'additionalInfo': _additionalController.text.trim(),
+            'isOpen24_7': _isOpen24_7,
+          });
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Expertise saved!'), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text('Expertise saved!'),
+            backgroundColor: Colors.green,
+          ),
         );
         context.go('/freelancer/profile');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text('Failed to save: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -134,33 +146,36 @@ class _FreelancerExpertiseScreenState extends State<FreelancerExpertiseScreen> {
 
                     const SizedBox(height: AppDimensions.paddingXL),
 
-                    Text('What type of services do you provide',
-                        style: AppTextStyles.labelText),
+                    Text(
+                      'What type of services do you provide',
+                      style: AppTextStyles.labelText,
+                    ),
                     const SizedBox(height: AppDimensions.paddingXS),
                     TextField(controller: _serviceTypeController),
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    Text('Description of what you do',
-                        style: AppTextStyles.labelText),
+                    Text(
+                      'Description of what you do',
+                      style: AppTextStyles.labelText,
+                    ),
                     const SizedBox(height: AppDimensions.paddingXS),
                     TextField(controller: _descriptionController),
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                   
                     Row(
                       children: [
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Shift Start',
-                                  style: AppTextStyles.labelText),
-                              const SizedBox(
-                                  height: AppDimensions.paddingXS),
-                              TextField(
-                                  controller: _shiftStartController),
+                              Text(
+                                'Shift Start',
+                                style: AppTextStyles.labelText,
+                              ),
+                              const SizedBox(height: AppDimensions.paddingXS),
+                              TextField(controller: _shiftStartController),
                             ],
                           ),
                         ),
@@ -169,10 +184,8 @@ class _FreelancerExpertiseScreenState extends State<FreelancerExpertiseScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Shift end',
-                                  style: AppTextStyles.labelText),
-                              const SizedBox(
-                                  height: AppDimensions.paddingXS),
+                              Text('Shift end', style: AppTextStyles.labelText),
+                              const SizedBox(height: AppDimensions.paddingXS),
                               TextField(controller: _shiftEndController),
                             ],
                           ),
@@ -182,13 +195,11 @@ class _FreelancerExpertiseScreenState extends State<FreelancerExpertiseScreen> {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    
                     Row(
                       children: [
                         Switch(
                           value: _isOpen24_7,
-                          onChanged: (val) =>
-                              setState(() => _isOpen24_7 = val),
+                          onChanged: (val) => setState(() => _isOpen24_7 = val),
                           activeColor: AppColors.primaryNavy,
                         ),
                         Text(
@@ -209,8 +220,9 @@ class _FreelancerExpertiseScreenState extends State<FreelancerExpertiseScreen> {
                       padding: const EdgeInsets.all(AppDimensions.paddingM),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius:
-                            BorderRadius.circular(AppDimensions.radiusM),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusM,
+                        ),
                       ),
                       child: TextField(
                         controller: _additionalController,
@@ -234,7 +246,9 @@ class _FreelancerExpertiseScreenState extends State<FreelancerExpertiseScreen> {
                       child: ElevatedButton(
                         onPressed: _isSaving ? null : _saveExpertise,
                         child: _isSaving
-                            ? const CircularProgressIndicator(color: Colors.white)
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
                             : Text('SAVE', style: AppTextStyles.buttonText),
                       ),
                     ),

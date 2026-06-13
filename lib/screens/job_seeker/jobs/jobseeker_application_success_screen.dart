@@ -7,17 +7,18 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 
-
 class JobseekerApplicationSuccessScreen extends StatefulWidget {
   final Map<String, dynamic>? job;
 
   const JobseekerApplicationSuccessScreen({super.key, this.job});
 
   @override
-  State<JobseekerApplicationSuccessScreen> createState() => _JobseekerApplicationSuccessScreenState();
+  State<JobseekerApplicationSuccessScreen> createState() =>
+      _JobseekerApplicationSuccessScreenState();
 }
 
-class _JobseekerApplicationSuccessScreenState extends State<JobseekerApplicationSuccessScreen> {
+class _JobseekerApplicationSuccessScreenState
+    extends State<JobseekerApplicationSuccessScreen> {
   String _actualCvName = 'Loading CV...';
   bool _isLoading = true;
 
@@ -27,7 +28,7 @@ class _JobseekerApplicationSuccessScreenState extends State<JobseekerApplication
     _fetchRealApplicationDetails();
   }
 
- Future<void> _fetchRealApplicationDetails() async {
+  Future<void> _fetchRealApplicationDetails() async {
     try {
       final currentUserId = FirebaseAuth.instance.currentUser?.uid;
       final currentJobId = widget.job?['id'] ?? 'unknown_job';
@@ -45,17 +46,18 @@ class _JobseekerApplicationSuccessScreenState extends State<JobseekerApplication
             final aTime = a.data()['appliedAt'] as Timestamp?;
             final bTime = b.data()['appliedAt'] as Timestamp?;
             if (aTime == null || bTime == null) return 0;
-            return bTime.compareTo(aTime); 
+            return bTime.compareTo(aTime);
           });
 
           setState(() {
-            _actualCvName = docs.first.data()['cvFileName']?.toString() ?? 'My_Resume.pdf';
+            _actualCvName =
+                docs.first.data()['cvFileName']?.toString() ?? 'My_Resume.pdf';
             _isLoading = false;
           });
           return;
         }
       }
-      
+
       setState(() {
         _actualCvName = 'No CV Found';
         _isLoading = false;
@@ -91,7 +93,10 @@ class _JobseekerApplicationSuccessScreenState extends State<JobseekerApplication
                 children: [
                   GestureDetector(
                     onTap: () => context.pop(),
-                    child: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                   const Icon(Icons.more_vert, color: AppColors.textPrimary),
                 ],
@@ -107,9 +112,15 @@ class _JobseekerApplicationSuccessScreenState extends State<JobseekerApplication
                       height: 80,
                       decoration: BoxDecoration(
                         color: AppColors.inputFill,
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusL,
+                        ),
                       ),
-                      child: const Icon(Icons.business, color: AppColors.textSecondary, size: 40),
+                      child: const Icon(
+                        Icons.business,
+                        color: AppColors.textSecondary,
+                        size: 40,
+                      ),
                     ),
                     const SizedBox(height: AppDimensions.paddingS),
                     Text(
@@ -137,13 +148,19 @@ class _JobseekerApplicationSuccessScreenState extends State<JobseekerApplication
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(location,
-                      style: AppTextStyles.bodySmall
-                          .copyWith(color: AppColors.textSecondary)),
+                  Text(
+                    location,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
                   const Text(' • '),
-                  Text(company,
-                      style: AppTextStyles.bodySmall
-                          .copyWith(color: AppColors.textSecondary)),
+                  Text(
+                    company,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
                 ],
               ),
 
@@ -158,7 +175,11 @@ class _JobseekerApplicationSuccessScreenState extends State<JobseekerApplication
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.picture_as_pdf, color: Colors.red, size: 32),
+                    const Icon(
+                      Icons.picture_as_pdf,
+                      color: Colors.red,
+                      size: 32,
+                    ),
                     const SizedBox(width: AppDimensions.paddingM),
                     Expanded(
                       child: Column(
@@ -168,7 +189,10 @@ class _JobseekerApplicationSuccessScreenState extends State<JobseekerApplication
                               ? const SizedBox(
                                   height: 14,
                                   width: 14,
-                                  child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.textSecondary),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.textSecondary,
+                                  ),
                                 )
                               : Text(
                                   _actualCvName,
@@ -228,12 +252,15 @@ class _JobseekerApplicationSuccessScreenState extends State<JobseekerApplication
                 height: AppDimensions.buttonHeight,
                 child: OutlinedButton(
                   onPressed: () => context.go(
-                      '/jobseeker/my-application',
-                      extra: widget.job),
+                    '/jobseeker/my-application',
+                    extra: widget.job,
+                  ),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.purpleButtonBorder),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusL,
+                      ),
                     ),
                     backgroundColor: AppColors.purpleButton,
                   ),

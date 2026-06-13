@@ -8,7 +8,7 @@ class JobModel {
   final String employmentType;
   final String description;
   final bool isActive;
-  final String? salary; 
+  final String? salary;
 
   JobModel({
     required this.id,
@@ -19,8 +19,8 @@ class JobModel {
     required this.workplaceType,
     required this.employmentType,
     required this.description,
-    this.isActive = true, 
-    this.salary,          
+    this.isActive = true,
+    this.salary,
   });
 
   factory JobModel.fromMap(Map<String, dynamic> data, String documentId) {
@@ -34,7 +34,7 @@ class JobModel {
       employmentType: data['employmentType'] ?? '',
       description: data['description'] ?? '',
       isActive: data['isActive'] ?? true,
-      salary: data['salary']?.toString(), 
+      salary: data['salary']?.toString(),
     );
   }
 }

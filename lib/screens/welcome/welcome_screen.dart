@@ -36,7 +36,8 @@ class WelcomeScreen extends StatelessWidget {
               // Company card
               _RoleCard(
                 title: 'Company',
-                description: 'Post job openings and hire the right talent for your business.',
+                description:
+                    'Post job openings and hire the right talent for your business.',
                 onSignUp: () => context.go('/company/signup'),
                 onLogin: () => context.go('/company/login'),
               ),
@@ -46,7 +47,8 @@ class WelcomeScreen extends StatelessWidget {
               // Job Seeker card
               _RoleCard(
                 title: 'Job Seeker',
-                description: 'Find jobs, build your profile, and apply instantly, in addition to providing your skills for people to hire you.',
+                description:
+                    'Find jobs, build your profile, and apply instantly, in addition to providing your skills for people to hire you.',
                 onSignUp: () => context.go('/jobseeker/signup'),
                 onLogin: () => context.go('/jobseeker/login'),
               ),
@@ -56,7 +58,8 @@ class WelcomeScreen extends StatelessWidget {
               // Student card
               _RoleCard(
                 title: 'Student',
-                description: 'Dive right in to the world of courses, trainings, workshops, and many more!',
+                description:
+                    'Dive right in to the world of courses, trainings, workshops, and many more!',
                 onSignUp: () => context.go('/student/signup'),
                 onLogin: () => context.go('/student/login'),
               ),
@@ -151,7 +154,9 @@ class _RoleCard extends StatelessWidget {
                   foregroundColor: AppColors.textPrimary,
                   side: const BorderSide(color: AppColors.textSecondary),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                    borderRadius: BorderRadius.circular(
+                      AppDimensions.radiusFull,
+                    ),
                   ),
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppDimensions.paddingL,
@@ -171,7 +176,9 @@ class _RoleCard extends StatelessWidget {
                   foregroundColor: AppColors.textPrimary,
                   side: const BorderSide(color: AppColors.textSecondary),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                    borderRadius: BorderRadius.circular(
+                      AppDimensions.radiusFull,
+                    ),
                   ),
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppDimensions.paddingL,

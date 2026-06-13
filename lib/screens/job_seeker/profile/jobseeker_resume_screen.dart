@@ -5,7 +5,7 @@ import 'package:file_picker/file_picker.dart' as fp;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:intl/intl.dart'; 
+import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -22,34 +22,38 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
   Uint8List? _resumeBytes;
   String? _resumeName;
   int? _resumeSizeInKb;
-  
+
   bool _isSaving = false;
-  bool _isLoading = true; 
-  
+  bool _isLoading = true;
+
   String? _existingResumeUrl;
   DateTime? _existingResumeDate;
 
   @override
   void initState() {
     super.initState();
-    _fetchExistingResume(); 
+    _fetchExistingResume();
   }
 
   Future<void> _fetchExistingResume() async {
     try {
       final currentUserId = FirebaseAuth.instance.currentUser?.uid;
       if (currentUserId != null) {
-        final doc = await FirebaseFirestore.instance.collection('users').doc(currentUserId).get();
-        
+        final doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUserId)
+            .get();
+
         if (doc.exists && doc.data() != null) {
           final data = doc.data()!;
-          
+
           if (data['hasResume'] == true || data['resumeUrl'] != null) {
             setState(() {
               _resumeName = data['resumeName']?.toString();
               _existingResumeUrl = data['resumeUrl']?.toString();
               if (data['resumeLastUpdated'] != null) {
-                _existingResumeDate = (data['resumeLastUpdated'] as Timestamp).toDate();
+                _existingResumeDate = (data['resumeLastUpdated'] as Timestamp)
+                    .toDate();
               }
             });
           }
@@ -67,7 +71,7 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
       fp.FilePickerResult? result = await fp.FilePicker.pickFiles(
         type: fp.FileType.custom,
         allowedExtensions: ['pdf', 'doc', 'docx'],
-        withData: true, 
+        withData: true,
       );
 
       if (result != null && result.files.single.bytes != null) {
@@ -86,8 +90,9 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
     if (currentUserId == null) return;
 
-    
-    if (_resumeBytes == null && _resumeName != null && _existingResumeUrl != null) {
+    if (_resumeBytes == null &&
+        _resumeName != null &&
+        _existingResumeUrl != null) {
       context.go('/jobseeker/profile');
       return;
     }
@@ -96,44 +101,56 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
 
     try {
       if (_resumeBytes != null) {
-      
-        final String uniqueFileName = '${DateTime.now().millisecondsSinceEpoch}_$_resumeName';
-        final storageRef = FirebaseStorage.instance.ref().child('user_resumes/$currentUserId/$uniqueFileName');
+        final String uniqueFileName =
+            '${DateTime.now().millisecondsSinceEpoch}_$_resumeName';
+        final storageRef = FirebaseStorage.instance.ref().child(
+          'user_resumes/$currentUserId/$uniqueFileName',
+        );
 
         final uploadTask = await storageRef.putData(_resumeBytes!);
         final secureFileUrl = await uploadTask.ref.getDownloadURL();
 
-        await FirebaseFirestore.instance.collection('users').doc(currentUserId).set({
-          'resumeName': _resumeName,
-          'resumeUrl': secureFileUrl,
-          'resumeLastUpdated': FieldValue.serverTimestamp(),
-          'hasResume': true,
-        }, SetOptions(merge: true));
-
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUserId)
+            .set({
+              'resumeName': _resumeName,
+              'resumeUrl': secureFileUrl,
+              'resumeLastUpdated': FieldValue.serverTimestamp(),
+              'hasResume': true,
+            }, SetOptions(merge: true));
       } else if (_resumeName == null) {
-        
         if (_existingResumeUrl != null) {
           try {
-            await FirebaseStorage.instance.refFromURL(_existingResumeUrl!).delete();
-          } catch(e) {
-            print("Notice: Could not delete old file from storage (might already be deleted): $e");
+            await FirebaseStorage.instance
+                .refFromURL(_existingResumeUrl!)
+                .delete();
+          } catch (e) {
+            print(
+              "Notice: Could not delete old file from storage (might already be deleted): $e",
+            );
           }
         }
 
-        
-        await FirebaseFirestore.instance.collection('users').doc(currentUserId).set({
-          'hasResume': false,
-          'resumeName': FieldValue.delete(),
-          'resumeUrl': FieldValue.delete(),
-          'resumeLastUpdated': FieldValue.delete(),
-        }, SetOptions(merge: true));
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUserId)
+            .set({
+              'hasResume': false,
+              'resumeName': FieldValue.delete(),
+              'resumeUrl': FieldValue.delete(),
+              'resumeLastUpdated': FieldValue.delete(),
+            }, SetOptions(merge: true));
 
         _existingResumeUrl = null;
       }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Resume profile updated!'), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text('Resume profile updated!'),
+            backgroundColor: Colors.green,
+          ),
         );
         context.go('/jobseeker/profile');
       }
@@ -190,9 +207,8 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-             
               GestureDetector(
-                onTap: _pickResume, 
+                onTap: _pickResume,
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(AppDimensions.paddingXL),
@@ -256,7 +272,7 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              _resumeName!, 
+                              _resumeName!,
                               style: AppTextStyles.bodySmall.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.textPrimary,
@@ -265,9 +281,9 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
-                              _resumeBytes != null 
-                                ? '${_resumeSizeInKb ?? 0} Kb • $dateToShow'
-                                : 'Saved Document • $dateToShow', 
+                              _resumeBytes != null
+                                  ? '${_resumeSizeInKb ?? 0} Kb • $dateToShow'
+                                  : 'Saved Document • $dateToShow',
                               style: AppTextStyles.bodySmall.copyWith(
                                 color: AppColors.textSecondary,
                                 fontSize: 10,
@@ -302,7 +318,10 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
                       ? const SizedBox(
                           width: 24,
                           height: 24,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
                         )
                       : Text('SAVE', style: AppTextStyles.buttonText),
                 ),

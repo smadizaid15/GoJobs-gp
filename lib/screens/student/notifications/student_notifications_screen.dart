@@ -12,13 +12,15 @@ class StudentNotificationsScreen extends StatefulWidget {
   const StudentNotificationsScreen({super.key});
 
   @override
-  State<StudentNotificationsScreen> createState() => _StudentNotificationsScreenState();
+  State<StudentNotificationsScreen> createState() =>
+      _StudentNotificationsScreenState();
 }
 
-class _StudentNotificationsScreenState extends State<StudentNotificationsScreen> {
+class _StudentNotificationsScreenState
+    extends State<StudentNotificationsScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  int _selectedFilter = 0; 
+  int _selectedFilter = 0;
   String? _profileImageUrl;
 
   @override
@@ -40,7 +42,9 @@ class _StudentNotificationsScreenState extends State<StudentNotificationsScreen>
   }
 
   Future<void> _markAsRead(String docId) async {
-    await _firestore.collection('notifications').doc(docId).update({'isRead': true});
+    await _firestore.collection('notifications').doc(docId).update({
+      'isRead': true,
+    });
   }
 
   @override
@@ -58,7 +62,9 @@ class _StudentNotificationsScreenState extends State<StudentNotificationsScreen>
                   const SizedBox(height: AppDimensions.paddingL),
 
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.paddingL,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -76,7 +82,10 @@ class _StudentNotificationsScreenState extends State<StudentNotificationsScreen>
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.menu, color: AppColors.textSecondary),
+                                const Icon(
+                                  Icons.menu,
+                                  color: AppColors.textSecondary,
+                                ),
                                 const SizedBox(width: AppDimensions.paddingS),
                                 Expanded(
                                   child: TextField(
@@ -88,7 +97,10 @@ class _StudentNotificationsScreenState extends State<StudentNotificationsScreen>
                                     ),
                                   ),
                                 ),
-                                const Icon(Icons.search, color: AppColors.textSecondary),
+                                const Icon(
+                                  Icons.search,
+                                  color: AppColors.textSecondary,
+                                ),
                               ],
                             ),
                           ),
@@ -99,8 +111,10 @@ class _StudentNotificationsScreenState extends State<StudentNotificationsScreen>
                           child: CircleAvatar(
                             radius: 20,
                             backgroundColor: AppColors.primaryNavy,
-                            backgroundImage: _profileImageUrl != null ? NetworkImage(_profileImageUrl!) : null,
-                            child: _profileImageUrl == null 
+                            backgroundImage: _profileImageUrl != null
+                                ? NetworkImage(_profileImageUrl!)
+                                : null,
+                            child: _profileImageUrl == null
                                 ? Text(
                                     'S',
                                     style: AppTextStyles.bodyMedium.copyWith(
@@ -118,23 +132,25 @@ class _StudentNotificationsScreenState extends State<StudentNotificationsScreen>
                   const SizedBox(height: AppDimensions.paddingM),
 
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.paddingL,
+                    ),
                     child: Row(
                       children: [
                         _FilterTab(
-                          label: 'All', 
+                          label: 'All',
                           isSelected: _selectedFilter == 0,
                           onTap: () => setState(() => _selectedFilter = 0),
                         ),
                         const SizedBox(width: AppDimensions.paddingS),
                         _FilterTab(
-                          label: 'Jobs', 
+                          label: 'Jobs',
                           isSelected: _selectedFilter == 1,
                           onTap: () => setState(() => _selectedFilter = 1),
                         ),
                         const SizedBox(width: AppDimensions.paddingS),
                         _FilterTab(
-                          label: 'Messages', 
+                          label: 'Messages',
                           isSelected: _selectedFilter == 2,
                           onTap: () => setState(() => _selectedFilter = 2),
                         ),
@@ -159,20 +175,29 @@ class _StudentNotificationsScreenState extends State<StudentNotificationsScreen>
                           .orderBy('createdAt', descending: true)
                           .snapshots(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         }
 
                         if (snapshot.hasError) {
-                          return const Center(child: Text('Error loading notifications'));
+                          return const Center(
+                            child: Text('Error loading notifications'),
+                          );
                         }
 
                         final docs = snapshot.data?.docs ?? [];
 
                         final filteredDocs = docs.where((doc) {
-                          final type = (doc.data() as Map<String, dynamic>)['type'] ?? 'general';
-                          if (_selectedFilter == 1 && type != 'job') return false;
-                          if (_selectedFilter == 2 && type != 'message') return false;
+                          final type =
+                              (doc.data() as Map<String, dynamic>)['type'] ??
+                              'general';
+                          if (_selectedFilter == 1 && type != 'job')
+                            return false;
+                          if (_selectedFilter == 2 && type != 'message')
+                            return false;
                           return true;
                         }).toList();
 
@@ -180,13 +205,17 @@ class _StudentNotificationsScreenState extends State<StudentNotificationsScreen>
                           return Center(
                             child: Text(
                               'You have no notifications',
-                              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
                             ),
                           );
                         }
 
                         return ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppDimensions.paddingL,
+                          ),
                           itemCount: filteredDocs.length,
                           itemBuilder: (context, index) {
                             final doc = filteredDocs[index];
@@ -203,11 +232,11 @@ class _StudentNotificationsScreenState extends State<StudentNotificationsScreen>
                                 subtitle: data['message'] ?? '',
                                 actionLabel: data['actionLabel'],
                                 isRead: data['isRead'] ?? false,
-                                onAction: data['actionRoute'] != null 
+                                onAction: data['actionRoute'] != null
                                     ? () {
                                         _markAsRead(doc.id);
                                         context.go(data['actionRoute']);
-                                      } 
+                                      }
                                     : null,
                               ),
                             );
@@ -232,7 +261,11 @@ class _FilterTab extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _FilterTab({required this.label, required this.isSelected, required this.onTap});
+  const _FilterTab({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -302,7 +335,9 @@ class _NotificationItem extends StatelessWidget {
               children: [
                 RichText(
                   text: TextSpan(
-                    style: AppTextStyles.bodySmall.copyWith(color: AppColors.textPrimary),
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
                     children: [
                       TextSpan(
                         text: '$title : ',
@@ -326,7 +361,9 @@ class _NotificationItem extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: AppColors.primaryNavy,
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusFull,
+                        ),
                       ),
                       child: Text(
                         actionLabel!,

@@ -28,7 +28,7 @@ class _CompanyEditProfileScreenState extends State<CompanyEditProfileScreen> {
   bool _isLoading = true;
   bool _isSaving = false;
   String? _logoUrl;
-  Uint8List? _webImageBytes; 
+  Uint8List? _webImageBytes;
 
   @override
   void initState() {
@@ -46,13 +46,15 @@ class _CompanyEditProfileScreenState extends State<CompanyEditProfileScreen> {
     super.dispose();
   }
 
-  
   Future<void> _loadCompanyData() async {
     try {
       final uid = FirebaseAuth.instance.currentUser?.uid;
       if (uid == null) return;
 
-      final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
       if (doc.exists && doc.data() != null) {
         final data = doc.data()!;
         setState(() {
@@ -87,7 +89,6 @@ class _CompanyEditProfileScreenState extends State<CompanyEditProfileScreen> {
     }
   }
 
-  
   Future<void> _handleSaveProfile() async {
     if (_nameController.text.trim().isEmpty) {
       _showSnackBar('Company name cannot be empty', isError: true);
@@ -102,7 +103,6 @@ class _CompanyEditProfileScreenState extends State<CompanyEditProfileScreen> {
 
       String? updatedLogoUrl = _logoUrl;
 
-     
       if (_webImageBytes != null) {
         final storageRef = FirebaseStorage.instance
             .ref()
@@ -117,7 +117,6 @@ class _CompanyEditProfileScreenState extends State<CompanyEditProfileScreen> {
         updatedLogoUrl = await snapshot.ref.getDownloadURL();
       }
 
-     
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
         'companyName': _nameController.text.trim(),
         'category': _categoryController.text.trim(),
@@ -192,7 +191,6 @@ class _CompanyEditProfileScreenState extends State<CompanyEditProfileScreen> {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-          
               Center(
                 child: GestureDetector(
                   onTap: _isSaving ? null : _handlePickLogo,
@@ -218,13 +216,21 @@ class _CompanyEditProfileScreenState extends State<CompanyEditProfileScreen> {
                           child: _webImageBytes != null
                               ? Image.memory(_webImageBytes!, fit: BoxFit.cover)
                               : (_logoUrl != null && _logoUrl!.isNotEmpty)
-                                  ? Image.network(
-                                      _logoUrl!,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) =>
-                                          const Icon(Icons.business, size: 40, color: AppColors.textSecondary),
-                                    )
-                                  : const Icon(Icons.add_a_photo_outlined, size: 36, color: AppColors.companyGold),
+                              ? Image.network(
+                                  _logoUrl!,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(
+                                        Icons.business,
+                                        size: 40,
+                                        color: AppColors.textSecondary,
+                                      ),
+                                )
+                              : const Icon(
+                                  Icons.add_a_photo_outlined,
+                                  size: 36,
+                                  color: AppColors.companyGold,
+                                ),
                         ),
                       ),
                       Container(
@@ -252,7 +258,10 @@ class _CompanyEditProfileScreenState extends State<CompanyEditProfileScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              Text('Company/enterprise category', style: AppTextStyles.labelText),
+              Text(
+                'Company/enterprise category',
+                style: AppTextStyles.labelText,
+              ),
               const SizedBox(height: AppDimensions.paddingXS),
               TextField(controller: _categoryController),
 
@@ -312,4 +321,3 @@ class _CompanyEditProfileScreenState extends State<CompanyEditProfileScreen> {
     );
   }
 }
-

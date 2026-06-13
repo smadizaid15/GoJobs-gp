@@ -19,7 +19,7 @@ class _FreelancerAboutMeScreenState extends State<FreelancerAboutMeScreen> {
   final _aboutController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
+
   bool _isLoading = true;
   bool _isSaving = false;
 
@@ -58,14 +58,20 @@ class _FreelancerAboutMeScreenState extends State<FreelancerAboutMeScreen> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Description updated!'), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text('Description updated!'),
+            backgroundColor: Colors.green,
+          ),
         );
         context.go('/freelancer/profile');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text('Failed to save: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -84,69 +90,84 @@ class _FreelancerAboutMeScreenState extends State<FreelancerAboutMeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
-        child: _isLoading 
-        ? const Center(child: CircularProgressIndicator())
-        : Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: AppDimensions.paddingL),
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.paddingL,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: AppDimensions.paddingL),
 
-              GestureDetector(
-                onTap: () => context.go('/freelancer/profile'),
-                child: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-              ),
+                    GestureDetector(
+                      onTap: () => context.go('/freelancer/profile'),
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
 
-              const SizedBox(height: AppDimensions.paddingL),
+                    const SizedBox(height: AppDimensions.paddingL),
 
-              Text(
-                'About me',
-                style: AppTextStyles.heading3.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                    Text(
+                      'About me',
+                      style: AppTextStyles.heading3.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+
+                    const SizedBox(height: AppDimensions.paddingXL),
+
+                    Container(
+                      width: double.infinity,
+                      height: 200,
+                      padding: const EdgeInsets.all(AppDimensions.paddingM),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusM,
+                        ),
+                      ),
+                      child: TextField(
+                        controller: _aboutController,
+                        maxLines: null,
+                        decoration: InputDecoration(
+                          hintText:
+                              'Tell potential clients about your skills and experience.',
+                          hintStyle: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                          border: InputBorder.none,
+                          filled: false,
+                        ),
+                      ),
+                    ),
+
+                    const Spacer(),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: AppDimensions.buttonHeight,
+                      child: ElevatedButton(
+                        onPressed: _isSaving ? null : _saveData,
+                        child: _isSaving
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : Text(
+                                'SAVE CHANGES',
+                                style: AppTextStyles.buttonText,
+                              ),
+                      ),
+                    ),
+
+                    const SizedBox(height: AppDimensions.paddingXL),
+                  ],
                 ),
               ),
-
-              const SizedBox(height: AppDimensions.paddingXL),
-
-              Container(
-                width: double.infinity,
-                height: 200,
-                padding: const EdgeInsets.all(AppDimensions.paddingM),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-                ),
-                child: TextField(
-                  controller: _aboutController,
-                  maxLines: null,
-                  decoration: InputDecoration(
-                    hintText: 'Tell potential clients about your skills and experience.',
-                    hintStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
-                    border: InputBorder.none,
-                    filled: false,
-                  ),
-                ),
-              ),
-
-              const Spacer(),
-
-              SizedBox(
-                width: double.infinity,
-                height: AppDimensions.buttonHeight,
-                child: ElevatedButton(
-                  onPressed: _isSaving ? null : _saveData,
-                  child: _isSaving 
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text('SAVE CHANGES', style: AppTextStyles.buttonText),
-                ),
-              ),
-
-              const SizedBox(height: AppDimensions.paddingXL),
-            ],
-          ),
-        ),
       ),
     );
   }

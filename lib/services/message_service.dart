@@ -16,9 +16,11 @@ class MessageService {
         .collection('messages')
         .orderBy('timestamp', descending: false)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => MessageModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => MessageModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   Future<void> sendMessage({
@@ -26,15 +28,13 @@ class MessageService {
     required String senderId,
     required String text,
   }) async {
-    await _firestore
-        .collection('chats')
-        .doc(chatId)
-        .collection('messages')
-        .add({
-      'senderId': senderId,
-      'text': text,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
+    await _firestore.collection('chats').doc(chatId).collection('messages').add(
+      {
+        'senderId': senderId,
+        'text': text,
+        'timestamp': FieldValue.serverTimestamp(),
+      },
+    );
 
     await _firestore.collection('chats').doc(chatId).set({
       'lastMessage': text,
@@ -49,7 +49,6 @@ class MessageService {
         .where('participants', arrayContains: uid)
         .orderBy('lastMessageTime', descending: true)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => doc.data()).toList());
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
   }
 }

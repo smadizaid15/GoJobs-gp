@@ -35,7 +35,6 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
       body: SafeArea(
         child: Column(
           children: [
-          
             Container(
               padding: const EdgeInsets.all(AppDimensions.paddingL),
               decoration: const BoxDecoration(
@@ -74,16 +73,23 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusM,
+                      ),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.search, color: AppColors.textSecondary),
+                        const Icon(
+                          Icons.search,
+                          color: AppColors.textSecondary,
+                        ),
                         const SizedBox(width: AppDimensions.paddingS),
                         Expanded(
                           child: TextField(
                             controller: _searchController,
-                            onChanged: (val) => setState(() => _searchQuery = val.toLowerCase()),
+                            onChanged: (val) => setState(
+                              () => _searchQuery = val.toLowerCase(),
+                            ),
                             decoration: InputDecoration(
                               hintText: 'Search for Python, UI/UX...',
                               hintStyle: AppTextStyles.bodySmall,
@@ -101,7 +107,6 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
 
             const SizedBox(height: AppDimensions.paddingM),
 
-            
             SizedBox(
               height: 40,
               child: ListView.builder(
@@ -114,7 +119,9 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                   return GestureDetector(
                     onTap: () => setState(() => _selectedFilter = index),
                     child: Container(
-                      margin: const EdgeInsets.only(right: AppDimensions.paddingS),
+                      margin: const EdgeInsets.only(
+                        right: AppDimensions.paddingS,
+                      ),
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppDimensions.paddingM,
                         vertical: AppDimensions.paddingXS,
@@ -123,8 +130,9 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                         color: _selectedFilter == index
                             ? AppColors.primaryNavy
                             : Colors.white,
-                        borderRadius:
-                            BorderRadius.circular(AppDimensions.radiusFull),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusFull,
+                        ),
                       ),
                       child: Text(
                         _filters[index],
@@ -145,10 +153,11 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
 
             const SizedBox(height: AppDimensions.paddingM),
 
-            
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('courses').snapshots(),
+                stream: FirebaseFirestore.instance
+                    .collection('courses')
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -164,26 +173,28 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                     return Center(
                       child: Text(
                         'No courses available right now.',
-                        style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     );
                   }
 
-                 
                   final filteredCourses = docs.where((doc) {
                     final data = doc.data() as Map<String, dynamic>;
                     final title = data['title']?.toString().toLowerCase() ?? '';
                     final isFree = data['isFree'] as bool? ?? false;
                     final isOnline = data['isOnline'] as bool? ?? false;
 
-                    
                     bool matchesSearch = title.contains(_searchQuery);
 
-                   
                     bool matchesFilter = true;
-                    if (_filters[_selectedFilter] == 'Free') matchesFilter = isFree;
-                    if (_filters[_selectedFilter] == 'Online') matchesFilter = isOnline;
-                    if (_filters[_selectedFilter] == 'On-Site') matchesFilter = !isOnline;
+                    if (_filters[_selectedFilter] == 'Free')
+                      matchesFilter = isFree;
+                    if (_filters[_selectedFilter] == 'Online')
+                      matchesFilter = isOnline;
+                    if (_filters[_selectedFilter] == 'On-Site')
+                      matchesFilter = !isOnline;
 
                     return matchesSearch && matchesFilter;
                   }).toList();
@@ -192,34 +203,44 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                     return Center(
                       child: Text(
                         'No courses match your filter.',
-                        style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     );
                   }
 
                   return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.paddingL,
+                    ),
                     itemCount: filteredCourses.length,
                     itemBuilder: (context, index) {
                       final doc = filteredCourses[index];
                       final data = doc.data() as Map<String, dynamic>;
-                      
-                      final courseDataForDetail = {
-                        'id': doc.id,
-                        ...data,
-                      };
+
+                      final courseDataForDetail = {'id': doc.id, ...data};
 
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: AppDimensions.paddingM),
+                        padding: const EdgeInsets.only(
+                          bottom: AppDimensions.paddingM,
+                        ),
                         child: _CourseCard(
                           title: data['title'] ?? 'Unknown Course',
                           company: data['companyName'] ?? 'Unknown Institution',
-                          location: (data['isOnline'] as bool? ?? false) ? 'Online' : (data['location'] ?? 'On-site'),
+                          location: (data['isOnline'] as bool? ?? false)
+                              ? 'Online'
+                              : (data['location'] ?? 'On-site'),
                           tags: List<String>.from(data['tags'] ?? []),
-                          price: (data['isFree'] as bool? ?? false) ? 'Free' : (data['price'] ?? 'Paid'),
+                          price: (data['isFree'] as bool? ?? false)
+                              ? 'Free'
+                              : (data['price'] ?? 'Paid'),
                           isPaid: !(data['isFree'] as bool? ?? false),
                           logoUrl: data['logoUrl'],
-                          onTap: () => context.push('/student/course-detail', extra: courseDataForDetail),
+                          onTap: () => context.push(
+                            '/student/course-detail',
+                            extra: courseDataForDetail,
+                          ),
                         ),
                       );
                     },
@@ -279,12 +300,19 @@ class _CourseCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: AppColors.inputFill,
                     borderRadius: BorderRadius.circular(AppDimensions.radiusS),
-                    image: logoUrl != null 
-                        ? DecorationImage(image: NetworkImage(logoUrl!), fit: BoxFit.cover)
+                    image: logoUrl != null
+                        ? DecorationImage(
+                            image: NetworkImage(logoUrl!),
+                            fit: BoxFit.cover,
+                          )
                         : null,
                   ),
-                  child: logoUrl == null 
-                      ? const Icon(Icons.business, color: AppColors.textSecondary, size: 20)
+                  child: logoUrl == null
+                      ? const Icon(
+                          Icons.business,
+                          color: AppColors.textSecondary,
+                          size: 20,
+                        )
                       : null,
                 ),
                 const Icon(
@@ -323,7 +351,9 @@ class _CourseCard extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: AppColors.inputFill,
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                    borderRadius: BorderRadius.circular(
+                      AppDimensions.radiusFull,
+                    ),
                   ),
                   child: Text(
                     tag,

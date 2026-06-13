@@ -19,16 +19,26 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
   String _selectedJobType = 'Full time';
 
   final List<String> _jobTypes = ['Full time', 'Part time', 'Remote'];
-  
- 
-  final List<String> _categories = ['Design', 'Technology', 'Business', 'Marketing'];
+
+  final List<String> _categories = [
+    'Design',
+    'Technology',
+    'Business',
+    'Marketing',
+  ];
   final Map<String, List<String>> _subCategories = {
     'Design': ['UI/UX Design', 'Graphic Design', 'Motion Graphics'],
     'Technology': ['Frontend Dev', 'Backend Dev', 'Mobile App', 'Data Science'],
     'Business': ['Management', 'HR', 'Finance'],
     'Marketing': ['Social Media', 'SEO', 'Content Creation'],
   };
-  final List<String> _locations = ['Irbid', 'Amman', 'Zarqa', 'Aqaba', 'Remote'];
+  final List<String> _locations = [
+    'Irbid',
+    'Amman',
+    'Zarqa',
+    'Aqaba',
+    'Remote',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +54,6 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
             children: [
               const SizedBox(height: AppDimensions.paddingL),
 
-          
               Row(
                 children: [
                   GestureDetector(
@@ -67,15 +76,19 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-           
               _FilterSection(
                 title: 'Category',
                 isExpanded: true,
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
-                    value: _categories.contains(_selectedCategory) ? _selectedCategory : _categories.first,
+                    value: _categories.contains(_selectedCategory)
+                        ? _selectedCategory
+                        : _categories.first,
                     isExpanded: true,
-                    icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down,
+                      color: AppColors.textSecondary,
+                    ),
                     items: _categories.map((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
@@ -85,8 +98,9 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
                     onChanged: (newValue) {
                       setState(() {
                         _selectedCategory = newValue!;
-                        
-                        _selectedSubCategory = _subCategories[_selectedCategory]!.first;
+
+                        _selectedSubCategory =
+                            _subCategories[_selectedCategory]!.first;
                       });
                     },
                   ),
@@ -95,7 +109,6 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-            
               _FilterSection(
                 title: 'Sub Category',
                 isExpanded: false,
@@ -103,8 +116,13 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
                   child: DropdownButton<String>(
                     value: _selectedSubCategory,
                     isExpanded: true,
-                    icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
-                    items: _subCategories[_selectedCategory]!.map((String value) {
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down,
+                      color: AppColors.textSecondary,
+                    ),
+                    items: _subCategories[_selectedCategory]!.map((
+                      String value,
+                    ) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value, style: AppTextStyles.bodyMedium),
@@ -121,7 +139,6 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              
               _FilterSection(
                 title: 'Location',
                 isExpanded: false,
@@ -129,7 +146,10 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
                   child: DropdownButton<String>(
                     value: _selectedLocation,
                     isExpanded: true,
-                    icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down,
+                      color: AppColors.textSecondary,
+                    ),
                     items: _locations.map((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
@@ -147,7 +167,6 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-          
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -201,7 +220,6 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
 
               const SizedBox(height: AppDimensions.paddingM),
 
-              
               Text(
                 'Job Type',
                 style: AppTextStyles.bodyMedium.copyWith(
@@ -215,7 +233,9 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
                 children: _jobTypes.map((type) {
                   final isSelected = _selectedJobType == type;
                   return Padding(
-                    padding: const EdgeInsets.only(right: AppDimensions.paddingS),
+                    padding: const EdgeInsets.only(
+                      right: AppDimensions.paddingS,
+                    ),
                     child: GestureDetector(
                       onTap: () => setState(() => _selectedJobType = type),
                       child: Container(
@@ -224,16 +244,24 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
                           vertical: AppDimensions.paddingXS,
                         ),
                         decoration: BoxDecoration(
-                          color: isSelected ? AppColors.primaryNavy : Colors.white,
-                          borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                          color: isSelected
+                              ? AppColors.primaryNavy
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.radiusFull,
+                          ),
                           border: Border.all(
-                            color: isSelected ? AppColors.primaryNavy : AppColors.divider,
+                            color: isSelected
+                                ? AppColors.primaryNavy
+                                : AppColors.divider,
                           ),
                         ),
                         child: Text(
                           type,
                           style: AppTextStyles.bodySmall.copyWith(
-                            color: isSelected ? Colors.white : AppColors.textSecondary,
+                            color: isSelected
+                                ? Colors.white
+                                : AppColors.textSecondary,
                           ),
                         ),
                       ),
@@ -244,13 +272,11 @@ class _JobseekerFilterScreenState extends State<JobseekerFilterScreen> {
 
               const SizedBox(height: AppDimensions.paddingXL),
 
-           
               SizedBox(
                 width: double.infinity,
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
                   onPressed: () {
-                    
                     context.pop({
                       'category': _selectedCategory,
                       'subCategory': _selectedSubCategory,

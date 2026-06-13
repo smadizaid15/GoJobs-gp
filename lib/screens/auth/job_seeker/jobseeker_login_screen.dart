@@ -192,8 +192,9 @@ class _JobseekerLoginScreenState extends State<JobseekerLoginScreen> {
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.purpleButtonBorder),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusL),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusL,
+                      ),
                     ),
                     backgroundColor: AppColors.purpleButton,
                   ),

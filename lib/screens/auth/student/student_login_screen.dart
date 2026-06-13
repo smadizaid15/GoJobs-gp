@@ -118,8 +118,8 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                 decoration: InputDecoration(
                   hintText: '••••••••••',
                   suffixIcon: GestureDetector(
-                    onTap: () => setState(
-                        () => _obscurePassword = !_obscurePassword),
+                    onTap: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
                     child: Icon(
                       _obscurePassword
                           ? Icons.visibility_off_outlined

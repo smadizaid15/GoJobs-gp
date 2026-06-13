@@ -17,7 +17,8 @@ class _CompanyEditJobScreenState extends State<CompanyEditJobScreen> {
   String _jobLocation = 'Uni street, Irbid, Jordan';
   String _employmentType = 'Full Time';
   final _descriptionController = TextEditingController(
-    text: 'Head barista, managing the bar and baristas and teaching learning baristas, everything in the bar is your responsibility',
+    text:
+        'Head barista, managing the bar and baristas and teaching learning baristas, everything in the bar is your responsibility',
   );
 
   @override
@@ -33,7 +34,6 @@ class _CompanyEditJobScreenState extends State<CompanyEditJobScreen> {
       body: SafeArea(
         child: Column(
           children: [
-          
             Padding(
               padding: const EdgeInsets.all(AppDimensions.paddingL),
               child: Row(
@@ -41,7 +41,10 @@ class _CompanyEditJobScreenState extends State<CompanyEditJobScreen> {
                 children: [
                   GestureDetector(
                     onTap: () => context.pop(),
-                    child: const Icon(Icons.close, color: AppColors.textPrimary),
+                    child: const Icon(
+                      Icons.close,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                   Text(
                     'Add a job',
@@ -75,8 +78,9 @@ class _CompanyEditJobScreenState extends State<CompanyEditJobScreen> {
                       label: 'Job position*',
                       value: _jobPosition,
                       onTap: () async {
-                        final result = await context
-                            .push<String>('/company/job-position-picker');
+                        final result = await context.push<String>(
+                          '/company/job-position-picker',
+                        );
                         if (result != null) {
                           setState(() => _jobPosition = result);
                         }
@@ -87,8 +91,9 @@ class _CompanyEditJobScreenState extends State<CompanyEditJobScreen> {
                       label: 'Type of workplace',
                       value: _workplaceType,
                       onTap: () async {
-                        final result = await context
-                            .push<String>('/company/workplace-type');
+                        final result = await context.push<String>(
+                          '/company/workplace-type',
+                        );
                         if (result != null) {
                           setState(() => _workplaceType = result);
                         }
@@ -99,8 +104,9 @@ class _CompanyEditJobScreenState extends State<CompanyEditJobScreen> {
                       label: 'Job location',
                       value: _jobLocation,
                       onTap: () async {
-                        final result = await context
-                            .push<String>('/company/location-picker');
+                        final result = await context.push<String>(
+                          '/company/location-picker',
+                        );
                         if (result != null) {
                           setState(() => _jobLocation = result);
                         }
@@ -111,8 +117,9 @@ class _CompanyEditJobScreenState extends State<CompanyEditJobScreen> {
                       label: 'Employment type',
                       value: _employmentType,
                       onTap: () async {
-                        final result =
-                            await context.push<String>('/company/job-type');
+                        final result = await context.push<String>(
+                          '/company/job-type',
+                        );
                         if (result != null) {
                           setState(() => _employmentType = result);
                         }
@@ -137,8 +144,9 @@ class _CompanyEditJobScreenState extends State<CompanyEditJobScreen> {
                       padding: const EdgeInsets.all(AppDimensions.paddingM),
                       decoration: BoxDecoration(
                         color: AppColors.inputFill,
-                        borderRadius:
-                            BorderRadius.circular(AppDimensions.radiusM),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusM,
+                        ),
                       ),
                       child: TextField(
                         controller: _descriptionController,
@@ -183,9 +191,7 @@ class _EditFormItem extends StatelessWidget {
           horizontal: AppDimensions.paddingS,
         ),
         decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: AppColors.divider),
-          ),
+          border: Border(bottom: BorderSide(color: AppColors.divider)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -208,10 +214,7 @@ class _EditFormItem extends StatelessWidget {
                 ),
               ],
             ),
-            const Icon(
-              Icons.edit_outlined,
-              color: AppColors.companyGold,
-            ),
+            const Icon(Icons.edit_outlined, color: AppColors.companyGold),
           ],
         ),
       ),

@@ -9,8 +9,7 @@ class AIJobDescriptionScreen extends StatefulWidget {
   const AIJobDescriptionScreen({super.key});
 
   @override
-  State<AIJobDescriptionScreen> createState() =>
-      _AIJobDescriptionScreenState();
+  State<AIJobDescriptionScreen> createState() => _AIJobDescriptionScreenState();
 }
 
 class _AIJobDescriptionScreenState extends State<AIJobDescriptionScreen> {
@@ -126,10 +125,12 @@ class _AIJobDescriptionScreenState extends State<AIJobDescriptionScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.companyGold.withValues(alpha: 0.2),
-                      borderRadius:
-                          BorderRadius.circular(AppDimensions.radiusFull),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusFull,
+                      ),
                       border: Border.all(
-                          color: AppColors.companyGold.withValues(alpha: 0.5)),
+                        color: AppColors.companyGold.withValues(alpha: 0.5),
+                      ),
                     ),
                     child: Text(
                       'AI Powered',
@@ -200,8 +201,7 @@ class _AIJobDescriptionScreenState extends State<AIJobDescriptionScreen> {
                       children: _jobTypes.map((type) {
                         final isSelected = _selectedJobType == type;
                         return GestureDetector(
-                          onTap: () =>
-                              setState(() => _selectedJobType = type),
+                          onTap: () => setState(() => _selectedJobType = type),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: AppDimensions.paddingM,
@@ -212,7 +212,8 @@ class _AIJobDescriptionScreenState extends State<AIJobDescriptionScreen> {
                                   ? AppColors.primaryNavy
                                   : Colors.white,
                               borderRadius: BorderRadius.circular(
-                                  AppDimensions.radiusFull),
+                                AppDimensions.radiusFull,
+                              ),
                               border: Border.all(
                                 color: isSelected
                                     ? AppColors.primaryNavy
@@ -256,9 +257,7 @@ class _AIJobDescriptionScreenState extends State<AIJobDescriptionScreen> {
                                 color: Colors.white,
                               ),
                         label: Text(
-                          _isLoading
-                              ? 'Generating...'
-                              : 'GENERATE DESCRIPTION',
+                          _isLoading ? 'Generating...' : 'GENERATE DESCRIPTION',
                           style: AppTextStyles.buttonText,
                         ),
                       ),
@@ -279,21 +278,21 @@ class _AIJobDescriptionScreenState extends State<AIJobDescriptionScreen> {
 
                       Container(
                         width: double.infinity,
-                        padding:
-                            const EdgeInsets.all(AppDimensions.paddingM),
+                        padding: const EdgeInsets.all(AppDimensions.paddingM),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius:
-                              BorderRadius.circular(AppDimensions.radiusL),
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.radiusL,
+                          ),
                           border: Border.all(
-                              color: AppColors.companyGold.withValues(alpha: 0.3)),
+                            color: AppColors.companyGold.withValues(alpha: 0.3),
+                          ),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
                                   children: [
@@ -303,7 +302,8 @@ class _AIJobDescriptionScreenState extends State<AIJobDescriptionScreen> {
                                       size: 16,
                                     ),
                                     const SizedBox(
-                                        width: AppDimensions.paddingXS),
+                                      width: AppDimensions.paddingXS,
+                                    ),
                                     Text(
                                       'AI Generated',
                                       style: AppTextStyles.bodySmall.copyWith(

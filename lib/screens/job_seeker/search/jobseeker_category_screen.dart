@@ -11,11 +11,31 @@ class JobseekerCategoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> categories = [
       {'icon': Icons.brush, 'name': 'Design', 'color': Colors.purple.shade100},
-      {'icon': Icons.computer, 'name': 'Technology', 'color': Colors.blue.shade100},
-      {'icon': Icons.business_center, 'name': 'Business', 'color': Colors.orange.shade100},
-      {'icon': Icons.campaign, 'name': 'Marketing', 'color': Colors.pink.shade100},
-      {'icon': Icons.engineering, 'name': 'Engineering', 'color': Colors.green.shade100},
-      {'icon': Icons.medication, 'name': 'Healthcare', 'color': Colors.teal.shade100},
+      {
+        'icon': Icons.computer,
+        'name': 'Technology',
+        'color': Colors.blue.shade100,
+      },
+      {
+        'icon': Icons.business_center,
+        'name': 'Business',
+        'color': Colors.orange.shade100,
+      },
+      {
+        'icon': Icons.campaign,
+        'name': 'Marketing',
+        'color': Colors.pink.shade100,
+      },
+      {
+        'icon': Icons.engineering,
+        'name': 'Engineering',
+        'color': Colors.green.shade100,
+      },
+      {
+        'icon': Icons.medication,
+        'name': 'Healthcare',
+        'color': Colors.teal.shade100,
+      },
     ];
 
     return Scaffold(
@@ -25,15 +45,19 @@ class JobseekerCategoryScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: AppDimensions.paddingL),
-            
-          
+
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppDimensions.paddingL,
+              ),
               child: Row(
                 children: [
                   GestureDetector(
                     onTap: () => context.pop(),
-                    child: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                   const SizedBox(width: AppDimensions.paddingM),
                   Text(
@@ -49,12 +73,13 @@ class JobseekerCategoryScreen extends StatelessWidget {
 
             const SizedBox(height: AppDimensions.paddingXL),
 
-           
             Expanded(
               child: GridView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.paddingL,
+                ),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, 
+                  crossAxisCount: 2,
                   crossAxisSpacing: AppDimensions.paddingM,
                   mainAxisSpacing: AppDimensions.paddingM,
                   childAspectRatio: 1.1,
@@ -64,19 +89,20 @@ class JobseekerCategoryScreen extends StatelessWidget {
                   final cat = categories[index];
                   return GestureDetector(
                     onTap: () {
-                     
                       context.push('/jobseeker/search', extra: 'Jobs');
                     },
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusL,
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.05),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
-                          )
+                          ),
                         ],
                       ),
                       child: Column(

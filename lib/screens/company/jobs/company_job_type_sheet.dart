@@ -32,7 +32,6 @@ class _CompanyJobTypeSheetState extends State<CompanyJobTypeSheet> {
           children: [
             const SizedBox(height: AppDimensions.paddingL),
 
-          
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,

@@ -29,14 +29,20 @@ class _JobseekerUpdatePasswordScreenState
         _newPasswordController.text.isEmpty ||
         _confirmPasswordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields'), backgroundColor: AppColors.error),
+        const SnackBar(
+          content: Text('Please fill in all fields'),
+          backgroundColor: AppColors.error,
+        ),
       );
       return;
     }
 
     if (_newPasswordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('New passwords do not match!'), backgroundColor: AppColors.error),
+        const SnackBar(
+          content: Text('New passwords do not match!'),
+          backgroundColor: AppColors.error,
+        ),
       );
       return;
     }
@@ -50,13 +56,16 @@ class _JobseekerUpdatePasswordScreenState
           email: user.email!,
           password: _oldPasswordController.text,
         );
-        
+
         await user.reauthenticateWithCredential(credential);
         await user.updatePassword(_newPasswordController.text);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Password updated successfully!'), backgroundColor: Colors.green),
+            const SnackBar(
+              content: Text('Password updated successfully!'),
+              backgroundColor: Colors.green,
+            ),
           );
           _oldPasswordController.clear();
           _newPasswordController.clear();
@@ -79,7 +88,10 @@ class _JobseekerUpdatePasswordScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text('Failed to update: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -139,8 +151,7 @@ class _JobseekerUpdatePasswordScreenState
                 decoration: InputDecoration(
                   hintText: '••••••••••',
                   suffixIcon: GestureDetector(
-                    onTap: () => setState(
-                        () => _obscureOld = !_obscureOld),
+                    onTap: () => setState(() => _obscureOld = !_obscureOld),
                     child: Icon(
                       _obscureOld
                           ? Icons.visibility_off_outlined
@@ -161,8 +172,7 @@ class _JobseekerUpdatePasswordScreenState
                 decoration: InputDecoration(
                   hintText: '••••••••••',
                   suffixIcon: GestureDetector(
-                    onTap: () => setState(
-                        () => _obscureNew = !_obscureNew),
+                    onTap: () => setState(() => _obscureNew = !_obscureNew),
                     child: Icon(
                       _obscureNew
                           ? Icons.visibility_off_outlined
@@ -183,8 +193,8 @@ class _JobseekerUpdatePasswordScreenState
                 decoration: InputDecoration(
                   hintText: '••••••••••',
                   suffixIcon: GestureDetector(
-                    onTap: () => setState(
-                        () => _obscureConfirm = !_obscureConfirm),
+                    onTap: () =>
+                        setState(() => _obscureConfirm = !_obscureConfirm),
                     child: Icon(
                       _obscureConfirm
                           ? Icons.visibility_off_outlined
@@ -202,7 +212,7 @@ class _JobseekerUpdatePasswordScreenState
                 height: AppDimensions.buttonHeight,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _updatePassword,
-                  child: _isLoading 
+                  child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
                       : Text('UPDATE', style: AppTextStyles.buttonText),
                 ),

@@ -11,14 +11,14 @@ class FreelancerProfileScreen extends StatefulWidget {
   const FreelancerProfileScreen({super.key});
 
   @override
-  State<FreelancerProfileScreen> createState() => _FreelancerProfileScreenState();
+  State<FreelancerProfileScreen> createState() =>
+      _FreelancerProfileScreenState();
 }
 
 class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isSubmitting = false;
-
 
   Future<void> _toggleAvailability(bool value) async {
     final user = _auth.currentUser;
@@ -52,9 +52,7 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
 
     if (user == null) {
       return const Scaffold(
-        body: Center(
-          child: Text('User not authenticated. Please log in.'),
-        ),
+        body: Center(child: Text('User not authenticated. Please log in.')),
       );
     }
 
@@ -71,16 +69,21 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryOrange),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    AppColors.primaryOrange,
+                  ),
                 ),
               );
             }
 
-            final userData = snapshot.data?.data() as Map<String, dynamic>? ?? {};
+            final userData =
+                snapshot.data?.data() as Map<String, dynamic>? ?? {};
             final String displayName = userData['name'] ?? 'Freelancer';
             final String location = userData['location'] ?? 'Irbid, Jordan';
             final bool isAvailable = userData['isAvailable'] ?? false;
-            final String firstLetter = displayName.isNotEmpty ? displayName[0].toUpperCase() : 'Z';
+            final String firstLetter = displayName.isNotEmpty
+                ? displayName[0].toUpperCase()
+                : 'Z';
 
             return Column(
               children: [
@@ -88,23 +91,26 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                       
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(AppDimensions.paddingL),
                           decoration: const BoxDecoration(
                             color: AppColors.primaryNavy,
                             borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(AppDimensions.radiusXL),
-                              bottomRight: Radius.circular(AppDimensions.radiusXL),
+                              bottomLeft: Radius.circular(
+                                AppDimensions.radiusXL,
+                              ),
+                              bottomRight: Radius.circular(
+                                AppDimensions.radiusXL,
+                              ),
                             ),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                             
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   GestureDetector(
                                     onTap: () => context.go('/freelancer/home'),
@@ -114,7 +120,8 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
                                     ),
                                   ),
                                   GestureDetector(
-                                    onTap: () => context.go('/freelancer/settings'),
+                                    onTap: () =>
+                                        context.go('/freelancer/settings'),
                                     child: const Icon(
                                       Icons.settings_outlined,
                                       color: Colors.white,
@@ -125,9 +132,9 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
 
                               const SizedBox(height: AppDimensions.paddingM),
 
-                             
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     children: [
@@ -136,46 +143,55 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
                                         backgroundColor: AppColors.inputFill,
                                         child: Text(
                                           firstLetter,
-                                          style: AppTextStyles.heading2.copyWith(
-                                            color: AppColors.textSecondary,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                          style: AppTextStyles.heading2
+                                              .copyWith(
+                                                color: AppColors.textSecondary,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                         ),
                                       ),
-                                      const SizedBox(width: AppDimensions.paddingM),
+                                      const SizedBox(
+                                        width: AppDimensions.paddingM,
+                                      ),
                                       Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Container(
                                             padding: const EdgeInsets.symmetric(
-                                              horizontal: AppDimensions.paddingS,
+                                              horizontal:
+                                                  AppDimensions.paddingS,
                                               vertical: 2,
                                             ),
                                             decoration: BoxDecoration(
                                               color: AppColors.primaryOrange,
-                                              borderRadius: BorderRadius.circular(
-                                                  AppDimensions.radiusFull),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    AppDimensions.radiusFull,
+                                                  ),
                                             ),
                                             child: Text(
                                               'Freelance',
-                                              style: AppTextStyles.bodySmall.copyWith(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w600,
-                                              ),
+                                              style: AppTextStyles.bodySmall
+                                                  .copyWith(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
                                             ),
                                           ),
                                         ],
                                       ),
                                     ],
                                   ),
-                                  
-                                
+
                                   Column(
                                     children: [
                                       Text(
                                         isAvailable ? 'Active' : 'Inactive',
                                         style: AppTextStyles.bodySmall.copyWith(
-                                          color: isAvailable ? Colors.greenAccent : Colors.white70,
+                                          color: isAvailable
+                                              ? Colors.greenAccent
+                                              : Colors.white70,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -186,15 +202,22 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
                                               height: 24,
                                               child: CircularProgressIndicator(
                                                 strokeWidth: 2,
-                                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                      Color
+                                                    >(Colors.white),
                                               ),
                                             )
                                           : Switch.adaptive(
                                               value: isAvailable,
                                               activeColor: Colors.greenAccent,
-                                              activeTrackColor: Colors.greenAccent.withOpacity(0.4),
-                                              inactiveThumbColor: Colors.white70,
-                                              inactiveTrackColor: Colors.white24,
+                                              activeTrackColor: Colors
+                                                  .greenAccent
+                                                  .withOpacity(0.4),
+                                              inactiveThumbColor:
+                                                  Colors.white70,
+                                              inactiveTrackColor:
+                                                  Colors.white24,
                                               onChanged: _toggleAvailability,
                                             ),
                                     ],
@@ -204,7 +227,6 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
 
                               const SizedBox(height: AppDimensions.paddingM),
 
-                            
                               Text(
                                 displayName,
                                 style: AppTextStyles.heading3.copyWith(
@@ -213,7 +235,6 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
                                 ),
                               ),
 
-                           
                               Text(
                                 location,
                                 style: AppTextStyles.bodySmall.copyWith(
@@ -223,9 +244,9 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
 
                               const SizedBox(height: AppDimensions.paddingM),
 
-                              
                               GestureDetector(
-                                onTap: () => context.go('/freelancer/edit-profile'),
+                                onTap: () =>
+                                    context.go('/freelancer/edit-profile'),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: AppDimensions.paddingL,
@@ -234,7 +255,8 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
                                   decoration: BoxDecoration(
                                     color: Colors.white24,
                                     borderRadius: BorderRadius.circular(
-                                        AppDimensions.radiusFull),
+                                      AppDimensions.radiusFull,
+                                    ),
                                     border: Border.all(color: Colors.white54),
                                   ),
                                   child: Row(
@@ -242,10 +264,13 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
                                     children: [
                                       Text(
                                         'Edit profile',
-                                        style: AppTextStyles.bodySmall
-                                            .copyWith(color: Colors.white),
+                                        style: AppTextStyles.bodySmall.copyWith(
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                      const SizedBox(width: AppDimensions.paddingXS),
+                                      const SizedBox(
+                                        width: AppDimensions.paddingXS,
+                                      ),
                                       const Icon(
                                         Icons.edit_outlined,
                                         color: Colors.white,
@@ -271,7 +296,6 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
 
                         const SizedBox(height: AppDimensions.paddingL),
 
-                       
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: AppDimensions.paddingL,
@@ -281,12 +305,14 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
                               _ProfileSection(
                                 icon: Icons.person_outline,
                                 label: 'About me/Description',
-                                onTap: () => context.push('/freelancer/about-me'),
+                                onTap: () =>
+                                    context.push('/freelancer/about-me'),
                               ),
                               _ProfileSection(
                                 icon: Icons.handyman_outlined,
                                 label: 'Services offered',
-                                onTap: () => context.push('/freelancer/services'),
+                                onTap: () =>
+                                    context.push('/freelancer/services'),
                               ),
                               _ProfileSection(
                                 icon: Icons.star_outline,
@@ -296,7 +322,8 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
                               _ProfileSection(
                                 icon: Icons.photo_library_outlined,
                                 label: 'Portfolio/work photos',
-                                onTap: () => context.push('/freelancer/portfolio'),
+                                onTap: () =>
+                                    context.push('/freelancer/portfolio'),
                               ),
                               const SizedBox(height: AppDimensions.paddingXL),
                             ],
@@ -354,10 +381,7 @@ class _ProfileSection extends StatelessWidget {
                 ),
               ],
             ),
-            const Icon(
-              Icons.add,
-              color: AppColors.primaryOrange,
-            ),
+            const Icon(Icons.add, color: AppColors.primaryOrange),
           ],
         ),
       ),

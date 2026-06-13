@@ -11,8 +11,7 @@ class JobseekerSkillsScreen extends StatefulWidget {
   const JobseekerSkillsScreen({super.key});
 
   @override
-  State<JobseekerSkillsScreen> createState() =>
-      _JobseekerSkillsScreenState();
+  State<JobseekerSkillsScreen> createState() => _JobseekerSkillsScreenState();
 }
 
 class _JobseekerSkillsScreenState extends State<JobseekerSkillsScreen> {
@@ -59,7 +58,10 @@ class _JobseekerSkillsScreenState extends State<JobseekerSkillsScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        final doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
         if (doc.exists && doc.data() != null) {
           final data = doc.data()!;
           if (data['skills'] != null) {
@@ -82,20 +84,26 @@ class _JobseekerSkillsScreenState extends State<JobseekerSkillsScreen> {
     setState(() => _isSaving = true);
 
     try {
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-        'skills': _selectedSkills,
-      });
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update(
+        {'skills': _selectedSkills},
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Skills updated!'), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text('Skills updated!'),
+            backgroundColor: Colors.green,
+          ),
         );
         context.pop();
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text('Failed to save: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -112,8 +120,7 @@ class _JobseekerSkillsScreenState extends State<JobseekerSkillsScreen> {
   @override
   Widget build(BuildContext context) {
     final filtered = _allSkills
-        .where((s) =>
-            s.toLowerCase().contains(_search.toLowerCase()))
+        .where((s) => s.toLowerCase().contains(_search.toLowerCase()))
         .toList();
 
     return Scaffold(
@@ -128,7 +135,6 @@ class _JobseekerSkillsScreenState extends State<JobseekerSkillsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        
                         GestureDetector(
                           onTap: () => context.pop(),
                           child: const Icon(
@@ -149,7 +155,6 @@ class _JobseekerSkillsScreenState extends State<JobseekerSkillsScreen> {
 
                         const SizedBox(height: AppDimensions.paddingM),
 
-                       
                         Container(
                           height: 48,
                           padding: const EdgeInsets.symmetric(
@@ -157,13 +162,16 @@ class _JobseekerSkillsScreenState extends State<JobseekerSkillsScreen> {
                           ),
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius:
-                                BorderRadius.circular(AppDimensions.radiusM),
+                            borderRadius: BorderRadius.circular(
+                              AppDimensions.radiusM,
+                            ),
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.search,
-                                  color: AppColors.textSecondary),
+                              const Icon(
+                                Icons.search,
+                                color: AppColors.textSecondary,
+                              ),
                               const SizedBox(width: AppDimensions.paddingS),
                               Expanded(
                                 child: TextField(
@@ -184,9 +192,11 @@ class _JobseekerSkillsScreenState extends State<JobseekerSkillsScreen> {
                                     _searchController.clear();
                                     setState(() => _search = '');
                                   },
-                                  child: const Icon(Icons.close,
-                                      color: AppColors.textSecondary,
-                                      size: 18),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: AppColors.textSecondary,
+                                    size: 18,
+                                  ),
                                 ),
                             ],
                           ),
@@ -195,7 +205,6 @@ class _JobseekerSkillsScreenState extends State<JobseekerSkillsScreen> {
                     ),
                   ),
 
-                
                   Expanded(
                     child: ListView.builder(
                       padding: const EdgeInsets.symmetric(
@@ -204,8 +213,7 @@ class _JobseekerSkillsScreenState extends State<JobseekerSkillsScreen> {
                       itemCount: filtered.length,
                       itemBuilder: (context, index) {
                         final skill = filtered[index];
-                        final isSelected =
-                            _selectedSkills.contains(skill);
+                        final isSelected = _selectedSkills.contains(skill);
                         return GestureDetector(
                           onTap: () {
                             setState(() {
@@ -221,8 +229,7 @@ class _JobseekerSkillsScreenState extends State<JobseekerSkillsScreen> {
                               vertical: AppDimensions.paddingS,
                             ),
                             child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   skill,
@@ -249,7 +256,6 @@ class _JobseekerSkillsScreenState extends State<JobseekerSkillsScreen> {
                     ),
                   ),
 
-                 
                   if (_selectedSkills.isNotEmpty) ...[
                     Container(
                       width: double.infinity,
@@ -277,21 +283,25 @@ class _JobseekerSkillsScreenState extends State<JobseekerSkillsScreen> {
                                 decoration: BoxDecoration(
                                   color: AppColors.inputFill,
                                   borderRadius: BorderRadius.circular(
-                                      AppDimensions.radiusFull),
+                                    AppDimensions.radiusFull,
+                                  ),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text(skill,
-                                        style: AppTextStyles.bodySmall),
+                                    Text(skill, style: AppTextStyles.bodySmall),
                                     const SizedBox(
-                                        width: AppDimensions.paddingXS),
+                                      width: AppDimensions.paddingXS,
+                                    ),
                                     GestureDetector(
-                                      onTap: () => setState(() =>
-                                          _selectedSkills.remove(skill)),
-                                      child: const Icon(Icons.close,
-                                          size: 14,
-                                          color: AppColors.textSecondary),
+                                      onTap: () => setState(
+                                        () => _selectedSkills.remove(skill),
+                                      ),
+                                      child: const Icon(
+                                        Icons.close,
+                                        size: 14,
+                                        color: AppColors.textSecondary,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -304,9 +314,14 @@ class _JobseekerSkillsScreenState extends State<JobseekerSkillsScreen> {
                             height: AppDimensions.buttonHeight,
                             child: ElevatedButton(
                               onPressed: _isSaving ? null : _saveSkills,
-                              child: _isSaving 
-                                ? const CircularProgressIndicator(color: Colors.white)
-                                : Text('SAVE', style: AppTextStyles.buttonText),
+                              child: _isSaving
+                                  ? const CircularProgressIndicator(
+                                      color: Colors.white,
+                                    )
+                                  : Text(
+                                      'SAVE',
+                                      style: AppTextStyles.buttonText,
+                                    ),
                             ),
                           ),
                         ],

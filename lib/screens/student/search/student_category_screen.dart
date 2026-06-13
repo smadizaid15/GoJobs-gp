@@ -5,10 +5,6 @@ class StudentCategoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text('StudentCategoryScreen'),
-      ),
-    );
+    return Scaffold(body: Center(child: Text('StudentCategoryScreen')));
   }
 }

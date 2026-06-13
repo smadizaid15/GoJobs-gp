@@ -15,7 +15,7 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
     final company = job?['companyName'] ?? 'Calma Space';
     final location = job?['location'] ?? 'Irbid, Jordan';
 
-    return Scaffold( 
+    return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -33,11 +33,12 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () => context.pop(),
-                      child: const Icon(Icons.arrow_back,
-                          color: AppColors.textPrimary),
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
-                    const Icon(Icons.more_vert,
-                        color: AppColors.textPrimary),
+                    const Icon(Icons.more_vert, color: AppColors.textPrimary),
                   ],
                 ),
               ),
@@ -52,11 +53,15 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
                       height: 80,
                       decoration: BoxDecoration(
                         color: AppColors.inputFill,
-                        borderRadius:
-                            BorderRadius.circular(AppDimensions.radiusL),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusL,
+                        ),
                       ),
-                      child: const Icon(Icons.business,
-                          color: AppColors.textSecondary, size: 40),
+                      child: const Icon(
+                        Icons.business,
+                        color: AppColors.textSecondary,
+                        size: 40,
+                      ),
                     ),
                     const SizedBox(height: AppDimensions.paddingS),
                     Text(
@@ -94,13 +99,19 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(company,
-                              style: AppTextStyles.bodySmall.copyWith(
-                                  color: AppColors.textSecondary)),
+                          Text(
+                            company,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
                           const Text(' • '),
-                          Text(location,
-                              style: AppTextStyles.bodySmall.copyWith(
-                                  color: AppColors.textSecondary)),
+                          Text(
+                            location,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -126,12 +137,9 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingM),
 
-                    _CompanyInfoRow(
-                        label: 'Company', value: company),
-                    _CompanyInfoRow(
-                        label: 'Location', value: location),
-                    _CompanyInfoRow(
-                        label: 'Open Position', value: title),
+                    _CompanyInfoRow(label: 'Company', value: company),
+                    _CompanyInfoRow(label: 'Location', value: location),
+                    _CompanyInfoRow(label: 'Open Position', value: title),
 
                     const SizedBox(height: AppDimensions.paddingL),
 
@@ -153,10 +161,13 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: AppColors.inputFill,
                               borderRadius: BorderRadius.circular(
-                                  AppDimensions.radiusM),
+                                AppDimensions.radiusM,
+                              ),
                             ),
-                            child: const Icon(Icons.image_outlined,
-                                color: AppColors.textSecondary),
+                            child: const Icon(
+                              Icons.image_outlined,
+                              color: AppColors.textSecondary,
+                            ),
                           ),
                         ),
                         const SizedBox(width: AppDimensions.paddingS),
@@ -166,12 +177,16 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: AppColors.inputFill,
                               borderRadius: BorderRadius.circular(
-                                  AppDimensions.radiusM),
+                                AppDimensions.radiusM,
+                              ),
                             ),
                             child: const Center(
-                              child: Text('15 pictures',
-                                  style: TextStyle(
-                                      color: AppColors.textSecondary)),
+                              child: Text(
+                                '15 pictures',
+                                style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -180,8 +195,10 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
 
                     const SizedBox(height: AppDimensions.paddingL),
 
-                    const Icon(Icons.bookmark_border,
-                        color: AppColors.textSecondary),
+                    const Icon(
+                      Icons.bookmark_border,
+                      color: AppColors.textSecondary,
+                    ),
 
                     const SizedBox(height: AppDimensions.paddingXL),
                   ],
@@ -223,9 +240,7 @@ class _CompanyInfoRow extends StatelessWidget {
           Text(
             value,
             style: AppTextStyles.bodySmall.copyWith(
-              color: isLink
-                  ? AppColors.primaryOrange
-                  : AppColors.textSecondary,
+              color: isLink ? AppColors.primaryOrange : AppColors.textSecondary,
               decoration: isLink
                   ? TextDecoration.underline
                   : TextDecoration.none,

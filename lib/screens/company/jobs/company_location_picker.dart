@@ -47,7 +47,6 @@ class _CompanyLocationPickerState extends State<CompanyLocationPicker> {
           children: [
             const SizedBox(height: AppDimensions.paddingL),
 
-           
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
@@ -75,7 +74,6 @@ class _CompanyLocationPickerState extends State<CompanyLocationPicker> {
 
             const SizedBox(height: AppDimensions.paddingL),
 
-            
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
@@ -124,7 +122,6 @@ class _CompanyLocationPickerState extends State<CompanyLocationPicker> {
 
             const SizedBox(height: AppDimensions.paddingM),
 
-           
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(

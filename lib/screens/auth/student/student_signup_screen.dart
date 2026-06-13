@@ -137,8 +137,8 @@ class _StudentSignupScreenState extends State<StudentSignupScreen> {
                 decoration: InputDecoration(
                   hintText: '••••••••••',
                   suffixIcon: GestureDetector(
-                    onTap: () => setState(
-                        () => _obscurePassword = !_obscurePassword),
+                    onTap: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
                     child: Icon(
                       _obscurePassword
                           ? Icons.visibility_off_outlined
@@ -171,8 +171,7 @@ class _StudentSignupScreenState extends State<StudentSignupScreen> {
                     ],
                   ),
                   GestureDetector(
-                    onTap: () =>
-                        context.go('/student/forgot-password'),
+                    onTap: () => context.go('/student/forgot-password'),
                     child: Text(
                       'Forgot Password ?',
                       style: AppTextStyles.bodySmall.copyWith(
