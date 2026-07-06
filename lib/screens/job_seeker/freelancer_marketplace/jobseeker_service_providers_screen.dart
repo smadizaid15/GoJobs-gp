@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -52,11 +53,10 @@ class JobseekerServiceProvidersScreen extends StatelessWidget {
                     StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection('users')
-                          .where('userType', isEqualTo: 'freelancer')
+                          .where('isAvailable', isEqualTo: true)
                           .snapshots(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
                           return const Center(
                             child: CircularProgressIndicator(),
                           );
@@ -77,7 +77,7 @@ class JobseekerServiceProvidersScreen extends StatelessWidget {
                             ),
                             child: Center(
                               child: Text(
-                                'No service providers available yet.',
+                                'No active service providers right now.',
                                 style: AppTextStyles.bodyMedium.copyWith(
                                   color: AppColors.textSecondary,
                                 ),
@@ -91,24 +91,24 @@ class JobseekerServiceProvidersScreen extends StatelessWidget {
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: providers.length,
                           itemBuilder: (context, index) {
-                            final data =
-                                providers[index].data() as Map<String, dynamic>;
+                            final data = providers[index].data() as Map<String, dynamic>;
+                            final freelancerId = providers[index].id; // The ID of the freelancer
 
-                            final name =
-                                data['fullName']?.toString() ??
-                                data['displayName']?.toString() ??
-                                'Freelancer';
-                            final profession =
-                                data['category']?.toString() ??
-                                data['profession']?.toString() ??
-                                'Service Provider';
-                            final description =
-                                data['aboutMe']?.toString() ??
-                                data['description']?.toString() ??
-                                'Available for hire.';
-                            final profileImageUrl =
-                                data['profileImageUrl']?.toString() ??
-                                data['logoUrl']?.toString();
+                            final name = data['fullName']?.toString() ??
+                                         data['displayName']?.toString() ??
+                                         data['name']?.toString() ??
+                                         'Freelancer';
+                                         
+                            final profession = data['category']?.toString() ??
+                                               data['profession']?.toString() ??
+                                               'Service Provider';
+                                               
+                            final description = data['aboutMe']?.toString() ??
+                                                data['description']?.toString() ??
+                                                'Available for hire.';
+                                                
+                            final profileImageUrl = data['freelancerAvatarUrl']?.toString() ??
+                                                    data['profileImageUrl']?.toString();
 
                             return Padding(
                               padding: const EdgeInsets.only(
@@ -120,10 +120,40 @@ class JobseekerServiceProvidersScreen extends StatelessWidget {
                                 description: description,
                                 imageUrl: profileImageUrl,
                                 time: 'Available now',
-                                onViewProfile: () {},
-                                onMessage: () => context.push(
-                                  '/jobseeker/chat-from-providers',
-                                ),
+                                onViewProfile: () {
+                                  context.push('/public-freelancer-profile', extra: data);
+                                },
+                                onRequest: () async {
+                                  final currentUser = FirebaseAuth.instance.currentUser;
+                                  if (currentUser == null) return;
+
+                                  try {
+                                    await FirebaseFirestore.instance.collection('freelancer_requests').add({
+                                      'freelancerId': freelancerId,
+                                      'clientId': currentUser.uid,
+                                      'status': 'pending',
+                                      'timestamp': FieldValue.serverTimestamp(),
+                                    });
+                                    
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Request sent!'),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('Error: $e'),
+                                          backgroundColor: AppColors.error,
+                                        ),
+                                      );
+                                    }
+                                  }
+                                },
                               ),
                             );
                           },
@@ -152,7 +182,7 @@ class _ServiceProviderCard extends StatelessWidget {
   final String time;
   final String? imageUrl;
   final VoidCallback onViewProfile;
-  final VoidCallback onMessage;
+  final VoidCallback onRequest;
 
   const _ServiceProviderCard({
     required this.name,
@@ -161,7 +191,7 @@ class _ServiceProviderCard extends StatelessWidget {
     required this.time,
     this.imageUrl,
     required this.onViewProfile,
-    required this.onMessage,
+    required this.onRequest,
   });
 
   @override
@@ -205,7 +235,7 @@ class _ServiceProviderCard extends StatelessWidget {
                     : null,
                 child: imageUrl == null || imageUrl!.isEmpty
                     ? Text(
-                        name.isNotEmpty ? name[0].toUpperCase() : 'U',
+                        name.isNotEmpty ? name[0].toUpperCase() : 'F',
                         style: AppTextStyles.bodyLarge.copyWith(
                           color: AppColors.textSecondary,
                           fontWeight: FontWeight.bold,
@@ -262,9 +292,7 @@ class _ServiceProviderCard extends StatelessWidget {
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.primaryNavy),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        AppDimensions.radiusFull,
-                      ),
+                      borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                     ),
                   ),
                   child: Text(
@@ -279,16 +307,14 @@ class _ServiceProviderCard extends StatelessWidget {
               const SizedBox(width: AppDimensions.paddingM),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: onMessage,
+                  onPressed: onRequest,
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        AppDimensions.radiusFull,
-                      ),
+                      borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                     ),
                   ),
                   child: Text(
-                    'Message',
+                    'Request',
                     style: AppTextStyles.bodySmall.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,

@@ -100,21 +100,6 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Hello',
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                            Text(
-                              '$_studentName.',
-                              style: AppTextStyles.heading3.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                          ],
                         ),
                         Row(
                           children: [
@@ -319,7 +304,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                         Expanded(
                           child: GestureDetector(
                             onTap: () =>
-                                context.go('/student/internship-categories'),
+                                context.go('/student/internship-list'),
                             child: Container(
                               padding: const EdgeInsets.all(
                                 AppDimensions.paddingM,
@@ -487,7 +472,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                                 type: jobData['workplaceType'] ?? 'On-site',
                                 jobType: jobData['jobType'] ?? 'Internship',
                                 onTap: () => context.push(
-                                  '/student/job-detail',
+                                  '/student/internship-detail',
                                   extra: fullJobData,
                                 ),
                               ),

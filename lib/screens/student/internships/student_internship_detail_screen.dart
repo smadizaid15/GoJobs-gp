@@ -12,17 +12,23 @@ class StudentInternshipDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = jobData ?? {};
+    
+    // Dynamic data extraction
     final title = data['title']?.toString() ?? 'Internship';
     final company = data['companyName']?.toString() ?? 'Company';
     final location = data['location']?.toString() ?? 'Location';
     final type = data['workplaceType']?.toString() ?? 'On-site';
     final duration = data['duration']?.toString() ?? 'Duration unlisted';
-    final description =
-        data['description']?.toString() ?? 'No description available.';
-    final requirements = List<String>.from(data['requirements'] ?? []);
+    final description = data['description']?.toString() ?? 'No description available.';
+    
+    // Safely handle requirements list
+    final rawRequirements = data['requirements'];
+    final requirements = rawRequirements is List 
+        ? List<String>.from(rawRequirements) 
+        : <String>[];
+        
     final qualifications = data['qualifications']?.toString() ?? 'None listed';
-    final experienceLevel =
-        data['experienceLevel']?.toString() ?? 'Entry Level';
+    final experienceLevel = data['experienceLevel']?.toString() ?? 'Entry Level';
     final logoUrl = data['logoUrl']?.toString();
 
     return Scaffold(
@@ -60,14 +66,14 @@ class StudentInternshipDetailScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(
                           AppDimensions.radiusL,
                         ),
-                        image: logoUrl != null
+                        image: (logoUrl != null && logoUrl.isNotEmpty)
                             ? DecorationImage(
                                 image: NetworkImage(logoUrl),
                                 fit: BoxFit.cover,
                               )
                             : null,
                       ),
-                      child: logoUrl == null
+                      child: (logoUrl == null || logoUrl.isEmpty)
                           ? const Icon(
                               Icons.business,
                               color: AppColors.textSecondary,

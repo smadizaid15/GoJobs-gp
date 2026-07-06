@@ -428,10 +428,17 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                     const SizedBox(height: AppDimensions.paddingL),
 
                     Align(
-                      alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: () => context.push('/ai-job-description'),
-                        child: Container(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                       onTap: () async {
+                       final result = await context.push<String>('/ai-job-description');
+                         if (result != null && result.isNotEmpty) {
+                          setState(() {
+                            _descriptionController.text = result;
+                          });
+                               }
+                         },
+                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: AppDimensions.paddingM,
                             vertical: AppDimensions.paddingXS,

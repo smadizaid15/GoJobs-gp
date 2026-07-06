@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
@@ -14,378 +15,419 @@ class JobseekerHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-    final jobService = JobService();
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, authSnapshot) {
+        
+        if (authSnapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            backgroundColor: Color(0xFFF0F0F5),
+            body: Center(
+              child: CircularProgressIndicator(color: AppColors.primaryNavy),
+            ),
+          );
+        }
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF0F0F5),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingL,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: AppDimensions.paddingL),
+        if (!authSnapshot.hasData || authSnapshot.data == null) {
+           return const Scaffold(
+            backgroundColor: Color(0xFFF0F0F5),
+            body: Center(child: Text('Loading user data...')),
+          );
+        }
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        final jobService = JobService();
+        final currentUser = authSnapshot.data!;
+
+        return Scaffold(
+          backgroundColor: const Color(0xFFF0F0F5),
+          body: SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.paddingL,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        const SizedBox(height: AppDimensions.paddingL),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Hello',
-                              style: AppTextStyles.bodyMedium.copyWith(
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () => context.go('/jobseeker/settings'),
+                                  child: const Icon(
+                                    Icons.settings_outlined,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                const SizedBox(width: AppDimensions.paddingS),
+                                GestureDetector(
+                                  onTap: () => context.push('/ai-chat'),
+                                  child: Container(
+                                    width: 36,
+                                    height: 36,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primaryNavy,
+                                      borderRadius: BorderRadius.circular(
+                                        AppDimensions.radiusS,
+                                      ),
+                                    ),
+                                    child: const Icon(
+                                      Icons.smart_toy_outlined,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: AppDimensions.paddingS),
+                                GestureDetector(
+                                  onTap: () => context.go('/jobseeker/profile'),
+                                  child: CircleAvatar(
+                                    radius: 20,
+                                    backgroundColor: AppColors.primaryNavy,
+                                    child: Text(
+                                      currentUser.displayName?.isNotEmpty == true
+                                          ? currentUser.displayName![0].toUpperCase()
+                                          : 'S', 
+                                      style: AppTextStyles.bodyMedium.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: AppDimensions.paddingL),
+
+                        Container(
+                          height: 44,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppDimensions.paddingM,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(
+                              AppDimensions.radiusM,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.menu,
                                 color: AppColors.textSecondary,
                               ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () => context.go('/jobseeker/settings'),
-                              child: const Icon(
-                                Icons.settings_outlined,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                            const SizedBox(width: AppDimensions.paddingS),
-                            GestureDetector(
-                              onTap: () => context.push('/ai-chat'),
-                              child: Container(
-                                width: 36,
-                                height: 36,
-                                decoration: BoxDecoration(
-                                  color: AppColors.primaryNavy,
-                                  borderRadius: BorderRadius.circular(
-                                    AppDimensions.radiusS,
+                              const SizedBox(width: AppDimensions.paddingS),
+                              Expanded(
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                    hintText: 'Search',
+                                    hintStyle: AppTextStyles.bodySmall,
+                                    border: InputBorder.none,
+                                    filled: false,
                                   ),
                                 ),
-                                child: const Icon(
-                                  Icons.smart_toy_outlined,
-                                  color: Colors.white,
-                                  size: 18,
-                                ),
                               ),
-                            ),
-                            const SizedBox(width: AppDimensions.paddingS),
-                            GestureDetector(
-                              onTap: () => context.go('/jobseeker/profile'),
-                              child: CircleAvatar(
-                                radius: 20,
-                                backgroundColor: AppColors.primaryNavy,
+                              const Icon(
+                                Icons.search,
+                                color: AppColors.textSecondary,
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: AppDimensions.paddingL),
+
+                        Text(
+                          'Recent Job List',
+                          style: AppTextStyles.bodyLarge.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+
+                        const SizedBox(height: AppDimensions.paddingM),
+
+                        StreamBuilder<List<JobModel>>(
+                          stream: jobService.getActiveJobs(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+
+                            if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            }
+
+                            final jobs = snapshot.data ?? [];
+
+                            if (jobs.isEmpty) {
+                              return Center(
                                 child: Text(
-                                  authProvider.user?.displayName?.isNotEmpty ==
-                                          true
-                                      ? authProvider.user!.displayName![0]
-                                            .toUpperCase()
-                                      : 'Z',
-                                  style: AppTextStyles.bodyMedium.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
+                                  'No jobs available yet',
+                                  style: AppTextStyles.bodySmall.copyWith(
+                                    color: AppColors.textSecondary,
                                   ),
                                 ),
-                              ),
-                            ),
-                          ],
+                              );
+                            }
+
+                            return Column(
+                              children: jobs
+                                  .take(3)
+                                  .map(
+                                    (job) => Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: AppDimensions.paddingM,
+                                      ),
+                                      child: _JobCard(
+                                        title: job.title,
+                                        company: job.companyName,
+                                        location: job.location,
+                                        type: job.workplaceType,
+                                        jobType: job.employmentType,
+                                        onTap: () => context.push(
+                                          '/jobseeker/job-detail',
+                                          extra: {
+                                            'title': job.title,
+                                            'companyName': job.companyName,
+                                            'location': job.location,
+                                            'workplaceType': job.workplaceType,
+                                            'employmentType': job.employmentType,
+                                            'description': job.description,
+                                          },
+                                        ),
+                                        // -----------------------------------------
+                                        // THE FULLY WIRED SAVE BUTTON IS RIGHT HERE
+                                        // -----------------------------------------
+                                        onSave: () async {
+                                          if (currentUser.uid.isEmpty) return;
+                                          try {
+                                            await JobService().toggleSavedJob(currentUser.uid, job.id);
+                                            if (context.mounted) {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                const SnackBar(
+                                                  content: Text('Saved to your profile!'),
+                                                  duration: Duration(seconds: 2),
+                                                  backgroundColor: Colors.green,
+                                                ),
+                                              );
+                                            }
+                                          } catch (e) {
+                                            if (context.mounted) {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                const SnackBar(
+                                                  content: Text('Failed to save job.'),
+                                                  backgroundColor: Colors.red,
+                                                ),
+                                              );
+                                            }
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                            );
+                          },
                         ),
+
+                        const SizedBox(height: AppDimensions.paddingL),
+
+                        Text(
+                          'Find Your Job/Course',
+                          style: AppTextStyles.bodyLarge.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+
+                        const SizedBox(height: AppDimensions.paddingM),
+
+                        StreamBuilder<List<JobModel>>(
+                          stream: jobService.getActiveJobs(),
+                          builder: (context, snapshot) {
+                            final allJobs = snapshot.data ?? [];
+
+                            final jobCount = allJobs
+                                .where(
+                                  (j) =>
+                                      j.employmentType.toLowerCase() !=
+                                      'internship',
+                                )
+                                .length;
+                            final internshipCount = allJobs
+                                .where(
+                                  (j) =>
+                                      j.employmentType.toLowerCase() ==
+                                      'internship',
+                                )
+                                .length;
+
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () => context.push(
+                                      '/jobseeker/search',
+                                      extra: 'Jobs',
+                                    ),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(
+                                        AppDimensions.paddingM,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primaryNavy,
+                                        borderRadius: BorderRadius.circular(
+                                          AppDimensions.radiusL,
+                                        ),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Icon(
+                                            Icons.work_outline,
+                                            color: Colors.white,
+                                          ),
+                                          const SizedBox(
+                                            height: AppDimensions.paddingS,
+                                          ),
+                                          Text(
+                                            '$jobCount',
+                                            style: AppTextStyles.heading3.copyWith(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Text(
+                                            'Jobs',
+                                            style: AppTextStyles.bodySmall.copyWith(
+                                              color: Colors.white70,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(width: AppDimensions.paddingM),
+
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () => context.push(
+                                      '/jobseeker/search',
+                                      extra: 'Internships',
+                                    ),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(
+                                        AppDimensions.paddingM,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF6C63FF),
+                                        borderRadius: BorderRadius.circular(
+                                          AppDimensions.radiusL,
+                                        ),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Icon(
+                                            Icons.school_outlined,
+                                            color: Colors.white,
+                                          ),
+                                          const SizedBox(
+                                            height: AppDimensions.paddingS,
+                                          ),
+                                          Text(
+                                            '$internshipCount',
+                                            style: AppTextStyles.heading3.copyWith(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Text(
+                                            'Internships',
+                                            style: AppTextStyles.bodySmall.copyWith(
+                                              color: Colors.white70,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+
+                        const SizedBox(height: AppDimensions.paddingL),
+
+                        GestureDetector(
+                          onTap: () => context.go('/jobseeker/service-providers'),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(AppDimensions.paddingL),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFF3E0),
+                              borderRadius: BorderRadius.circular(
+                                AppDimensions.radiusL,
+                              ),
+                              border: Border.all(color: AppColors.primaryOrange),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'In need of service providers ?',
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                const SizedBox(height: AppDimensions.paddingXS),
+                                Text(
+                                  'Press here to uncover the world of freelancers and the variety of services they have to offer',
+                                  style: AppTextStyles.bodySmall.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: AppDimensions.paddingXL),
                       ],
                     ),
-
-                    const SizedBox(height: AppDimensions.paddingL),
-
-                    Container(
-                      height: 44,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppDimensions.paddingM,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                          AppDimensions.radiusM,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.menu,
-                            color: AppColors.textSecondary,
-                          ),
-                          const SizedBox(width: AppDimensions.paddingS),
-                          Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: 'Search',
-                                hintStyle: AppTextStyles.bodySmall,
-                                border: InputBorder.none,
-                                filled: false,
-                              ),
-                            ),
-                          ),
-                          const Icon(
-                            Icons.search,
-                            color: AppColors.textSecondary,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingL),
-
-                    Text(
-                      'Recent Job List',
-                      style: AppTextStyles.bodyLarge.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingM),
-
-                    StreamBuilder<List<JobModel>>(
-                      stream: jobService.getActiveJobs(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        }
-
-                        final jobs = snapshot.data ?? [];
-
-                        if (jobs.isEmpty) {
-                          return Center(
-                            child: Text(
-                              'No jobs available yet',
-                              style: AppTextStyles.bodySmall.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          );
-                        }
-
-                        return Column(
-                          children: jobs
-                              .take(3)
-                              .map(
-                                (job) => Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: AppDimensions.paddingM,
-                                  ),
-                                  child: _JobCard(
-                                    title: job.title,
-                                    company: job.companyName,
-                                    location: job.location,
-                                    type: job.workplaceType,
-                                    jobType: job.employmentType,
-                                    onTap: () => context.push(
-                                      '/jobseeker/job-detail',
-                                      extra: {
-                                        'title': job.title,
-                                        'companyName': job.companyName,
-                                        'location': job.location,
-                                        'workplaceType': job.workplaceType,
-                                        'employmentType': job.employmentType,
-                                        'description': job.description,
-                                      },
-                                    ),
-                                    onSave: () {},
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingL),
-
-                    Text(
-                      'Find Your Job/Course',
-                      style: AppTextStyles.bodyLarge.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingM),
-
-                    StreamBuilder<List<JobModel>>(
-                      stream: jobService.getActiveJobs(),
-                      builder: (context, snapshot) {
-                        final allJobs = snapshot.data ?? [];
-
-                        final jobCount = allJobs
-                            .where(
-                              (j) =>
-                                  j.employmentType.toLowerCase() !=
-                                  'internship',
-                            )
-                            .length;
-                        final internshipCount = allJobs
-                            .where(
-                              (j) =>
-                                  j.employmentType.toLowerCase() ==
-                                  'internship',
-                            )
-                            .length;
-
-                        return Row(
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () => context.push(
-                                  '/jobseeker/search',
-                                  extra: 'Jobs',
-                                ),
-                                child: Container(
-                                  padding: const EdgeInsets.all(
-                                    AppDimensions.paddingM,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primaryNavy,
-                                    borderRadius: BorderRadius.circular(
-                                      AppDimensions.radiusL,
-                                    ),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Icon(
-                                        Icons.work_outline,
-                                        color: Colors.white,
-                                      ),
-                                      const SizedBox(
-                                        height: AppDimensions.paddingS,
-                                      ),
-                                      Text(
-                                        '$jobCount',
-                                        style: AppTextStyles.heading3.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(
-                                        'Jobs',
-                                        style: AppTextStyles.bodySmall.copyWith(
-                                          color: Colors.white70,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            const SizedBox(width: AppDimensions.paddingM),
-
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () => context.push(
-                                  '/jobseeker/search',
-                                  extra: 'Internships',
-                                ),
-                                child: Container(
-                                  padding: const EdgeInsets.all(
-                                    AppDimensions.paddingM,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF6C63FF),
-                                    borderRadius: BorderRadius.circular(
-                                      AppDimensions.radiusL,
-                                    ),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Icon(
-                                        Icons.school_outlined,
-                                        color: Colors.white,
-                                      ),
-                                      const SizedBox(
-                                        height: AppDimensions.paddingS,
-                                      ),
-                                      Text(
-                                        '$internshipCount',
-                                        style: AppTextStyles.heading3.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(
-                                        'Internships',
-                                        style: AppTextStyles.bodySmall.copyWith(
-                                          color: Colors.white70,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingL),
-
-                    GestureDetector(
-                      onTap: () => context.go('/jobseeker/service-providers'),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(AppDimensions.paddingL),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFF3E0),
-                          borderRadius: BorderRadius.circular(
-                            AppDimensions.radiusL,
-                          ),
-                          border: Border.all(color: AppColors.primaryOrange),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'In need of service providers ?',
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                            const SizedBox(height: AppDimensions.paddingXS),
-                            Text(
-                              'Press here to uncover the world of freelancers and the variety of services they have to offer',
-                              style: AppTextStyles.bodySmall.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingXL),
-                  ],
+                  ),
                 ),
-              ),
+                const JobseekerBottomNav(currentIndex: 0),
+              ],
             ),
-            const JobseekerBottomNav(currentIndex: 0),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

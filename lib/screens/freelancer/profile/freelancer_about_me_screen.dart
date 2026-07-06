@@ -11,8 +11,7 @@ class FreelancerAboutMeScreen extends StatefulWidget {
   const FreelancerAboutMeScreen({super.key});
 
   @override
-  State<FreelancerAboutMeScreen> createState() =>
-      _FreelancerAboutMeScreenState();
+  State<FreelancerAboutMeScreen> createState() => _FreelancerAboutMeScreenState();
 }
 
 class _FreelancerAboutMeScreenState extends State<FreelancerAboutMeScreen> {
@@ -26,24 +25,27 @@ class _FreelancerAboutMeScreenState extends State<FreelancerAboutMeScreen> {
   @override
   void initState() {
     super.initState();
-    _loadExistingData();
+    _initializeData();
   }
 
-  Future<void> _loadExistingData() async {
-    final user = _auth.currentUser;
-    if (user != null) {
-      try {
-        final doc = await _firestore.collection('users').doc(user.uid).get();
-        if (doc.exists && doc.data() != null) {
-          setState(() {
-            _aboutController.text = doc.data()!['aboutMe']?.toString() ?? '';
-          });
-        }
-      } catch (e) {
-        debugPrint("Error loading About Me: $e");
+  // 🛡️ THE SAFETY NET: Waits for Auth to resolve before querying Firestore
+  Future<void> _initializeData() async {
+    try {
+      User? user = _auth.currentUser;
+      user ??= await _auth.authStateChanges().firstWhere((u) => u != null);
+
+      final doc = await _firestore.collection('users').doc(user!.uid).get();
+      if (doc.exists && doc.data() != null && mounted) {
+        setState(() {
+          _aboutController.text = doc.data()!['aboutMe']?.toString() ?? 
+                                  doc.data()!['description']?.toString() ?? '';
+        });
       }
+    } catch (e) {
+      debugPrint("Error loading About Me: $e");
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
-    setState(() => _isLoading = false);
   }
 
   Future<void> _saveData() async {
@@ -91,7 +93,7 @@ class _FreelancerAboutMeScreenState extends State<FreelancerAboutMeScreen> {
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange))
             : Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,

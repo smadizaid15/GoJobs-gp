@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
+import '../../../widgets/company_bottom_nav.dart';
+
 
 class CompanyApplicantDetailScreen extends StatefulWidget {
   final Map<String, dynamic> application;
@@ -14,12 +17,10 @@ class CompanyApplicantDetailScreen extends StatefulWidget {
   const CompanyApplicantDetailScreen({super.key, required this.application});
 
   @override
-  State<CompanyApplicantDetailScreen> createState() =>
-      _CompanyApplicantDetailScreenState();
+  State<CompanyApplicantDetailScreen> createState() => _CompanyApplicantDetailScreenState();
 }
 
-class _CompanyApplicantDetailScreenState
-    extends State<CompanyApplicantDetailScreen> {
+class _CompanyApplicantDetailScreenState extends State<CompanyApplicantDetailScreen> {
   bool _isProcessing = false;
 
   Future<void> _openCvLink() async {

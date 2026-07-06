@@ -11,8 +11,7 @@ class FreelancerExpertiseScreen extends StatefulWidget {
   const FreelancerExpertiseScreen({super.key});
 
   @override
-  State<FreelancerExpertiseScreen> createState() =>
-      _FreelancerExpertiseScreenState();
+  State<FreelancerExpertiseScreen> createState() => _FreelancerExpertiseScreenState();
 }
 
 class _FreelancerExpertiseScreenState extends State<FreelancerExpertiseScreen> {
@@ -29,33 +28,32 @@ class _FreelancerExpertiseScreenState extends State<FreelancerExpertiseScreen> {
   @override
   void initState() {
     super.initState();
-    _loadExpertise();
+    _initializeData();
   }
 
-  Future<void> _loadExpertise() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      try {
-        final doc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
-        if (doc.exists && doc.data() != null) {
-          final data = doc.data()!;
-          setState(() {
-            _serviceTypeController.text = data['serviceType'] ?? '';
-            _descriptionController.text = data['expertiseDescription'] ?? '';
-            _shiftStartController.text = data['shiftStart'] ?? '';
-            _shiftEndController.text = data['shiftEnd'] ?? '';
-            _additionalController.text = data['additionalInfo'] ?? '';
-            _isOpen24_7 = data['isOpen24_7'] ?? false;
-          });
-        }
-      } catch (e) {
-        debugPrint("Error loading expertise: $e");
+  // 🛡️ THE SAFETY NET: Waits for Auth to resolve before querying Firestore
+  Future<void> _initializeData() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      user ??= await FirebaseAuth.instance.authStateChanges().firstWhere((u) => u != null);
+
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+      if (doc.exists && doc.data() != null && mounted) {
+        final data = doc.data()!;
+        setState(() {
+          _serviceTypeController.text = data['serviceType'] ?? '';
+          _descriptionController.text = data['expertiseDescription'] ?? '';
+          _shiftStartController.text = data['shiftStart'] ?? '';
+          _shiftEndController.text = data['shiftEnd'] ?? '';
+          _additionalController.text = data['additionalInfo'] ?? '';
+          _isOpen24_7 = data['isOpen24_7'] ?? false;
+        });
       }
+    } catch (e) {
+      debugPrint("Error loading expertise: $e");
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
-    setState(() => _isLoading = false);
   }
 
   Future<void> _saveExpertise() async {
@@ -116,7 +114,7 @@ class _FreelancerExpertiseScreenState extends State<FreelancerExpertiseScreen> {
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange))
             : SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,

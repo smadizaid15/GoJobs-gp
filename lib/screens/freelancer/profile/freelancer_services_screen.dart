@@ -11,8 +11,7 @@ class FreelancerServicesScreen extends StatefulWidget {
   const FreelancerServicesScreen({super.key});
 
   @override
-  State<FreelancerServicesScreen> createState() =>
-      _FreelancerServicesScreenState();
+  State<FreelancerServicesScreen> createState() => _FreelancerServicesScreenState();
 }
 
 class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
@@ -23,27 +22,26 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
   @override
   void initState() {
     super.initState();
-    _loadServices();
+    _initializeData();
   }
 
-  Future<void> _loadServices() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      try {
-        final doc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
-        if (doc.exists && doc.data() != null) {
-          setState(() {
-            _servicesController.text = doc.data()!['servicesDescription'] ?? '';
-          });
-        }
-      } catch (e) {
-        debugPrint("Error loading services: $e");
+  // 🛡️ THE SAFETY NET: Waits for Auth to resolve before querying Firestore
+  Future<void> _initializeData() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      user ??= await FirebaseAuth.instance.authStateChanges().firstWhere((u) => u != null);
+
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+      if (doc.exists && doc.data() != null && mounted) {
+        setState(() {
+          _servicesController.text = doc.data()!['servicesDescription'] ?? '';
+        });
       }
+    } catch (e) {
+      debugPrint("Error loading services: $e");
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
-    setState(() => _isLoading = false);
   }
 
   Future<void> _saveServices() async {
@@ -64,7 +62,7 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.pop(context);
+        Navigator.pop(context); // Closes the bottom sheet
         context.go('/freelancer/profile');
       }
     } catch (e) {
@@ -93,7 +91,7 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange))
             : Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,
@@ -162,9 +160,7 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
                               ),
                             ),
                             builder: (context) => Padding(
-                              padding: const EdgeInsets.all(
-                                AppDimensions.paddingXL,
-                              ),
+                              padding: const EdgeInsets.all(AppDimensions.paddingXL),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -178,18 +174,14 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: AppDimensions.paddingL,
-                                  ),
+                                  const SizedBox(height: AppDimensions.paddingL),
                                   Text(
                                     'Save Changes ?',
                                     style: AppTextStyles.heading3.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: AppDimensions.paddingS,
-                                  ),
+                                  const SizedBox(height: AppDimensions.paddingS),
                                   Text(
                                     'Are you sure you want to change what you entered?',
                                     style: AppTextStyles.bodySmall.copyWith(
@@ -197,16 +189,12 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
-                                  const SizedBox(
-                                    height: AppDimensions.paddingL,
-                                  ),
+                                  const SizedBox(height: AppDimensions.paddingL),
                                   SizedBox(
                                     width: double.infinity,
                                     height: AppDimensions.buttonHeight,
                                     child: ElevatedButton(
-                                      onPressed: _isSaving
-                                          ? null
-                                          : _saveServices,
+                                      onPressed: _isSaving ? null : _saveServices,
                                       child: _isSaving
                                           ? const CircularProgressIndicator(
                                               color: Colors.white,
@@ -217,9 +205,7 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
                                             ),
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: AppDimensions.paddingM,
-                                  ),
+                                  const SizedBox(height: AppDimensions.paddingM),
                                   SizedBox(
                                     width: double.infinity,
                                     height: AppDimensions.buttonHeight,
@@ -245,9 +231,7 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: AppDimensions.paddingL,
-                                  ),
+                                  const SizedBox(height: AppDimensions.paddingL),
                                 ],
                               ),
                             ),

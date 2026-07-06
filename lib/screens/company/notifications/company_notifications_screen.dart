@@ -110,9 +110,10 @@ class _CompanyNotificationsScreenState
                               borderRadius: BorderRadius.circular(
                                 AppDimensions.radiusS,
                               ),
-                              child: Image.asset(
-                                'assets/images/company_logo.png',
-                                fit: BoxFit.contain,
+                              child: const Icon(
+                                Icons.business,
+                                size: 24,
+                                color: AppColors.textSecondary,
                               ),
                             ),
                           ),

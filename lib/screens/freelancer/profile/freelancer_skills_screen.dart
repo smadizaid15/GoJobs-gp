@@ -42,30 +42,33 @@ class _FreelancerSkillsScreenState extends State<FreelancerSkillsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadSkills();
+    _initializeData();
   }
 
-  Future<void> _loadSkills() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      try {
-        final doc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
-        if (doc.exists && doc.data() != null) {
-          final data = doc.data()!;
-          if (data['freelancerSkills'] != null) {
-            setState(() {
-              _selectedSkills = List<String>.from(data['freelancerSkills']);
-            });
-          }
+  // 🛡️ THE SAFETY NET: Waits for Auth to resolve before querying Firestore
+  Future<void> _initializeData() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      user ??= await FirebaseAuth.instance.authStateChanges().firstWhere((u) => u != null);
+
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+      if (doc.exists && doc.data() != null && mounted) {
+        final data = doc.data()!;
+        if (data['skills'] != null) {
+          setState(() {
+            _selectedSkills = List<String>.from(data['skills']);
+          });
+        } else if (data['freelancerSkills'] != null) {
+          setState(() {
+            _selectedSkills = List<String>.from(data['freelancerSkills']);
+          });
         }
-      } catch (e) {
-        debugPrint("Error loading freelancer skills: $e");
       }
+    } catch (e) {
+      debugPrint("Error loading freelancer skills: $e");
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
-    setState(() => _isLoading = false);
   }
 
   Future<void> _saveSkills() async {
@@ -76,7 +79,7 @@ class _FreelancerSkillsScreenState extends State<FreelancerSkillsScreen> {
 
     try {
       await FirebaseFirestore.instance.collection('users').doc(user.uid).update(
-        {'freelancerSkills': _selectedSkills},
+        {'skills': _selectedSkills}, // Matched with Public Profile!
       );
 
       if (mounted) {
@@ -98,7 +101,7 @@ class _FreelancerSkillsScreenState extends State<FreelancerSkillsScreen> {
         );
       }
     } finally {
-      setState(() => _isSaving = false);
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 
@@ -118,7 +121,7 @@ class _FreelancerSkillsScreenState extends State<FreelancerSkillsScreen> {
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange))
             : Column(
                 children: [
                   Padding(

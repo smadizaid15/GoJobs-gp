@@ -14,8 +14,7 @@ class FreelancerPortfolioScreen extends StatefulWidget {
   const FreelancerPortfolioScreen({super.key});
 
   @override
-  State<FreelancerPortfolioScreen> createState() =>
-      _FreelancerPortfolioScreenState();
+  State<FreelancerPortfolioScreen> createState() => _FreelancerPortfolioScreenState();
 }
 
 class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
@@ -32,27 +31,33 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
   @override
   void initState() {
     super.initState();
-    _loadPortfolio();
+    _initializeData();
   }
 
-  Future<void> _loadPortfolio() async {
-    final user = _auth.currentUser;
-    if (user != null) {
-      try {
-        final doc = await _firestore.collection('users').doc(user.uid).get();
-        if (doc.exists && doc.data() != null) {
-          final data = doc.data()!;
-          if (data['portfolioImages'] != null) {
-            setState(() {
-              _existingImages = List<String>.from(data['portfolioImages']);
-            });
-          }
+  // 🛡️ THE SAFETY NET: Waits for Auth to resolve before querying Firestore
+  Future<void> _initializeData() async {
+    try {
+      User? user = _auth.currentUser;
+      user ??= await _auth.authStateChanges().firstWhere((u) => u != null);
+
+      final doc = await _firestore.collection('users').doc(user!.uid).get();
+      if (doc.exists && doc.data() != null && mounted) {
+        final data = doc.data()!;
+        if (data['portfolioPhotos'] != null) {
+          setState(() {
+            _existingImages = List<String>.from(data['portfolioPhotos']);
+          });
+        } else if (data['portfolioImages'] != null) {
+          setState(() {
+            _existingImages = List<String>.from(data['portfolioImages']);
+          });
         }
-      } catch (e) {
-        debugPrint("Error loading portfolio: $e");
       }
+    } catch (e) {
+      debugPrint("Error loading portfolio: $e");
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
-    setState(() => _isLoading = false);
   }
 
   Future<void> _pickImages() async {
@@ -78,7 +83,7 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
     final user = _auth.currentUser;
     if (user != null) {
       await _firestore.collection('users').doc(user.uid).update({
-        'portfolioImages': _existingImages,
+        'portfolioPhotos': _existingImages, // Matched with Public Profile!
       });
     }
   }
@@ -94,8 +99,7 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
 
       for (var image in _newSelectedImages) {
         final bytes = await image.readAsBytes();
-        final fileName =
-            '${DateTime.now().millisecondsSinceEpoch}_${image.name}';
+        final fileName = '${DateTime.now().millisecondsSinceEpoch}_${image.name}';
         final ref = FirebaseStorage.instance.ref().child(
           'portfolio_images/${user.uid}/$fileName',
         );
@@ -111,7 +115,7 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
       final finalImagesList = [..._existingImages, ...uploadedUrls];
 
       await _firestore.collection('users').doc(user.uid).update({
-        'portfolioImages': finalImagesList,
+        'portfolioPhotos': finalImagesList, // Matched with Public Profile!
       });
 
       if (mounted) {
@@ -139,14 +143,13 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool hasAnyPhotos =
-        _existingImages.isNotEmpty || _newSelectedImages.isNotEmpty;
+    final bool hasAnyPhotos = _existingImages.isNotEmpty || _newSelectedImages.isNotEmpty;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange))
             : Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,
@@ -233,13 +236,12 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
                         child: GridView.builder(
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: AppDimensions.paddingM,
-                                mainAxisSpacing: AppDimensions.paddingM,
-                              ),
+                            crossAxisCount: 2,
+                            crossAxisSpacing: AppDimensions.paddingM,
+                            mainAxisSpacing: AppDimensions.paddingM,
+                          ),
                           itemCount:
-                              _existingImages.length +
-                              _newSelectedImages.length,
+                              _existingImages.length + _newSelectedImages.length,
                           itemBuilder: (context, index) {
                             if (index < _existingImages.length) {
                               final imageUrl = _existingImages[index];
@@ -259,8 +261,7 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
                                     top: 8,
                                     right: 8,
                                     child: GestureDetector(
-                                      onTap: () =>
-                                          _removeExistingImage(imageUrl),
+                                      onTap: () => _removeExistingImage(imageUrl),
                                       child: Container(
                                         padding: const EdgeInsets.all(4),
                                         decoration: const BoxDecoration(
@@ -279,16 +280,15 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
                               );
                             }
 
-                            final newImageIndex =
-                                index - _existingImages.length;
+                            final newImageIndex = index - _existingImages.length;
                             return FutureBuilder<Uint8List>(
-                              future: _newSelectedImages[newImageIndex]
-                                  .readAsBytes(),
+                              future: _newSelectedImages[newImageIndex].readAsBytes(),
                               builder: (context, snapshot) {
-                                if (!snapshot.hasData)
+                                if (!snapshot.hasData) {
                                   return const Center(
                                     child: CircularProgressIndicator(),
                                   );
+                                }
                                 return Stack(
                                   fit: StackFit.expand,
                                   children: [
@@ -305,8 +305,7 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
                                       top: 8,
                                       right: 8,
                                       child: GestureDetector(
-                                        onTap: () =>
-                                            _removeNewImage(newImageIndex),
+                                        onTap: () => _removeNewImage(newImageIndex),
                                         child: Container(
                                           padding: const EdgeInsets.all(4),
                                           decoration: const BoxDecoration(

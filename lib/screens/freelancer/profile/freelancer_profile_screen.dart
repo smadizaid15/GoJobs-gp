@@ -11,8 +11,7 @@ class FreelancerProfileScreen extends StatefulWidget {
   const FreelancerProfileScreen({super.key});
 
   @override
-  State<FreelancerProfileScreen> createState() =>
-      _FreelancerProfileScreenState();
+  State<FreelancerProfileScreen> createState() => _FreelancerProfileScreenState();
 }
 
 class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
@@ -33,6 +32,10 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
         'isAvailable': value,
       });
     } catch (e) {
+      // 🛡️ THE GUARD: This stops the white screen crash if the async task fails 
+      // or if you navigate away before it finishes.
+      if (!mounted) return; 
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to update status: ${e.toString()}'),
@@ -40,305 +43,271 @@ class _FreelancerProfileScreenState extends State<FreelancerProfileScreen> {
         ),
       );
     } finally {
-      setState(() {
-        _isSubmitting = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = _auth.currentUser;
+    // 1. Force the screen to wait for Auth confirmation
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, authSnapshot) {
+        
+        // 2. Prevent the white screen crash with a loading state
+        if (authSnapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            backgroundColor: Color(0xFFF0F0F5),
+            body: Center(
+              child: CircularProgressIndicator(color: AppColors.primaryOrange),
+            ),
+          );
+        }
 
-    if (user == null) {
-      return const Scaffold(
-        body: Center(child: Text('User not authenticated. Please log in.')),
-      );
-    }
+        final user = authSnapshot.data;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF0F0F5),
-      body: SafeArea(
-        child: StreamBuilder<DocumentSnapshot>(
-          stream: _firestore.collection('users').doc(user.uid).snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return const Center(child: Text('Something went wrong'));
-            }
+        if (user == null) {
+          return const Scaffold(
+            backgroundColor: Color(0xFFF0F0F5),
+            body: Center(child: Text('Loading user data...')),
+          );
+        }
 
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    AppColors.primaryOrange,
-                  ),
-                ),
-              );
-            }
+        return Scaffold(
+          backgroundColor: const Color(0xFFF0F0F5),
+          body: SafeArea(
+            child: StreamBuilder<DocumentSnapshot>(
+              stream: _firestore.collection('users').doc(user.uid).snapshots(),
+              builder: (context, snapshot) {
+                
+                // Let's catch any silent database errors on the screen instead of crashing
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}', style: const TextStyle(color: Colors.red)),
+                  );
+                }
 
-            final userData =
-                snapshot.data?.data() as Map<String, dynamic>? ?? {};
-            final String displayName = userData['name'] ?? 'Freelancer';
-            final String location = userData['location'] ?? 'Irbid, Jordan';
-            final bool isAvailable = userData['isAvailable'] ?? false;
-            final String firstLetter = displayName.isNotEmpty
-                ? displayName[0].toUpperCase()
-                : 'Z';
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryOrange),
+                    ),
+                  );
+                }
 
-            return Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(AppDimensions.paddingL),
-                          decoration: const BoxDecoration(
-                            color: AppColors.primaryNavy,
-                            borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(
-                                AppDimensions.radiusXL,
+                // Safely extract the data with bulletproof fallbacks
+                final userData = snapshot.data?.data() as Map<String, dynamic>? ?? {};
+                
+                final String displayName = userData['fullName']?.toString() ?? 
+                                           userData['displayName']?.toString() ?? 
+                                           userData['name']?.toString() ?? 
+                                           'Freelancer';
+                                           
+                final String location = userData['location']?.toString() ?? 'Location not set';
+                final bool isAvailable = userData['isAvailable'] ?? false;
+                final String firstLetter = displayName.isNotEmpty ? displayName[0].toUpperCase() : 'F';
+
+                return Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(AppDimensions.paddingL),
+                              decoration: const BoxDecoration(
+                                color: AppColors.primaryNavy,
+                                borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(AppDimensions.radiusXL),
+                                  bottomRight: Radius.circular(AppDimensions.radiusXL),
+                                ),
                               ),
-                              bottomRight: Radius.circular(
-                                AppDimensions.radiusXL,
-                              ),
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () => context.go('/freelancer/home'),
-                                    child: const Icon(
-                                      Icons.share_outlined,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () =>
-                                        context.go('/freelancer/settings'),
-                                    child: const Icon(
-                                      Icons.settings_outlined,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                              const SizedBox(height: AppDimensions.paddingM),
-
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      CircleAvatar(
-                                        radius: 40,
-                                        backgroundColor: AppColors.inputFill,
-                                        child: Text(
-                                          firstLetter,
-                                          style: AppTextStyles.heading2
-                                              .copyWith(
+                                      GestureDetector(
+                                        onTap: () => context.go('/freelancer/home'),
+                                        child: const Icon(Icons.share_outlined, color: Colors.white),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () => context.go('/freelancer/settings'),
+                                        child: const Icon(Icons.settings_outlined, color: Colors.white),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: AppDimensions.paddingM),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 40,
+                                            backgroundColor: AppColors.inputFill,
+                                            child: Text(
+                                              firstLetter,
+                                              style: AppTextStyles.heading2.copyWith(
                                                 color: AppColors.textSecondary,
                                                 fontWeight: FontWeight.bold,
                                               ),
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        width: AppDimensions.paddingM,
-                                      ),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal:
-                                                  AppDimensions.paddingS,
-                                              vertical: 2,
                                             ),
-                                            decoration: BoxDecoration(
-                                              color: AppColors.primaryOrange,
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    AppDimensions.radiusFull,
-                                                  ),
-                                            ),
-                                            child: Text(
-                                              'Freelance',
-                                              style: AppTextStyles.bodySmall
-                                                  .copyWith(
+                                          ),
+                                          const SizedBox(width: AppDimensions.paddingM),
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(
+                                                  horizontal: AppDimensions.paddingS,
+                                                  vertical: 2,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.primaryOrange,
+                                                  borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                                                ),
+                                                child: Text(
+                                                  'Freelance',
+                                                  style: AppTextStyles.bodySmall.copyWith(
                                                     color: Colors.white,
                                                     fontWeight: FontWeight.w600,
                                                   ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      Column(
+                                        children: [
+                                          Text(
+                                            isAvailable ? 'Active' : 'Inactive',
+                                            style: AppTextStyles.bodySmall.copyWith(
+                                              color: isAvailable ? Colors.greenAccent : Colors.white70,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                           ),
+                                          const SizedBox(height: 4),
+                                          _isSubmitting
+                                              ? const SizedBox(
+                                                  width: 24,
+                                                  height: 24,
+                                                  child: CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                                  ),
+                                                )
+                                              : Switch.adaptive(
+                                                  value: isAvailable,
+                                                  activeColor: Colors.greenAccent,
+                                                  activeTrackColor: Colors.greenAccent.withOpacity(0.4),
+                                                  inactiveThumbColor: Colors.white70,
+                                                  inactiveTrackColor: Colors.white24,
+                                                  onChanged: _toggleAvailability,
+                                                ),
                                         ],
                                       ),
                                     ],
                                   ),
-
-                                  Column(
-                                    children: [
-                                      Text(
-                                        isAvailable ? 'Active' : 'Inactive',
-                                        style: AppTextStyles.bodySmall.copyWith(
-                                          color: isAvailable
-                                              ? Colors.greenAccent
-                                              : Colors.white70,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                  const SizedBox(height: AppDimensions.paddingM),
+                                  Text(
+                                    displayName,
+                                    style: AppTextStyles.heading3.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    location,
+                                    style: AppTextStyles.bodySmall.copyWith(
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                  const SizedBox(height: AppDimensions.paddingM),
+                                  GestureDetector(
+                                    onTap: () => context.go('/freelancer/edit-profile'),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: AppDimensions.paddingL,
+                                        vertical: AppDimensions.paddingXS,
                                       ),
-                                      const SizedBox(height: 4),
-                                      _isSubmitting
-                                          ? const SizedBox(
-                                              width: 24,
-                                              height: 24,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2,
-                                                valueColor:
-                                                    AlwaysStoppedAnimation<
-                                                      Color
-                                                    >(Colors.white),
-                                              ),
-                                            )
-                                          : Switch.adaptive(
-                                              value: isAvailable,
-                                              activeColor: Colors.greenAccent,
-                                              activeTrackColor: Colors
-                                                  .greenAccent
-                                                  .withOpacity(0.4),
-                                              inactiveThumbColor:
-                                                  Colors.white70,
-                                              inactiveTrackColor:
-                                                  Colors.white24,
-                                              onChanged: _toggleAvailability,
-                                            ),
-                                    ],
+                                      decoration: BoxDecoration(
+                                        color: Colors.white24,
+                                        borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                                        border: Border.all(color: Colors.white54),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            'Edit profile',
+                                            style: AppTextStyles.bodySmall.copyWith(color: Colors.white),
+                                          ),
+                                          const SizedBox(width: AppDimensions.paddingXS),
+                                          const Icon(Icons.edit_outlined, color: Colors.white, size: 16),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: AppDimensions.paddingS),
+                                  Text(
+                                    'You are now in the freelance page\nHere, you can post skills to be hired instantly',
+                                    style: AppTextStyles.bodySmall.copyWith(
+                                      color: Colors.white60,
+                                      fontSize: 10,
+                                    ),
                                   ),
                                 ],
                               ),
-
-                              const SizedBox(height: AppDimensions.paddingM),
-
-                              Text(
-                                displayName,
-                                style: AppTextStyles.heading3.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-
-                              Text(
-                                location,
-                                style: AppTextStyles.bodySmall.copyWith(
-                                  color: Colors.white70,
-                                ),
-                              ),
-
-                              const SizedBox(height: AppDimensions.paddingM),
-
-                              GestureDetector(
-                                onTap: () =>
-                                    context.go('/freelancer/edit-profile'),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: AppDimensions.paddingL,
-                                    vertical: AppDimensions.paddingXS,
+                            ),
+                            const SizedBox(height: AppDimensions.paddingL),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
+                              child: Column(
+                                children: [
+                                  _ProfileSection(
+                                    icon: Icons.person_outline,
+                                    label: 'About me/Description',
+                                    onTap: () => context.push('/freelancer/about-me'),
                                   ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white24,
-                                    borderRadius: BorderRadius.circular(
-                                      AppDimensions.radiusFull,
-                                    ),
-                                    border: Border.all(color: Colors.white54),
+                                  _ProfileSection(
+                                    icon: Icons.handyman_outlined,
+                                    label: 'Services offered',
+                                    onTap: () => context.push('/freelancer/services'),
                                   ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        'Edit profile',
-                                        style: AppTextStyles.bodySmall.copyWith(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        width: AppDimensions.paddingXS,
-                                      ),
-                                      const Icon(
-                                        Icons.edit_outlined,
-                                        color: Colors.white,
-                                        size: 16,
-                                      ),
-                                    ],
+                                  _ProfileSection(
+                                    icon: Icons.star_outline,
+                                    label: 'Rate, skills and tools, Availability',
+                                    onTap: () => context.push('/freelancer/skills'),
                                   ),
-                                ),
+                                  _ProfileSection(
+                                    icon: Icons.photo_library_outlined,
+                                    label: 'Portfolio/work photos',
+                                    onTap: () => context.push('/freelancer/portfolio'),
+                                  ),
+                                  const SizedBox(height: AppDimensions.paddingXL),
+                                ],
                               ),
-
-                              const SizedBox(height: AppDimensions.paddingS),
-
-                              Text(
-                                'You are now in the freelance page\nHere, you can post skills to be hired instantly',
-                                style: AppTextStyles.bodySmall.copyWith(
-                                  color: Colors.white60,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-
-                        const SizedBox(height: AppDimensions.paddingL),
-
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppDimensions.paddingL,
-                          ),
-                          child: Column(
-                            children: [
-                              _ProfileSection(
-                                icon: Icons.person_outline,
-                                label: 'About me/Description',
-                                onTap: () =>
-                                    context.push('/freelancer/about-me'),
-                              ),
-                              _ProfileSection(
-                                icon: Icons.handyman_outlined,
-                                label: 'Services offered',
-                                onTap: () =>
-                                    context.push('/freelancer/services'),
-                              ),
-                              _ProfileSection(
-                                icon: Icons.star_outline,
-                                label: 'Rate, skills and tools, Availability',
-                                onTap: () => context.push('/freelancer/skills'),
-                              ),
-                              _ProfileSection(
-                                icon: Icons.photo_library_outlined,
-                                label: 'Portfolio/work photos',
-                                onTap: () =>
-                                    context.push('/freelancer/portfolio'),
-                              ),
-                              const SizedBox(height: AppDimensions.paddingXL),
-                            ],
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-                const FreelancerBottomNav(currentIndex: 1),
-              ],
-            );
-          },
-        ),
-      ),
+                    const FreelancerBottomNav(currentIndex: 1),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

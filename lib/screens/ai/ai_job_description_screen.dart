@@ -341,9 +341,9 @@ class _AIJobDescriptionScreenState extends State<AIJobDescriptionScreen> {
                         width: double.infinity,
                         height: AppDimensions.buttonHeight,
                         child: ElevatedButton(
-                          onPressed: () {
-                            context.pop();
-                          },
+                         onPressed: () {
+                         context.pop(_generatedDescription); 
+                         },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.companyGold,
                           ),

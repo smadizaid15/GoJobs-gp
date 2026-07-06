@@ -11,12 +11,10 @@ class FreelancerEditProfileScreen extends StatefulWidget {
   const FreelancerEditProfileScreen({super.key});
 
   @override
-  State<FreelancerEditProfileScreen> createState() =>
-      _FreelancerEditProfileScreenState();
+  State<FreelancerEditProfileScreen> createState() => _FreelancerEditProfileScreenState();
 }
 
-class _FreelancerEditProfileScreenState
-    extends State<FreelancerEditProfileScreen> {
+class _FreelancerEditProfileScreenState extends State<FreelancerEditProfileScreen> {
   final _nameController = TextEditingController();
   final _dobController = TextEditingController();
   final _emailController = TextEditingController();
@@ -30,34 +28,32 @@ class _FreelancerEditProfileScreenState
   @override
   void initState() {
     super.initState();
-    _loadProfileData();
+    _initializeData();
   }
 
-  Future<void> _loadProfileData() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      try {
-        final doc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
-        if (doc.exists && doc.data() != null) {
-          final data = doc.data()!;
-          setState(() {
-            _nameController.text =
-                data['fullName'] ?? data['displayName'] ?? '';
-            _dobController.text = data['dob'] ?? '';
-            _emailController.text = data['email'] ?? user.email ?? '';
-            _phoneController.text = data['phone'] ?? '';
-            _locationController.text = data['location'] ?? '';
-            _isMale = data['gender'] == 'Female' ? false : true;
-          });
-        }
-      } catch (e) {
-        debugPrint("Error loading profile: $e");
+  // 🛡️ THE SAFETY NET: Waits for Auth to resolve before querying Firestore
+  Future<void> _initializeData() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      user ??= await FirebaseAuth.instance.authStateChanges().firstWhere((u) => u != null);
+
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+      if (doc.exists && doc.data() != null && mounted) {
+        final data = doc.data()!;
+        setState(() {
+          _nameController.text = data['fullName'] ?? data['displayName'] ?? data['name'] ?? '';
+          _dobController.text = data['dob'] ?? '';
+          _emailController.text = data['email'] ?? user!.email ?? '';
+          _phoneController.text = data['phone'] ?? '';
+          _locationController.text = data['location'] ?? '';
+          _isMale = data['gender'] == 'Female' ? false : true;
+        });
       }
+    } catch (e) {
+      debugPrint("Error loading profile: $e");
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
-    setState(() => _isLoading = false);
   }
 
   Future<void> _saveProfileData() async {
@@ -118,7 +114,7 @@ class _FreelancerEditProfileScreenState
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange))
             : SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,

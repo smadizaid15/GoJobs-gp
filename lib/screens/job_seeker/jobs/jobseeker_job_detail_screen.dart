@@ -53,18 +53,31 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                     GestureDetector(
                       onTap: () async {
                         if (jobId.isEmpty) return;
-                        final currentUserId =
-                            FirebaseAuth.instance.currentUser?.uid ?? '';
-                        await JobService().toggleSavedJob(currentUserId, jobId);
+                        final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
+                        
+                        if (currentUserId.isEmpty) return;
 
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Saved to your profile!'),
-                              duration: Duration(seconds: 2),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
+                        try {
+                          await JobService().toggleSavedJob(currentUserId, jobId);
+
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Saved to your profile!'),
+                                duration: Duration(seconds: 2),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Failed to save job.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         }
                       },
                       child: const Icon(

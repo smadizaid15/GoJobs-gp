@@ -153,9 +153,10 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
                                                         AppColors.textSecondary,
                                                   ),
                                         )
-                                      : Image.asset(
-                                          'assets/images/company_logo.png',
-                                          fit: BoxFit.contain,
+                                      : const Icon(
+                                          Icons.business,
+                                          size: 40,
+                                          color: AppColors.textSecondary,
                                         ),
                                 ),
                               ),

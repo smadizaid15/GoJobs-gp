@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:gp1_mvp/screens/job_seeker/freelancer_marketplace/public_freelancer_profile_screen.dart';
 import '../screens/splash/splash_screen.dart';
 import '../screens/welcome/welcome_screen.dart';
 
@@ -186,6 +187,7 @@ class AppRouter {
         path: '/student/check-email',
         builder: (context, state) => const StudentCheckEmailScreen(),
       ),
+      
 
       // Company
       GoRoute(
@@ -378,6 +380,14 @@ class AppRouter {
           return JobseekerMyApplicationScreen(job: job);
         },
       ),
+      GoRoute(
+  path: '/public-freelancer-profile',
+  builder: (context, state) {
+    final providerData = state.extra as Map<String, dynamic>;
+    return PublicFreelancerProfileScreen(providerData: providerData);
+  },
+),
+      
 
       // Freelancer
       GoRoute(
@@ -408,6 +418,7 @@ class AppRouter {
         path: '/freelancer/skills',
         builder: (context, state) => const FreelancerSkillsScreen(),
       ),
+      
       GoRoute(
         path: '/freelancer/portfolio',
         builder: (context, state) => const FreelancerPortfolioScreen(),
@@ -474,9 +485,15 @@ class AppRouter {
         builder: (context, state) => const StudentInternshipCategoriesScreen(),
       ),
       GoRoute(
-        path: '/student/internship-detail',
-        builder: (context, state) => const StudentInternshipDetailScreen(),
-      ),
+  path: '/student/internship-detail',
+  builder: (context, state) {
+    // 1. Grab the data that was passed from the click
+    final incomingData = state.extra as Map<String, dynamic>?; 
+    
+    // 2. Hand it directly to the screen
+    return StudentInternshipDetailScreen(jobData: incomingData); 
+  },
+),
       GoRoute(
         path: '/student/internship-list',
         builder: (context, state) => const StudentInternshipListScreen(),

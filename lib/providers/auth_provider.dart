@@ -6,12 +6,10 @@ enum AuthStatus { idle, loading, success, error }
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
-
   AuthStatus _status = AuthStatus.idle;
   String? _errorMessage;
   User? _user;
   String? _userType;
-
   AuthStatus get status => _status;
   String? get errorMessage => _errorMessage;
   User? get user => _user;
@@ -31,13 +29,13 @@ class AuthProvider extends ChangeNotifier {
     });
   }
 
-  //Jobseeker
   Future<bool> signUpJobSeeker({
     required String firstName,
     required String lastName,
     required String email,
     required String password,
   }) async {
+
     _setLoading();
     try {
       await _authService.signUpJobSeeker(
@@ -53,8 +51,6 @@ class AuthProvider extends ChangeNotifier {
       return false;
     }
   }
-
-  // company
   Future<bool> signUpCompany({
     required String companyName,
     required String category,
@@ -78,8 +74,6 @@ class AuthProvider extends ChangeNotifier {
       return false;
     }
   }
-
-  // student
   Future<bool> signUpStudent({
     required String firstName,
     required String lastName,
@@ -101,8 +95,6 @@ class AuthProvider extends ChangeNotifier {
       return false;
     }
   }
-
-  // login
   Future<bool> login({required String email, required String password}) async {
     _setLoading();
     try {
@@ -114,71 +106,123 @@ class AuthProvider extends ChangeNotifier {
       return false;
     }
   }
-
-  // logout
   Future<void> logout() async {
     await _authService.logout();
     _user = null;
     _userType = null;
     notifyListeners();
   }
-
-  // forgot pass
   Future<bool> resetPassword({required String email}) async {
+
     _setLoading();
+
     try {
+
       await _authService.resetPassword(email: email);
+
       _setSuccess();
+
       return true;
+
     } catch (e) {
+
       _setError(_getErrorMessage(e));
+
       return false;
+
     }
+
   }
+
+
 
   // update pass
+
   Future<bool> updatePassword({
+
     required String currentPassword,
+
     required String newPassword,
+
   }) async {
+
     _setLoading();
+
     try {
+
       await _authService.updatePassword(
+
         currentPassword: currentPassword,
+
         newPassword: newPassword,
+
       );
+
       _setSuccess();
+
       return true;
+
     } catch (e) {
+
       _setError(_getErrorMessage(e));
+
       return false;
+
     }
+
   }
+
+
 
   // helper methods
+
   void _setLoading() {
+
     _status = AuthStatus.loading;
+
     _errorMessage = null;
+
     notifyListeners();
+
   }
+
+
 
   void _setSuccess() {
+
     _status = AuthStatus.success;
+
     _errorMessage = null;
+
     notifyListeners();
+
   }
+
+
 
   void _setError(String message) {
+
     _status = AuthStatus.error;
+
     _errorMessage = message;
+
     notifyListeners();
+
   }
 
+
+
   void clearError() {
+
     _errorMessage = null;
+
     _status = AuthStatus.idle;
+
     notifyListeners();
+
   }
+
+
 
   String _getErrorMessage(dynamic e) {
     if (e is FirebaseAuthException) {
@@ -203,4 +247,4 @@ class AuthProvider extends ChangeNotifier {
     }
     return 'Something went wrong. Please try again.';
   }
-}
+} 
