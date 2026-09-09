@@ -22,23 +22,43 @@ Status: proposed sequencing for turning the audited codebase (`docs/architecture
 
 - **Objective**: Lay groundwork that every later phase depends on, without yet touching security-sensitive logic: fix the cheap, high-value production blockers found in Phase 0 that don't require the backend to exist first, and establish base tooling.
 - **Prerequisites**: Phase 0 complete and reviewed.
-- **Tasks**:
-  - Remove `lib/config/api_config.dart` usage from the client (SECURITY_AUDIT.md H-1) — stub the AI feature or disable it temporarily until Phase 6 provides a backend proxy; do not ship a build with the key embedded again.
-  - Fix Android release signing (`android/app/build.gradle.kts`) — real keystore, secrets-managed, not the debug fallback.
-  - Fix default `applicationId`/bundle ID on Android and iOS.
-  - Add missing iOS `Info.plist` usage-description keys for camera/photo library.
-  - Correct the README's inaccurate gitignore claim.
-  - Pin the Flutter/Dart version (FVM or equivalent) so builds are reproducible.
-  - Delete confirmed-dead code: `lib/services/api_service.dart` (duplicate of `auth_service.dart`, re-confirmed genuinely unused in the second-pass audit), empty `lib/services/chat_service.dart` (only after confirming nothing will need it before Phase 9's chat consolidation — otherwise defer to that phase), the dead `StorageService.pickAndUploadProfilePic`/`pickAndUploadPortfolioPhoto` methods (confirmed zero call-sites — the live logo/portfolio-photo upload code lives directly in the company/freelancer profile screens instead), the empty `lib/widgets/*` stub files (defer deletion until Phase 7 actually implements them, to avoid churn).
-  - Set up `.env.example` with placeholders (no real values) for whatever config the eventual backend will need.
-  - **(Added from second-pass audit, 2026-09-09)** Restore the `flutter analyze` step to `.github/workflows/non-functional.yml` — it ran there previously and was removed when the workflow was renamed to "security-audit," leaving CI blind to the 52 current lint issues (11 `avoid_print`, 8 `unused_import`, etc.).
-  - **(Added from second-pass audit, BLOCKED per third-pass audit, 2026-09-09)** Deploy the corrected `firestore.rules`/`storage.rules` prepared during the second-pass audit (adds `courses`/`course_enrollments` coverage and the `company_logos`/`job_images`/`portfolio_images` Storage prefixes missing from the 2026-09-08 deploy; also closes C-9's ownership-field-immutability and status-enum gaps). **Do not deploy yet** — the third-pass audit found the `applications` rule only matches a dead-code field shape (`userId`/lowercase `status`); the two live "apply for job"/"apply for internship" screens write different shapes (`applicantId`; `status:'Pending'` with no `companyId`) that would be hard-denied by this rule. Fix the app code's field-name/casing inconsistency first (or widen the rule to tolerate both), re-verify against the emulator suite, then deploy. Also add the missing ownership-field immutability to `freelancer_requests`' update rule (found in the same pass) before this deploy.
-  - **(Added from third-pass audit)** Commit `firestore.rules`, `storage.rules`, `firestore.indexes.json`, `firebase-emulator-tests/`, and `docs/` to git — all of this security-critical work currently exists only in one uncommitted working tree with no backup and no version history, following the deletion of the pre-rewrite safety backup. Requires explicit owner go-ahead per standing "only commit when asked" instruction.
-- **Files affected**: `lib/config/api_config.dart` (removed/stubbed), `lib/services/ai_service.dart` (temporarily disabled or stubbed), `android/app/build.gradle.kts`, `ios/Runner/Info.plist`, `ios/Runner.xcodeproj/project.pbxproj`, `README.md`, `lib/services/api_service.dart` (deleted), new `.fvmrc`, new `.env.example`, `.github/workflows/non-functional.yml`, `firestore.rules`, `storage.rules`.
-- **Tests**: `flutter analyze` clean; `flutter build apk --release` succeeds and produces a properly-signed artifact (verify signature, not just build success); `flutter build ios` succeeds without picker-permission crashes on a real/simulated device exercising the CV-upload and profile-pic flows.
-- **Security requirements**: H-1 (client-embedded key) closed as of this phase, even before the backend replacement exists — the AI feature going temporarily offline is an acceptable tradeoff for not shipping a live key.
-- **Acceptance criteria**: a release build can be produced that Play Console/App Store Connect would accept on technical grounds (signing, bundle ID, permissions) — not yet submitted, just technically valid; no hardcoded secrets remain in `lib/`.
-- **Rollback**: each task is independently revertible via git; signing/bundle-ID changes are the highest-care items (affect any existing installs referencing the old package name) — coordinate before changing if any build has already been distributed.
+
+### Status as of 2026-09-09
+
+**Done and pushed (Phase 0 commit `1f2d2c2c`, plus a separately-approved production rules deploy):**
+- H-1 closed: `lib/config/api_config.dart` holds no real key; `ai_service.dart` fails clearly on a missing key before any network call.
+- `applications` field-shape unification (was 3 incompatible shapes; job-seeker and student apply flows now write the same `userId`/lowercase-`status`/always-present-`companyId` shape the rules expect).
+- `freelancer_requests` ownership-field immutability + status-enum fix (the C-9 pattern, previously missed for this collection).
+- `/student/upload-cv` routing fix — `state.extra` now actually reaches the screen, so applications record a real `companyId` instead of a fallback.
+- `firestore.rules` (corrected version, including all of the above) deployed to production `gojobs-187af`, verified.
+- 131-case emulator regression suite committed, passing.
+- Full Phase 0 documentation set committed.
+
+**Not yet done** (remainder of this phase, requires separate approval before implementation — see the Decisions list in the Phase 1 design-pass report):
+- Fix Android release signing (`android/app/build.gradle.kts`) — real keystore, secrets-managed, not the debug fallback.
+- Fix default `applicationId`/bundle ID on Android and iOS (target values now specified in `docs/architecture/ENVIRONMENTS.md`'s flavor table).
+- Add missing iOS `Info.plist` usage-description keys for camera/photo library.
+- Correct the README's inaccurate gitignore claim.
+- Pin the Flutter/Dart/Node toolchain (`.fvmrc`/`.nvmrc`, explicit Android SDK levels) — see `docs/architecture/DEVELOPMENT_WORKFLOW.md` for the exact proposed pins.
+- Delete confirmed-dead code: `lib/services/api_service.dart`, empty `lib/services/chat_service.dart`, dead `StorageService` methods, empty `lib/widgets/*` stubs (still deferred to Phase 7 to avoid churn).
+- Restore `flutter analyze` (and add `flutter test`, blocked on the one pre-existing failing test — see `docs/operations/CI_CD.md`) to CI.
+- **Deploy `storage.rules`** (the corrected version with `company_logos`/`job_images`/`portfolio_images` coverage is written locally and tested but was never deployed this session — only `firestore.rules` was, per the explicit scoping of that approval). Storage is still running the 2026-09-08 interim version, which is missing those three prefixes.
+
+### Phase 1 foundation design pass (2026-09-09) — documentation only, nothing implemented
+
+Produced this session, per explicit scope ("foundation only," no feature migration, no scaffolding created yet):
+- `docs/architecture/TARGET_ARCHITECTURE.md` — expanded to explicitly cover every live product domain (auth, users/profiles, jobs, applications, companies, messaging/chat, notifications, student/internships, freelancer marketplace, courses/workshops, search/filtering, saved jobs, AI integration layer), a proposed backend folder structure, and a tightened AI provider abstraction section.
+- `docs/architecture/ENVIRONMENTS.md` — expanded with concrete Android/iOS flavor identifiers, backend environment variables, secrets handling, and an explicit "preventing accidental production access" design.
+- `docs/architecture/DEVELOPMENT_WORKFLOW.md` (new) — branch strategy (`main`/`develop`/`feature`/`fix`/`hotfix`) and a full toolchain audit + pinning proposal.
+- `docs/operations/CI_CD.md` (new) — current CI/CD audit (re-confirmed: no test/lint gate, floating Flutter version, a deleted `test-and-build` job) and the proposed minimal Phase 1 CI foundation.
+
+None of the above creates a `develop` branch, a `.fvmrc`, a `services/api/` directory, GitHub branch protection, or any new Firebase project — all of that is proposed and awaits explicit approval, tracked as decisions in the design-pass report.
+
+- **Files affected**: `lib/config/api_config.dart` (done), `lib/services/ai_service.dart` (done), `firestore.rules` (done, deployed), `firebase-emulator-tests/` (done), plus this design pass's four documentation files. Still to touch: `android/app/build.gradle.kts`, `ios/Runner/Info.plist`, `ios/Runner.xcodeproj/project.pbxproj`, `README.md`, new `.fvmrc`/`.nvmrc`, `.github/workflows/*.yml`, `lib/services/api_service.dart` (delete).
+- **Tests**: `flutter analyze` clean on everything touched so far; 131/131 emulator suite; full-project `flutter analyze`/`flutter test` still show the pre-existing baseline (52 lint issues, 1 failing smoke test) since those are explicitly deferred, not silently ignored.
+- **Security requirements**: H-1 closed. `firestore.rules` deployed; `storage.rules` deploy still pending (see above).
+- **Acceptance criteria**: a release build can be produced that Play Console/App Store Connect would accept on technical grounds — not yet met (signing/bundle ID/permissions still open).
+- **Rollback**: each remaining task is independently revertible via git; signing/bundle-ID changes are the highest-care items — coordinate before changing if any build has already been distributed.
 - **Dependencies on previous phases**: Phase 0 findings drive every task here directly.
 
 ---

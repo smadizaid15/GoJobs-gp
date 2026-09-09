@@ -137,6 +137,27 @@ describe('storage: company_logos/{uid}.jpg — second-pass fix, not yet deployed
     await assertFails(uploadBytes(ref(db, `company_logos/${OWNER}.jpg`), PAYLOAD));
     await assertFails(getBytes(ref(db, `company_logos/${OWNER}.jpg`)));
   });
+
+  // Phase 1 Storage-rules review (2026-09-09): company_logos previously had
+  // no delete coverage at all, unlike every other prefix (which gets
+  // delete-by-owner and delete-by-stranger for free via the parameterized
+  // loop above). The write rule covers create/update/delete uniformly in
+  // Storage, so this was a real, if likely low-risk, coverage gap rather
+  // than an actual behavior difference — closing it explicitly.
+
+  it('[Phase 1 review] allows the owner to delete their own logo', async () => {
+    const seedDb = testEnv.authenticatedContext(OWNER).storage();
+    await uploadBytes(ref(seedDb, `company_logos/${OWNER}.jpg`), PAYLOAD);
+    const ownerDb = testEnv.authenticatedContext(OWNER).storage();
+    await assertSucceeds(deleteObject(ref(ownerDb, `company_logos/${OWNER}.jpg`)));
+  });
+
+  it('[Phase 1 review] denies a different user from deleting the owner\'s logo', async () => {
+    const seedDb = testEnv.authenticatedContext(OWNER).storage();
+    await uploadBytes(ref(seedDb, `company_logos/${OWNER}.jpg`), PAYLOAD);
+    const otherDb = testEnv.authenticatedContext(OTHER).storage();
+    await assertFails(deleteObject(ref(otherDb, `company_logos/${OWNER}.jpg`)));
+  });
 });
 
 describe('storage: paths outside the known prefixes', () => {
