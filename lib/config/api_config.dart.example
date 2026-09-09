@@ -1,0 +1,11 @@
+// Template only — copy this file to `api_config.dart` (gitignored, never
+// committed) and fill in your OWN key for local development.
+//
+// This is a stopgap for local dev only. Do not ship a build with a real
+// key here — see docs/security/SECURITY_AUDIT.md (H-1) for why, and
+// docs/architecture/TARGET_ARCHITECTURE.md ("AI architecture") for the
+// target design, where AI provider calls move behind a backend endpoint
+// and the Flutter client never holds a provider key at all.
+class ApiConfig {
+  static const String groqApiKey = 'YOUR_GROQ_API_KEY_HERE';
+}

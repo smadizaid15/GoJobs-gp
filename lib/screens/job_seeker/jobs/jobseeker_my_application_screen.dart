@@ -39,7 +39,7 @@ class _JobseekerMyApplicationScreenState
       if (currentUserId != null) {
         final snapshot = await FirebaseFirestore.instance
             .collection('applications')
-            .where('applicantId', isEqualTo: currentUserId)
+            .where('userId', isEqualTo: currentUserId)
             .where('jobId', isEqualTo: currentJobId)
             .get();
 

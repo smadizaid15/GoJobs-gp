@@ -294,7 +294,7 @@ class _LiveApplicantCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = applicationDoc.data() as Map<String, dynamic>;
-    final applicantId = data['applicantId']?.toString() ?? '';
+    final applicantId = data['userId']?.toString() ?? '';
     final jobId = data['jobId']?.toString() ?? '';
 
     // 4. 🛡️ CRASH PREVENTION: Do not search Firebase if the ID is missing

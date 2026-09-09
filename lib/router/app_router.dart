@@ -500,7 +500,10 @@ class AppRouter {
       ),
       GoRoute(
         path: '/student/upload-cv',
-        builder: (context, state) => const StudentUploadCvScreen(),
+        builder: (context, state) {
+          final incomingData = state.extra as Map<String, dynamic>?;
+          return StudentUploadCvScreen(jobData: incomingData);
+        },
       ),
       GoRoute(
         path: '/student/application-success',

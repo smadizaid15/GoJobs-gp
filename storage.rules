@@ -1,0 +1,98 @@
+rules_version = '2';
+
+// GoJobs Storage Security Rules — INTERIM HARDENED VERSION
+//
+// Context: replaces a live production ruleset that granted
+// `allow read, write: if request.auth != null` on the ENTIRE bucket
+// (`/{allPaths=**}`) — any signed-in user could read, overwrite, or
+// delete any other user's CV, profile picture, or portfolio photo. See
+// docs/security/SECURITY_AUDIT.md (H-2) for detail.
+//
+// *** SECOND-PASS AUDIT CORRECTION (not yet deployed) ***
+// The original version of this file (deployed 2026-09-08) was derived
+// only from lib/services/storage_service.dart and
+// jobseeker_resume_screen.dart, and missed THREE live, shipping upload
+// paths entirely: company_logos/, job_images/, portfolio_images/. Two of
+// the four originally-covered prefixes (`profiles/`, `portfolios/`) turn
+// out to be referenced only by dead code (StorageService methods with
+// zero call-sites) — the real, live features that conceptually replace
+// them use different literal path segments. Since this file denies by
+// default, the three missing paths have been silently rejecting uploads
+// in production since the original deploy: company logo edits, job image
+// uploads when posting a job, and freelancer portfolio photo uploads.
+// This correction adds the three missing prefixes. NOT YET DEPLOYED —
+// awaiting approval, per instruction not to push production changes
+// during this audit.
+//
+// Paths below are every one confirmed live in the current codebase:
+//   cvs/{uid}/{fileName}                    lib/screens/job_seeker/jobs/jobseeker_upload_cv_screen.dart
+//   user_resumes/{uid}/{fileName}            lib/screens/job_seeker/profile/jobseeker_resume_screen.dart
+//   company_logos/{uid}.jpg                  lib/screens/company/profile/company_edit_profile_screen.dart (flat filename, not a subfolder — the uid IS the filename, extension always .jpg)
+//   job_images/{uid}/{fileName}              lib/screens/company/jobs/company_add_job_screen.dart
+//   portfolio_images/{uid}/{fileName}        lib/screens/freelancer/profile/freelancer_portfolio_screen.dart
+//   profiles/{uid}/{fileName}                dead code only (lib/services/storage_service.dart, zero call-sites) — kept, harmless
+//   portfolios/{uid}/{fileName}               dead code only (lib/services/storage_service.dart, zero call-sites) — kept, harmless
+//
+// CV and resume READS are deliberately left open to any signed-in user
+// for now (same tradeoff as firestore.rules' `users` read scoping): a
+// company needs to open an applicant's CV to review it, and there is no
+// backend yet to issue a scoped signed URL for just that pair of users.
+// Phase 8 (docs/ROADMAP.md) replaces this with backend-mediated
+// signed-URL access so CV reads can be scoped to "the applicant + the
+// company that received this specific application" instead of "anyone
+// signed in." WRITE is tightened now regardless — nothing today requires
+// a user to write into another user's file paths, so there is no
+// legitimate case this breaks.
+//
+// Profile pictures and portfolio photos are intentionally public-read
+// (browsed by other users in listings/marketplaces) by product design —
+// this matches current app behavior, not a gap.
+//
+// Anything outside these four prefixes is denied by default — previously
+// the single `{allPaths=**}` rule covered (and exposed) the whole bucket,
+// including any path this audit doesn't have visibility into. If a
+// legitimate upload path breaks because of this, it needs a rule added
+// here explicitly, not a reversion to the bucket-wide `if true`-equivalent.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    match /cvs/{userId}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /profiles/{userId}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /portfolios/{userId}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /user_resumes/{userId}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Flat filename, not a subfolder: the file IS named "{uid}.jpg" —
+    // confirmed via lib/screens/company/profile/company_edit_profile_screen.dart:107-110
+    // (`.ref().child('company_logos').child('$uid.jpg')`).
+    match /company_logos/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && fileName == request.auth.uid + '.jpg';
+    }
+
+    match /job_images/{userId}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /portfolio_images/{userId}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

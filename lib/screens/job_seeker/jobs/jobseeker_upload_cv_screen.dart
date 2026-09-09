@@ -76,7 +76,7 @@ class _JobseekerUploadCvScreenState extends State<JobseekerUploadCvScreen> {
       await FirebaseFirestore.instance.collection('applications').add({
         'jobId': widget.job?['id'] ?? 'unknown_job',
         'companyId': widget.job?['companyId'] ?? 'unknown_company',
-        'applicantId': currentUserId,
+        'userId': currentUserId,
         'message': _infoController.text,
         'cvFileName': _cvFileName,
         'cvUrl': secureUrl,

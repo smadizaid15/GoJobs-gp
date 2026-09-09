@@ -44,6 +44,25 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Local-only API config (never commit real keys here). Copy
+# lib/config/api_config.dart.example to lib/config/api_config.dart and
+# fill in your own key for local dev. See docs/security/SECURITY_AUDIT.md.
 lib/config/api_config.dart
 
+# Secret-management hygiene, general
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+!*.example
 
+
+
+# Firebase emulator test harness (firebase-emulator-tests/)
+node_modules/
+firestore-debug.log
+firebase-debug.log
+ui-debug.log
+firebase-export-*/
+.firebase/

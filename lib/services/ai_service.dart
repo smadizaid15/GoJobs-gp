@@ -9,6 +9,19 @@ class AIService {
       'https://api.groq.com/openai/v1/chat/completions';
 
   Future<String> _generate(String prompt) async {
+    if (_apiKey.isEmpty) {
+      // No key configured locally. This is expected in every environment
+      // except a developer's own machine with a local, gitignored
+      // lib/config/api_config.dart (see api_config.dart.example). AI
+      // features must never call out with an empty/missing key — fail
+      // clearly here so every caller's existing catch-block fallback
+      // (canned match-score, fallback interview questions, etc.) engages
+      // instead of making a doomed network request. This is a stopgap:
+      // the target design (docs/architecture/TARGET_ARCHITECTURE.md,
+      // "AI architecture") moves this call behind a backend endpoint so
+      // the client never holds a provider key at all, hardcoded or not.
+      throw Exception('AI features are not configured in this build.');
+    }
     try {
       final response = await http.post(
         Uri.parse(_baseUrl),

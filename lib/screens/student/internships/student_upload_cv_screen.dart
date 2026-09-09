@@ -23,8 +23,23 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
   Future<void> _submitApplication() async {
     final user = FirebaseAuth.instance.currentUser;
     final jobId = widget.jobData?['id'];
+    final companyId = widget.jobData?['companyId'];
 
     if (user == null || jobId == null) return;
+
+    if (companyId == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'This internship listing is missing company information. Please go back and try again.',
+            ),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+      return;
+    }
 
     setState(() => _isApplying = true);
 
@@ -42,11 +57,12 @@ class _StudentUploadCvScreenState extends State<StudentUploadCvScreen> {
         'userId': user.uid,
         'userName': userName,
         'jobId': jobId,
+        'companyId': companyId,
         'jobTitle': widget.jobData?['title'] ?? 'Internship',
         'companyName': widget.jobData?['companyName'] ?? 'Company',
         'location': widget.jobData?['location'] ?? 'Location',
         'logoUrl': widget.jobData?['logoUrl'],
-        'status': 'Pending',
+        'status': 'pending',
         'appliedAt': FieldValue.serverTimestamp(),
       });
 

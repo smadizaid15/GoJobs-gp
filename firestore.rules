@@ -1,0 +1,233 @@
+rules_version = '2';
+
+// GoJobs Firestore Security Rules — INTERIM HARDENED VERSION
+//
+// Context: this replaces a live production ruleset (gojobs-187af) that
+// granted almost every collection `allow read, write: if request.auth !=
+// null` with no ownership check at all — meaning any signed-in user could
+// read/modify/delete any other user's data. See docs/security/SECURITY_AUDIT.md
+// for the full findings (C-1, C-2, C-3 and related).
+//
+// This is a same-day stopgap, not the final design. The full Phase 4
+// rewrite (docs/ROADMAP.md) adds backend-side enforcement on top of this,
+// emulator-based automated tests, and precise read-side scoping for
+// `users` profile reads and CV/resume reads once a backend exists to issue
+// signed URLs (Phase 8). Two things are deliberately left as they were:
+//   1. `users/{uid}` document READS stay open to any signed-in user —
+//      companies read applicant profiles and vice versa; narrowing this
+//      safely requires verifying every screen that depends on it, which
+//      belongs in Phase 4 with proper testing, not an emergency patch.
+//   2. CV/resume file READS (in storage.rules) stay open for the same
+//      reason — companies need to open applicant CVs, and doing that
+//      safely without over-exposing requires backend-issued signed URLs
+//      (Phase 8), which don't exist yet.
+// Everything else below closes a confirmed-live vulnerability.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── users/{uid} ──────────────────────────────────────────────
+    // Read: unchanged (any signed-in user; see note above).
+    // Create: unchanged (self only).
+    // Update: self only, AND `userType` may no longer change via a
+    // direct client write. Previously any signed-in user could call
+    // users/{their own uid}.update({userType: 'company'}) and silently
+    // become a different role, bypassing the app's signup flow. Role
+    // changes should only ever happen through controlled backend logic
+    // (Phase 4/6), never a direct client write — even the owner's own.
+    // Delete: denied — account deletion should go through a controlled
+    // backend flow (Phase 6), not a raw client delete.
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null
+                    && request.auth.uid == userId
+                    && request.resource.data.userType == resource.data.userType;
+      allow delete: if false;
+
+      // Subcollections (currently just saved_jobs). Every confirmed
+      // call-site only ever reads/writes the CALLER's own subcollection,
+      // so — unlike the parent doc above — this can safely be scoped to
+      // owner-only for both read and write with no functional risk.
+      //
+      // IMPORTANT: this must be a NON-recursive, nested match
+      // (`/{subcollection}/{docId}`), not `/{subcollection=**}` at the
+      // top level. A top-level recursive wildcard match on
+      // `users/{userId}/{subcollection=**}` was empirically confirmed
+      // (via the automated emulator test suite) to ALSO match the
+      // parent `users/{userId}` document itself — and since Firestore
+      // rules are OR'd across every matching block, that unconditionally
+      // permissive "self read/write" rule silently re-opened both the
+      // userType-immutability lock and the delete:false restriction
+      // above. Nesting it inside this match block, one non-recursive
+      // level deep, fixes that without changing subcollection behavior.
+      match /{subcollection}/{docId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // ── jobs/{jobId} ─────────────────────────────────────────────
+    // Read: unchanged (job browsing is open to any signed-in user by
+    // product design). Write: now requires the caller to actually own
+    // the job (companyId on create must be their own uid; companyId on
+    // the existing doc must match their uid for update/delete). This
+    // closes the confirmed-live hole where any signed-in user — of any
+    // role — could delete or overwrite any company's job posting.
+    //
+    // C-9 (second-pass finding, fixed here): update ALSO requires
+    // companyId to stay the same value — the original version only
+    // checked the EXISTING owner, not that the write kept it unchanged,
+    // which let the owning company reassign a job to an arbitrary uid
+    // (confirmed via emulator test). Ownership checks and field
+    // immutability are different guarantees; both are needed.
+    match /jobs/{jobId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+                    && request.resource.data.companyId == request.auth.uid;
+      allow update: if request.auth != null
+                    && resource.data.companyId == request.auth.uid
+                    && request.resource.data.companyId == resource.data.companyId;
+      allow delete: if request.auth != null
+                    && resource.data.companyId == request.auth.uid;
+    }
+
+    // ── applications/{appId} ─────────────────────────────────────
+    // Read/update restricted to the applicant (userId) or the owning
+    // company (companyId, denormalized onto the application at
+    // apply-time). This closes the confirmed-live hole where any
+    // signed-in user could read, or accept/reject, any applicant's
+    // application at any company. Create requires applying as yourself.
+    // Delete restricted to the applicant withdrawing their own
+    // application (no delete path exists in the app today, but this is
+    // the correct default if one is added later).
+    // C-9 (second-pass finding, fixed here): update now also requires
+    // userId/companyId to stay unchanged, and status to be one of the
+    // three values the app actually uses. The original version let
+    // either party reassign userId/companyId to an arbitrary uid, and
+    // accepted any string as status (both confirmed via emulator test).
+    match /applications/{appId} {
+      allow read: if request.auth != null
+                    && (resource.data.userId == request.auth.uid
+                        || resource.data.companyId == request.auth.uid);
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.status == 'pending';
+      allow update: if request.auth != null
+                    && (resource.data.userId == request.auth.uid
+                        || resource.data.companyId == request.auth.uid)
+                    && request.resource.data.userId == resource.data.userId
+                    && request.resource.data.companyId == resource.data.companyId
+                    && request.resource.data.status in ['pending', 'accepted', 'rejected'];
+      allow delete: if request.auth != null
+                    && resource.data.userId == request.auth.uid;
+    }
+
+    // ── freelancer_requests/{requestId} ──────────────────────────
+    // Fields confirmed in lib/screens/{student,job_seeker}/freelancer_marketplace/*
+    // and lib/screens/freelancer/home/freelancer_home_screen.dart:
+    // freelancerId, clientId, status. Restricted to the two parties
+    // involved. Previously any signed-in user could read/modify any
+    // request between any two other people.
+    // Third-pass audit fix (2026-09-09): update previously had no
+    // ownership-field immutability or status validation — the same C-9
+    // pattern already applied to jobs/applications was missing here. A
+    // party to their own request could reassign freelancerId/clientId to
+    // an arbitrary uid, or set status to any string. Fixed below by
+    // splitting update out from read/delete and requiring both id fields
+    // to stay unchanged plus status to be one of the three values the
+    // app actually writes ('pending' on create; 'accepted'/'declined' via
+    // freelancer_home_screen.dart's _updateRequestStatus).
+    match /freelancer_requests/{requestId} {
+      allow read, delete: if request.auth != null
+                    && (resource.data.freelancerId == request.auth.uid
+                        || resource.data.clientId == request.auth.uid);
+      allow create: if request.auth != null
+                    && request.resource.data.clientId == request.auth.uid
+                    && request.resource.data.status == 'pending';
+      allow update: if request.auth != null
+                    && (resource.data.freelancerId == request.auth.uid
+                        || resource.data.clientId == request.auth.uid)
+                    && request.resource.data.freelancerId == resource.data.freelancerId
+                    && request.resource.data.clientId == resource.data.clientId
+                    && request.resource.data.status in ['pending', 'accepted', 'declined'];
+    }
+
+    // ── notifications/{notificationId} ───────────────────────────
+    // The app uses two different owner-field conventions inconsistently
+    // (`userId` in some call-sites, `recipientId` in others — see
+    // docs/security/SECURITY_AUDIT.md). Both are honored here so neither
+    // notification type breaks. Create stays open to any signed-in user
+    // because the normal flow has one user create a notification FOR
+    // another (e.g. a job seeker applying creates a notification for the
+    // company) — that cross-user create is legitimate, not the
+    // vulnerability. What this closes is a stranger reading, marking
+    // read, or deleting a notification that isn't theirs.
+    match /notifications/{notificationId} {
+      allow read, update, delete: if request.auth != null
+                    && (resource.data.userId == request.auth.uid
+                        || resource.data.recipientId == request.auth.uid);
+      allow create: if request.auth != null;
+    }
+
+    // ── chats/{chatId} and chats/{chatId}/messages/{messageId} ───
+    // Restricted to participants of the chat, via the `participants`
+    // array field the inbox screens already query with arrayContains
+    // (lib/screens/{student,job_seeker,company,freelancer}/messages/*).
+    // Previously any signed-in user could read or write into any two
+    // other people's conversation. Message reads/creates check the
+    // PARENT chat doc's participants via get() since individual message
+    // documents don't carry a participants field themselves.
+    match /chats/{chatId} {
+      allow read, update: if request.auth != null
+                    && request.auth.uid in resource.data.participants;
+      allow create: if request.auth != null
+                    && request.auth.uid in request.resource.data.participants;
+      allow delete: if false;
+
+      match /messages/{messageId} {
+        allow read: if request.auth != null
+                    && request.auth.uid in
+                       get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+        allow create: if request.auth != null
+                    && request.resource.data.senderId == request.auth.uid
+                    && request.auth.uid in
+                       get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+        allow update, delete: if false;
+      }
+    }
+
+    // ── courses/{courseId} and course_enrollments/{id} ───────────
+    // *** SECOND-PASS AUDIT CORRECTION (not yet deployed) ***
+    // Missing entirely from the version deployed 2026-09-08 — the
+    // original pass only grepped lib/services/, not the student
+    // screens, and missed the "Courses & Workshops" feature (browsing:
+    // lib/screens/student/courses/student_courses_screen.dart,
+    // lib/screens/student/home/student_home_screen.dart; enrolling:
+    // lib/screens/student/courses/student_course_detail_screen.dart).
+    // Since this file denies by default, both have been silently
+    // denied in production since that deploy — course browsing shows
+    // "Error loading courses" and enrollment shows "Failed to enroll"
+    // (both fail silently into a caught SnackBar, easy to miss without
+    // exercising these specific screens). NOT YET DEPLOYED — awaiting
+    // approval.
+    match /courses/{courseId} {
+      allow read: if request.auth != null;
+      // No write path exists anywhere in the app today (courses are
+      // presumably seeded/managed out-of-band). Denying write is the
+      // correct default until a real course-management (likely admin)
+      // feature is designed — do not open this without a role check.
+      allow write: if false;
+    }
+
+    match /course_enrollments/{enrollmentId} {
+      allow read: if request.auth != null && resource.data.studentId == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.studentId == request.auth.uid;
+      // No update/delete (e.g. "unenroll") path exists in the app
+      // today; denying both is the correct default until one is built.
+      allow update, delete: if false;
+    }
+
+    // Everything else: denied by default (previously implicit via the
+    // absence of a matching rule; now explicit for clarity).
+  }
+}
