@@ -8,7 +8,6 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../widgets/jobseeker_bottom_nav.dart';
 import '../../../services/job_service.dart';
-import '../../../models/job_model.dart';
 
 class JobseekerSavedScreen extends StatelessWidget {
   const JobseekerSavedScreen({super.key});

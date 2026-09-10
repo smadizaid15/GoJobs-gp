@@ -43,7 +43,7 @@ class JobService {
         .snapshots()
         .map((snapshot) {
           return snapshot.docs.map((doc) {
-            return JobModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+            return JobModel.fromMap(doc.data(), doc.id);
           }).toList();
         });
   }
@@ -87,7 +87,7 @@ class JobService {
         .snapshots()
         .map((snapshot) {
           return snapshot.docs.map((doc) {
-            return JobModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+            return JobModel.fromMap(doc.data(), doc.id);
           }).toList();
         });
   }
@@ -100,4 +100,3 @@ class JobService {
     }
   }
 }
- 

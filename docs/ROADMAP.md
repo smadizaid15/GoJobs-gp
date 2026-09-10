@@ -39,10 +39,15 @@ Status: proposed sequencing for turning the audited codebase (`docs/architecture
 - Fix default `applicationId`/bundle ID on Android and iOS (target values now specified in `docs/architecture/ENVIRONMENTS.md`'s flavor table).
 - Add missing iOS `Info.plist` usage-description keys for camera/photo library.
 - Correct the README's inaccurate gitignore claim.
-- Pin the Flutter/Dart/Node toolchain (`.fvmrc`/`.nvmrc`, explicit Android SDK levels) — see `docs/architecture/DEVELOPMENT_WORKFLOW.md` for the exact proposed pins.
 - Delete confirmed-dead code: `lib/services/api_service.dart`, empty `lib/services/chat_service.dart`, dead `StorageService` methods, empty `lib/widgets/*` stubs (still deferred to Phase 7 to avoid churn).
-- Restore `flutter analyze` (and add `flutter test`, blocked on the one pre-existing failing test — see `docs/operations/CI_CD.md`) to CI.
 - **Deploy `storage.rules`** (the corrected version with `company_logos`/`job_images`/`portfolio_images` coverage is written locally and tested but was never deployed this session — only `firestore.rules` was, per the explicit scoping of that approval). Storage is still running the 2026-09-08 interim version, which is missing those three prefixes.
+
+**Done, on branch `feature/phase1-engineering-foundation`, not yet merged or pushed (2026-09-09 engineering-foundation implementation batch):**
+- Toolchain pinned: `.fvmrc` (Flutter `3.44.2`), `.nvmrc` (Node `24.21.0`), explicit `compileSdk`/`targetSdk`/`minSdk` (36/36/24) in `android/app/build.gradle.kts`.
+- `flutter analyze` and `flutter test` restored as real CI gates (see below) — the pre-existing failing smoke test blocker is resolved, not skipped.
+- `test/widget_test.dart` replaced with `test/theme_provider_test.dart` — see "CI/CD and test-suite changes" below for why the original template test could not simply be patched.
+- `.github/workflows/main.yml` (the unconditional Docker Hub publish workflow) removed — it could bake `API_CONFIG_DART` into a published image on every push to `main`, which is unacceptable as a "production pipeline" and was never gated by any test. No replacement deploy workflow has been created; deploys remain manual and explicitly approved, same as every rules deploy so far in this engagement.
+- `.github/workflows/non-functional.yml` renamed to `ci.yml` and converted into the Phase 1 CI foundation from `docs/operations/CI_CD.md`: exact-pinned Flutter `3.44.2`, `dart format` check, `flutter analyze`, `flutter test`, `flutter build apk --debug`, plus the 133-case Firebase emulator security-rules suite on Node `24.21.0`. Still verification-only — no deploy, no publish, no secrets consumed.
 
 ### Phase 1 foundation design pass (2026-09-09) — documentation only, nothing implemented
 

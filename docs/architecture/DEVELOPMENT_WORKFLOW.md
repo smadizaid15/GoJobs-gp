@@ -1,6 +1,6 @@
 # GoJobs — Development Workflow & Toolchain
 
-Status: Phase 1 foundation design. Proposed, not yet implemented (branch protection rules, version-pin files, and CI enforcement all require separate, explicit follow-up actions — this document defines what they should be).
+Status: Phase 1 foundation. Toolchain pins and CI enforcement are **implemented** on branch `feature/phase1-engineering-foundation` (2026-09-09), not yet merged or pushed. Branch protection rules are still proposed only — that's a GitHub repository setting, not a file this repo can commit.
 
 ## Branch strategy
 
@@ -25,32 +25,30 @@ Using the brief's intended model — no evidence in this repo suggests a reason 
 
 | Tool | Version found | Pinned in repo today? |
 |---|---|---|
-| Flutter | 3.44.2 (stable channel, revision `c9a6c48423`) | No — no `.fvmrc`, no version file anywhere |
-| Dart | 3.12.2 (bundled with the above Flutter) | No — `pubspec.yaml` only has a loose lower-bound (`sdk: ^3.10.4`) |
-| Java | OpenJDK 21.0.10 (Android Studio's bundled JBR — no standalone JDK on `PATH`) | No |
+| Flutter | 3.44.2 (stable channel, revision `c9a6c48423`) | **Yes** — `.fvmrc` (2026-09-09) |
+| Dart | 3.12.2 (bundled with the above Flutter) | Tracks the Flutter pin; `pubspec.yaml`'s lower-bound (`sdk: ^3.10.4`) is unchanged |
+| Java | OpenJDK 21.0.10 (Android Studio's bundled JBR — no standalone JDK on `PATH`) | No — documented here as the tested-against version; CI pins `temurin` 21 separately (see `docs/operations/CI_CD.md`) |
 | Gradle | 8.14 (via `android/gradle/wrapper/gradle-wrapper.properties`) | **Yes** — the wrapper already pins this correctly |
 | Android Gradle Plugin (AGP) | 8.11.1 (`android/settings.gradle.kts`) | Yes |
 | Kotlin Gradle plugin | 2.2.20 (`android/settings.gradle.kts`) | Yes |
 | `com.google.gms.google-services` | 4.3.15 (`android/settings.gradle.kts`) | Yes |
-| Android `compileSdk`/`minSdk`/`targetSdk` | 36 / 24 / 36 — resolved from the installed Flutter SDK's own defaults (`flutter.compileSdkVersion` etc. in `android/app/build.gradle.kts`), confirmed by reading `FlutterExtension.kt` in the installed Flutter SDK | **No** — these are implicit, would silently change if a different Flutter version builds this project |
-| NDK | `28.2.13676358` (same implicit-default mechanism) | No |
-| Node.js | v25.2.1 (installed on this machine; **not the proposed target** — Node 25 is a Current/non-LTS release line, not suitable to pin a backend to) | No — no `.nvmrc`, no `engines` field anywhere |
-| npm | 11.6.2 (bundled with the above Node) | No |
-| Firebase CLI | 15.29.0 | No |
+| Android `compileSdk`/`minSdk`/`targetSdk` | 36 / 24 / 36 | **Yes** — explicit integers in `android/app/build.gradle.kts` (2026-09-09), replacing the implicit `flutter.xxxSdkVersion` references |
+| NDK | `28.2.13676358` (implicit-default mechanism, unchanged) | No — out of scope for this pass, only `compileSdk`/`minSdk`/`targetSdk` were requested |
+| Node.js | v25.2.1 installed on this dev machine; **`.nvmrc` pins the project to 24.21.0 LTS** instead (see below) | **Yes** — `.nvmrc` (2026-09-09) |
+| npm | Bundled with whichever Node satisfies `.nvmrc` | No — not pinned separately this pass, by instruction; a backend `package.json` will carry its own `engines` constraint when `services/api/` is scaffolded |
+| Firebase CLI | 15.29.0 | No — no per-repo pin mechanism exists; CI installs this exact version explicitly (`docs/operations/CI_CD.md`) rather than floating |
 | Docker | 29.1.3 | N/A (used only for the Flutter-web-in-nginx image today; not version-sensitive for that use) |
 | Python | **Not installed** on this machine (confirmed during the secret-remediation phase — `git-filter-repo` couldn't run, BFG Repo-Cleaner was used instead) | N/A — not currently a project dependency, but relevant if any future tooling assumes Python is present |
 | git | 2.51.2.windows.1 | N/A |
 
-CI (`non-functional.yml`) uses `flutter-version: '3.x'` — a **floating** version selector, independently confirmed to not match whatever pin this document proposes unless CI is updated too (see the CI/CD design doc).
+CI (`ci.yml`, renamed from `non-functional.yml`) now pins Flutter to the exact `3.44.2` version below rather than floating `3.x` — see `docs/operations/CI_CD.md`.
 
-## Proposed pinning
+## Pinning (implemented 2026-09-09)
 
 Goal: local development and CI resolve to the *same* Flutter/Dart/Node versions, and Android SDK levels stop drifting silently with whatever Flutter happens to be installed.
 
-1. **Flutter/Dart**: add `.fvmrc` pinning Flutter `3.44.2` (the version already in use — pin what's proven working, not a fresh upgrade bundled into this same change). Requires installing [FVM](https://fvm.app/) as the standard local dev tool going forward; document the setup step in a future `docs/DEVELOPMENT_SETUP.md` (not created this phase — out of scope, this document only proposes the pin, not the full onboarding guide).
-2. **Node.js**: **corrected 2026-09-09** — target **Node 24 LTS** (codename "Krypton," currently `24.21.0`), not the `25.2.1` installed on this dev machine. Node 25.x is a Current release line, not LTS — it does not receive the long-term support/security-maintenance guarantee a backend should be pinned to, and reaches end-of-life well before a production service built on it should have to force an upgrade. Node 24 entered LTS in October 2025 and is supported into 2028, which is the right target for both the future `services/api/` backend and `firebase-emulator-tests/` (currently developed against whatever Node happens to be installed, i.e. 25.2.1 — that tooling should move to 24 LTS too for consistency, even though it's dev/test-only and lower-risk than the backend). **`.nvmrc` is not created yet** — this is a target correction to the proposal, not an implementation step; creating the file and switching the local Node install to match is still a separate, future action requiring its own go-ahead. [Node.js 24.21.0 (LTS)](https://nodejs.org/en/blog/release/v24.21.0), [endoflife.date/nodejs](https://endoflife.date/nodejs)
-3. **Android SDK levels**: replace the implicit `flutter.compileSdkVersion`/`flutter.minSdkVersion`/`flutter.targetSdkVersion` references in `android/app/build.gradle.kts` with explicit integers (`compileSdk = 36`, `minSdk = 24`, `targetSdk = 36`) matching today's resolved values, so a future Flutter upgrade can't silently change the Android build target without a deliberate, reviewed change to this file.
-4. **Firebase CLI**: no per-repo pin mechanism exists (it's a global npm/standalone install, not a project dependency) — recommend documenting the tested-against version (15.29.0) in the same future setup doc rather than a repo file, and re-verifying after any CLI upgrade before it's used for a rules/indexes deploy.
-5. **CI**: change `non-functional.yml`'s `flutter-version: '3.x'` to the exact pinned version once `.fvmrc` exists, so CI and local dev are provably the same toolchain rather than coincidentally similar.
-
-None of the above is implemented in this pass — per this phase's scope, this section is the proposal; creating `.fvmrc`/`.nvmrc` and editing `build.gradle.kts`'s SDK-level lines are small, mechanical follow-ups that need your explicit go-ahead (listed in the Decisions section of the Phase 1 report).
+1. **Flutter/Dart**: `.fvmrc` pins Flutter `3.44.2` (the version already in use — pinning what's proven working, not a fresh upgrade bundled into this same change). Using the pin locally requires installing [FVM](https://fvm.app/) as the standard local dev tool going forward; a full onboarding guide (`docs/DEVELOPMENT_SETUP.md`) is still not created — out of scope for this pass, which only creates the pin file itself.
+2. **Node.js**: `.nvmrc` pins **Node 24 LTS** (codename "Krypton," `24.21.0`), not the `25.2.1` installed on this dev machine. Node 25.x is a Current release line, not LTS — it does not receive the long-term support/security-maintenance guarantee a backend should be pinned to, and reaches end-of-life well before a production service built on it should have to force an upgrade. Node 24 entered LTS in October 2025 and is supported into 2028, which is the right target for both the future `services/api/` backend and `firebase-emulator-tests/` (previously developed against whatever Node happened to be installed, i.e. 25.2.1). [Node.js 24.21.0 (LTS)](https://nodejs.org/en/blog/release/v24.21.0), [endoflife.date/nodejs](https://endoflife.date/nodejs)
+3. **Android SDK levels**: the implicit `flutter.compileSdkVersion`/`flutter.minSdkVersion`/`flutter.targetSdkVersion` references in `android/app/build.gradle.kts` are replaced with explicit integers (`compileSdk = 36`, `minSdk = 24`, `targetSdk = 36`) matching the values they previously resolved to, so a future Flutter upgrade can't silently change the Android build target without a deliberate, reviewed change to this file. `ndkVersion` is left on its implicit default — not part of this pass's requested scope.
+4. **Firebase CLI**: still no per-repo pin mechanism (it's a global npm/standalone install, not a project dependency) — CI installs the audited version (15.29.0) explicitly rather than floating; local developers should verify their installed version matches before running a rules/indexes deploy.
+5. **npm**: intentionally not pinned separately this pass — it tracks whatever ships bundled with the pinned Node version. A `services/api/` backend `package.json` will carry its own `engines` constraint once that's scaffolded, per the same reasoning that applies to Flutter/Dart above.

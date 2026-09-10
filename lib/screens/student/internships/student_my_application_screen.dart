@@ -114,10 +114,12 @@ class StudentMyApplicationScreen extends StatelessWidget {
                       }
 
                       Color statusColor = AppColors.primaryOrange;
-                      if (status.toLowerCase() == 'accepted')
+                      if (status.toLowerCase() == 'accepted') {
                         statusColor = Colors.green;
-                      if (status.toLowerCase() == 'rejected')
+                      }
+                      if (status.toLowerCase() == 'rejected') {
                         statusColor = AppColors.error;
+                      }
 
                       return Container(
                         margin: const EdgeInsets.only(
@@ -193,7 +195,7 @@ class StudentMyApplicationScreen extends StatelessWidget {
                                     vertical: 4,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: statusColor.withOpacity(0.1),
+                                    color: statusColor.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(
                                       AppDimensions.radiusFull,
                                     ),

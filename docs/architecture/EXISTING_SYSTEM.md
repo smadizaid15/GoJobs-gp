@@ -20,7 +20,7 @@ This document is factual, not aspirational — it records what actually exists i
 - **Directory layout** (`lib/`):
   ```
   lib/
-    config/          — api_config.dart (gitignored secret; see SECURITY_AUDIT.md)
+    config/          — api_config.dart (tracked, safe, empty AI-key placeholder as of 2026-09-10; see SECURITY_AUDIT.md H-1)
     core/
       constants/       — mostly empty stubs; app_enums.dart is the one real file
       theme/           — app_colors.dart, app_dimensions.dart, app_text_styles.dart, app_theme.dart

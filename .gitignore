@@ -44,10 +44,10 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Local-only API config (never commit real keys here). Copy
-# lib/config/api_config.dart.example to lib/config/api_config.dart and
-# fill in your own key for local dev. See docs/security/SECURITY_AUDIT.md.
-lib/config/api_config.dart
+# NOTE: lib/config/api_config.dart is intentionally NOT ignored — it is a
+# tracked, safe, empty-key placeholder (no AI provider secret ever compiled
+# into the Flutter client). See the file itself and
+# docs/security/SECURITY_AUDIT.md (H-1) / docs/architecture/TARGET_ARCHITECTURE.md.
 
 # Secret-management hygiene, general
 .env

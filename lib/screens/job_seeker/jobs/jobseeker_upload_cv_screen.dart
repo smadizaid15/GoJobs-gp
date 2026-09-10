@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:file_picker/file_picker.dart' as fp;
@@ -42,7 +42,9 @@ class _JobseekerUploadCvScreenState extends State<JobseekerUploadCvScreen> {
         });
       }
     } catch (e) {
-      print("Error picking file: $e");
+      if (kDebugMode) {
+        debugPrint("Error picking file: $e");
+      }
     }
   }
 
@@ -101,7 +103,9 @@ class _JobseekerUploadCvScreenState extends State<JobseekerUploadCvScreen> {
         context.push('/jobseeker/application-success', extra: widget.job);
       }
     } catch (e) {
-      print('Error submitting application: $e');
+      if (kDebugMode) {
+        debugPrint('Error submitting application: $e');
+      }
       if (mounted) {
         ScaffoldMessenger.of(
           context,

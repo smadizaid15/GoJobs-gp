@@ -11,12 +11,22 @@ class PublicFreelancerProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = providerData['fullName']?.toString() ?? providerData['displayName']?.toString() ?? providerData['name']?.toString() ?? 'Freelancer';
-    final profession = providerData['category']?.toString() ?? providerData['profession']?.toString() ?? 'Service Provider';
-    final about = providerData['aboutMe']?.toString() ?? providerData['description']?.toString() ?? 'No description provided.';
-    final profileImageUrl = providerData['freelancerAvatarUrl']?.toString() ??
-                            providerData['profileImageUrl']?.toString(); 
-                         
+    final name =
+        providerData['fullName']?.toString() ??
+        providerData['displayName']?.toString() ??
+        providerData['name']?.toString() ??
+        'Freelancer';
+    final profession =
+        providerData['category']?.toString() ??
+        providerData['profession']?.toString() ??
+        'Service Provider';
+    final about =
+        providerData['aboutMe']?.toString() ??
+        providerData['description']?.toString() ??
+        'No description provided.';
+    final profileImageUrl =
+        providerData['freelancerAvatarUrl']?.toString() ??
+        providerData['profileImageUrl']?.toString();
 
     final List<String> skills = [];
     if (providerData['skills'] != null) {
@@ -26,7 +36,9 @@ class PublicFreelancerProfileScreen extends StatelessWidget {
 
     final List<String> portfolioPhotos = [];
     if (providerData['portfolioPhotos'] != null) {
-      portfolioPhotos.addAll(List<String>.from(providerData['portfolioPhotos']));
+      portfolioPhotos.addAll(
+        List<String>.from(providerData['portfolioPhotos']),
+      );
     }
 
     return Scaffold(
@@ -38,7 +50,13 @@ class PublicFreelancerProfileScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => context.pop(),
         ),
-        title: Text('Provider Profile', style: AppTextStyles.heading3.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
+        title: Text(
+          'Provider Profile',
+          style: AppTextStyles.heading3.copyWith(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -50,39 +68,98 @@ class PublicFreelancerProfileScreen extends StatelessWidget {
               child: CircleAvatar(
                 radius: 50,
                 backgroundColor: AppColors.inputFill,
-                backgroundImage: profileImageUrl != null && profileImageUrl.isNotEmpty ? NetworkImage(profileImageUrl) : null,
-                child: profileImageUrl == null || profileImageUrl.isEmpty ? Text(name.isNotEmpty ? name[0].toUpperCase() : 'F', style: AppTextStyles.heading1.copyWith(color: AppColors.textSecondary)) : null,
+                backgroundImage:
+                    profileImageUrl != null && profileImageUrl.isNotEmpty
+                    ? NetworkImage(profileImageUrl)
+                    : null,
+                child: profileImageUrl == null || profileImageUrl.isEmpty
+                    ? Text(
+                        name.isNotEmpty ? name[0].toUpperCase() : 'F',
+                        style: AppTextStyles.heading1.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      )
+                    : null,
               ),
             ),
             const SizedBox(height: AppDimensions.paddingM),
-            Center(child: Text(name, style: AppTextStyles.heading2.copyWith(fontWeight: FontWeight.bold))),
-            Center(child: Text(profession, style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary))),
+            Center(
+              child: Text(
+                name,
+                style: AppTextStyles.heading2.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Center(
+              child: Text(
+                profession,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ),
             const SizedBox(height: AppDimensions.paddingS),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(Icons.star, color: Colors.amber, size: 20),
                 const SizedBox(width: 4),
-                Text('4.8 (12 reviews)', style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+                Text(
+                  '4.8 (12 reviews)',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: AppDimensions.paddingL),
-            Text('About', style: AppTextStyles.heading3.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              'About',
+              style: AppTextStyles.heading3.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: AppDimensions.paddingS),
             Text(about, style: AppTextStyles.bodyMedium),
             const SizedBox(height: AppDimensions.paddingL),
-            Text('Skills', style: AppTextStyles.heading3.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              'Skills',
+              style: AppTextStyles.heading3.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: AppDimensions.paddingS),
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: skills.map((skill) => Chip(label: Text(skill, style: AppTextStyles.bodySmall), backgroundColor: AppColors.primaryOrange.withOpacity(0.1), side: BorderSide.none)).toList(),
+              children: skills
+                  .map(
+                    (skill) => Chip(
+                      label: Text(skill, style: AppTextStyles.bodySmall),
+                      backgroundColor: AppColors.primaryOrange.withValues(
+                        alpha: 0.1,
+                      ),
+                      side: BorderSide.none,
+                    ),
+                  )
+                  .toList(),
             ),
             const SizedBox(height: AppDimensions.paddingL),
-            Text('Portfolio', style: AppTextStyles.heading3.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              'Portfolio',
+              style: AppTextStyles.heading3.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: AppDimensions.paddingS),
             if (portfolioPhotos.isEmpty)
-              Text('No photos uploaded yet.', style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary))
+              Text(
+                'No photos uploaded yet.',
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              )
             else
               SizedBox(
                 height: 120,
@@ -93,7 +170,13 @@ class PublicFreelancerProfileScreen extends StatelessWidget {
                     return Container(
                       width: 120,
                       margin: const EdgeInsets.only(right: 12),
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), image: DecorationImage(image: NetworkImage(portfolioPhotos[index]), fit: BoxFit.cover)),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        image: DecorationImage(
+                          image: NetworkImage(portfolioPhotos[index]),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     );
                   },
                 ),

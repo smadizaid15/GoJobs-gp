@@ -11,10 +11,12 @@ class FreelancerEditProfileScreen extends StatefulWidget {
   const FreelancerEditProfileScreen({super.key});
 
   @override
-  State<FreelancerEditProfileScreen> createState() => _FreelancerEditProfileScreenState();
+  State<FreelancerEditProfileScreen> createState() =>
+      _FreelancerEditProfileScreenState();
 }
 
-class _FreelancerEditProfileScreenState extends State<FreelancerEditProfileScreen> {
+class _FreelancerEditProfileScreenState
+    extends State<FreelancerEditProfileScreen> {
   final _nameController = TextEditingController();
   final _dobController = TextEditingController();
   final _emailController = TextEditingController();
@@ -35,13 +37,19 @@ class _FreelancerEditProfileScreenState extends State<FreelancerEditProfileScree
   Future<void> _initializeData() async {
     try {
       User? user = FirebaseAuth.instance.currentUser;
-      user ??= await FirebaseAuth.instance.authStateChanges().firstWhere((u) => u != null);
+      user ??= await FirebaseAuth.instance.authStateChanges().firstWhere(
+        (u) => u != null,
+      );
 
-      final doc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .get();
       if (doc.exists && doc.data() != null && mounted) {
         final data = doc.data()!;
         setState(() {
-          _nameController.text = data['fullName'] ?? data['displayName'] ?? data['name'] ?? '';
+          _nameController.text =
+              data['fullName'] ?? data['displayName'] ?? data['name'] ?? '';
           _dobController.text = data['dob'] ?? '';
           _emailController.text = data['email'] ?? user!.email ?? '';
           _phoneController.text = data['phone'] ?? '';
@@ -114,7 +122,11 @@ class _FreelancerEditProfileScreenState extends State<FreelancerEditProfileScree
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange))
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryOrange,
+                ),
+              )
             : SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,

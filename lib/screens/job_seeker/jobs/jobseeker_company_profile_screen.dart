@@ -215,13 +215,8 @@ class JobseekerCompanyProfileScreen extends StatelessWidget {
 class _CompanyInfoRow extends StatelessWidget {
   final String label;
   final String value;
-  final bool isLink;
 
-  const _CompanyInfoRow({
-    required this.label,
-    required this.value,
-    this.isLink = false,
-  });
+  const _CompanyInfoRow({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -240,10 +235,7 @@ class _CompanyInfoRow extends StatelessWidget {
           Text(
             value,
             style: AppTextStyles.bodySmall.copyWith(
-              color: isLink ? AppColors.primaryOrange : AppColors.textSecondary,
-              decoration: isLink
-                  ? TextDecoration.underline
-                  : TextDecoration.none,
+              color: AppColors.textSecondary,
             ),
           ),
         ],

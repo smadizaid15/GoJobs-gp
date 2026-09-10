@@ -11,7 +11,8 @@ class FreelancerServicesScreen extends StatefulWidget {
   const FreelancerServicesScreen({super.key});
 
   @override
-  State<FreelancerServicesScreen> createState() => _FreelancerServicesScreenState();
+  State<FreelancerServicesScreen> createState() =>
+      _FreelancerServicesScreenState();
 }
 
 class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
@@ -29,9 +30,14 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
   Future<void> _initializeData() async {
     try {
       User? user = FirebaseAuth.instance.currentUser;
-      user ??= await FirebaseAuth.instance.authStateChanges().firstWhere((u) => u != null);
+      user ??= await FirebaseAuth.instance.authStateChanges().firstWhere(
+        (u) => u != null,
+      );
 
-      final doc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .get();
       if (doc.exists && doc.data() != null && mounted) {
         setState(() {
           _servicesController.text = doc.data()!['servicesDescription'] ?? '';
@@ -91,7 +97,11 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange))
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryOrange,
+                ),
+              )
             : Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,
@@ -160,7 +170,9 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
                               ),
                             ),
                             builder: (context) => Padding(
-                              padding: const EdgeInsets.all(AppDimensions.paddingXL),
+                              padding: const EdgeInsets.all(
+                                AppDimensions.paddingXL,
+                              ),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -174,14 +186,18 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(height: AppDimensions.paddingL),
+                                  const SizedBox(
+                                    height: AppDimensions.paddingL,
+                                  ),
                                   Text(
                                     'Save Changes ?',
                                     style: AppTextStyles.heading3.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  const SizedBox(height: AppDimensions.paddingS),
+                                  const SizedBox(
+                                    height: AppDimensions.paddingS,
+                                  ),
                                   Text(
                                     'Are you sure you want to change what you entered?',
                                     style: AppTextStyles.bodySmall.copyWith(
@@ -189,12 +205,16 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
-                                  const SizedBox(height: AppDimensions.paddingL),
+                                  const SizedBox(
+                                    height: AppDimensions.paddingL,
+                                  ),
                                   SizedBox(
                                     width: double.infinity,
                                     height: AppDimensions.buttonHeight,
                                     child: ElevatedButton(
-                                      onPressed: _isSaving ? null : _saveServices,
+                                      onPressed: _isSaving
+                                          ? null
+                                          : _saveServices,
                                       child: _isSaving
                                           ? const CircularProgressIndicator(
                                               color: Colors.white,
@@ -205,7 +225,9 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
                                             ),
                                     ),
                                   ),
-                                  const SizedBox(height: AppDimensions.paddingM),
+                                  const SizedBox(
+                                    height: AppDimensions.paddingM,
+                                  ),
                                   SizedBox(
                                     width: double.infinity,
                                     height: AppDimensions.buttonHeight,
@@ -231,7 +253,9 @@ class _FreelancerServicesScreenState extends State<FreelancerServicesScreen> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(height: AppDimensions.paddingL),
+                                  const SizedBox(
+                                    height: AppDimensions.paddingL,
+                                  ),
                                 ],
                               ),
                             ),

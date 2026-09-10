@@ -11,7 +11,8 @@ class FreelancerAboutMeScreen extends StatefulWidget {
   const FreelancerAboutMeScreen({super.key});
 
   @override
-  State<FreelancerAboutMeScreen> createState() => _FreelancerAboutMeScreenState();
+  State<FreelancerAboutMeScreen> createState() =>
+      _FreelancerAboutMeScreenState();
 }
 
 class _FreelancerAboutMeScreenState extends State<FreelancerAboutMeScreen> {
@@ -37,8 +38,10 @@ class _FreelancerAboutMeScreenState extends State<FreelancerAboutMeScreen> {
       final doc = await _firestore.collection('users').doc(user!.uid).get();
       if (doc.exists && doc.data() != null && mounted) {
         setState(() {
-          _aboutController.text = doc.data()!['aboutMe']?.toString() ?? 
-                                  doc.data()!['description']?.toString() ?? '';
+          _aboutController.text =
+              doc.data()!['aboutMe']?.toString() ??
+              doc.data()!['description']?.toString() ??
+              '';
         });
       }
     } catch (e) {
@@ -93,7 +96,11 @@ class _FreelancerAboutMeScreenState extends State<FreelancerAboutMeScreen> {
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange))
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryOrange,
+                ),
+              )
             : Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,

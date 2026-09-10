@@ -88,12 +88,11 @@ class _CompanyJobTypeSheetState extends State<CompanyJobTypeSheet> {
                 children: _types.map((type) {
                   final isSelected = _selected == type;
                   return GestureDetector(
-                    onTap: () {
+                    onTap: () async {
                       setState(() => _selected = type);
-                      Future.delayed(
-                        const Duration(milliseconds: 300),
-                        () => context.pop(_selected),
-                      );
+                      await Future.delayed(const Duration(milliseconds: 300));
+                      if (!context.mounted) return;
+                      context.pop(_selected);
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(

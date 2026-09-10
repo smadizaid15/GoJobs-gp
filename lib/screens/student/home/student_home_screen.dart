@@ -98,9 +98,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                        ),
+                        Column(crossAxisAlignment: CrossAxisAlignment.start),
                         Row(
                           children: [
                             GestureDetector(
@@ -303,8 +301,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
 
                         Expanded(
                           child: GestureDetector(
-                            onTap: () =>
-                                context.go('/student/internship-list'),
+                            onTap: () => context.go('/student/internship-list'),
                             child: Container(
                               padding: const EdgeInsets.all(
                                 AppDimensions.paddingM,

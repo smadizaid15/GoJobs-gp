@@ -11,7 +11,8 @@ class FreelancerExpertiseScreen extends StatefulWidget {
   const FreelancerExpertiseScreen({super.key});
 
   @override
-  State<FreelancerExpertiseScreen> createState() => _FreelancerExpertiseScreenState();
+  State<FreelancerExpertiseScreen> createState() =>
+      _FreelancerExpertiseScreenState();
 }
 
 class _FreelancerExpertiseScreenState extends State<FreelancerExpertiseScreen> {
@@ -35,9 +36,14 @@ class _FreelancerExpertiseScreenState extends State<FreelancerExpertiseScreen> {
   Future<void> _initializeData() async {
     try {
       User? user = FirebaseAuth.instance.currentUser;
-      user ??= await FirebaseAuth.instance.authStateChanges().firstWhere((u) => u != null);
+      user ??= await FirebaseAuth.instance.authStateChanges().firstWhere(
+        (u) => u != null,
+      );
 
-      final doc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .get();
       if (doc.exists && doc.data() != null && mounted) {
         final data = doc.data()!;
         setState(() {
@@ -114,7 +120,11 @@ class _FreelancerExpertiseScreenState extends State<FreelancerExpertiseScreen> {
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange))
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryOrange,
+                ),
+              )
             : SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,
@@ -198,7 +208,7 @@ class _FreelancerExpertiseScreenState extends State<FreelancerExpertiseScreen> {
                         Switch(
                           value: _isOpen24_7,
                           onChanged: (val) => setState(() => _isOpen24_7 = val),
-                          activeColor: AppColors.primaryNavy,
+                          activeThumbColor: AppColors.primaryNavy,
                         ),
                         Text(
                           'open to work 24/7',

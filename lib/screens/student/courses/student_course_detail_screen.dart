@@ -254,9 +254,7 @@ class _StudentCourseDetailScreenState extends State<StudentCourseDetailScreen> {
                         ),
                       ),
                       const SizedBox(height: AppDimensions.paddingS),
-                      ...learningPoints
-                          .map((point) => _LearnItem(text: point))
-                          .toList(),
+                      ...learningPoints.map((point) => _LearnItem(text: point)),
                       const SizedBox(height: AppDimensions.paddingXL),
                     ],
 

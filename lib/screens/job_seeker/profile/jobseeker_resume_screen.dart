@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:file_picker/file_picker.dart' as fp;
@@ -60,7 +60,9 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
         }
       }
     } catch (e) {
-      print("Error fetching existing resume: $e");
+      if (kDebugMode) {
+        debugPrint("Error fetching existing resume: $e");
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -82,7 +84,9 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
         });
       }
     } catch (e) {
-      print("Error picking resume: $e");
+      if (kDebugMode) {
+        debugPrint("Error picking resume: $e");
+      }
     }
   }
 
@@ -126,9 +130,11 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
                 .refFromURL(_existingResumeUrl!)
                 .delete();
           } catch (e) {
-            print(
-              "Notice: Could not delete old file from storage (might already be deleted): $e",
-            );
+            if (kDebugMode) {
+              debugPrint(
+                "Notice: Could not delete old file from storage (might already be deleted): $e",
+              );
+            }
           }
         }
 
@@ -155,7 +161,9 @@ class _JobseekerResumeScreenState extends State<JobseekerResumeScreen> {
         context.go('/jobseeker/profile');
       }
     } catch (e) {
-      print('Critical error saving resume: $e');
+      if (kDebugMode) {
+        debugPrint('Critical error saving resume: $e');
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
