@@ -44,9 +44,18 @@ before(async () => {
   // This can only succeed once the real ruleset is loaded and evaluating
   // correctly — the actual condition every test below depends on — so it
   // is a direct readiness check, not a proxy for one.
+  //
+  // Deadline is 90s, not 20s: observed in CI (not locally) that a fully
+  // cold GitHub Actions runner — no cached emulator binaries, forced to
+  // download cloud-storage-rules-runtime-*.jar fresh — can take longer
+  // than 20s just to finish loading the ruleset, which made this same
+  // deterministic probe correctly report "not ready yet" for the entire
+  // 20s window and fail loudly (as designed) rather than silently race.
+  // 90s is a maximum cold-start allowance, not an intended wait: the loop
+  // still returns the moment the real condition is met, same as before.
   const readinessPath = `cvs/${OWNER}/_warmup.bin`;
   const ownerDb = testEnv.authenticatedContext(OWNER).storage();
-  const deadline = Date.now() + 20_000;
+  const deadline = Date.now() + 90_000;
   let lastError;
   while (Date.now() < deadline) {
     try {
