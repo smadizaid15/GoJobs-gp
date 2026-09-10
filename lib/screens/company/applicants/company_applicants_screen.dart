@@ -1,15 +1,13 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../widgets/company_bottom_nav.dart';
-
 
 class CompanyApplicantsScreen extends StatelessWidget {
   const CompanyApplicantsScreen({super.key});
@@ -23,7 +21,9 @@ class CompanyApplicantsScreen extends StatelessWidget {
         if (authSnapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             backgroundColor: Color(0xFFF0F0F5),
-            body: Center(child: CircularProgressIndicator(color: AppColors.primaryNavy)),
+            body: Center(
+              child: CircularProgressIndicator(color: AppColors.primaryNavy),
+            ),
           );
         }
 
@@ -38,16 +38,22 @@ class CompanyApplicantsScreen extends StatelessWidget {
 
         // 2. 🛡️ LIVE COMPANY PROFILE STREAM (Replaces initState)
         return StreamBuilder<DocumentSnapshot>(
-          stream: FirebaseFirestore.instance.collection('users').doc(currentUserId).snapshots(),
+          stream: FirebaseFirestore.instance
+              .collection('users')
+              .doc(currentUserId)
+              .snapshots(),
           builder: (context, userSnapshot) {
             String companyName = 'Your Company';
             String companyLocation = 'Location not set';
             String? companyLogoUrl;
 
             if (userSnapshot.hasData && userSnapshot.data!.exists) {
-              final userData = userSnapshot.data!.data() as Map<String, dynamic>;
-              companyName = userData['companyName']?.toString() ?? 'Your Company';
-              companyLocation = userData['location']?.toString() ?? 'Location not set';
+              final userData =
+                  userSnapshot.data!.data() as Map<String, dynamic>;
+              companyName =
+                  userData['companyName']?.toString() ?? 'Your Company';
+              companyLocation =
+                  userData['location']?.toString() ?? 'Location not set';
               companyLogoUrl = userData['logoUrl']?.toString();
             }
 
@@ -85,14 +91,18 @@ class CompanyApplicantsScreen extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(
                                       AppDimensions.radiusS,
                                     ),
-                                    image: companyLogoUrl != null && companyLogoUrl.isNotEmpty
+                                    image:
+                                        companyLogoUrl != null &&
+                                            companyLogoUrl.isNotEmpty
                                         ? DecorationImage(
                                             image: NetworkImage(companyLogoUrl),
                                             fit: BoxFit.cover,
                                           )
                                         : null,
                                   ),
-                                  child: companyLogoUrl == null || companyLogoUrl.isEmpty
+                                  child:
+                                      companyLogoUrl == null ||
+                                          companyLogoUrl.isEmpty
                                       ? const Icon(
                                           Icons.business,
                                           color: AppColors.primaryNavy,
@@ -145,7 +155,9 @@ class CompanyApplicantsScreen extends StatelessWidget {
                                       color: Colors.white,
                                     ),
                                   ),
-                                  const SizedBox(width: AppDimensions.paddingXS),
+                                  const SizedBox(
+                                    width: AppDimensions.paddingXS,
+                                  ),
                                   const Icon(
                                     Icons.edit_outlined,
                                     color: Colors.white,
@@ -208,14 +220,24 @@ class CompanyApplicantsScreen extends StatelessWidget {
                             .where('companyId', isEqualTo: currentUserId)
                             .snapshots(),
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(child: CircularProgressIndicator());
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
                           }
 
                           if (snapshot.hasError) {
-                            print('🚨 FIREBASE ERROR: ${snapshot.error}');
+                            if (kDebugMode) {
+                              debugPrint(
+                                '🚨 FIREBASE ERROR: ${snapshot.error}',
+                              );
+                            }
                             return Center(
-                              child: Text('Error loading applications: ${snapshot.error}', style: const TextStyle(color: Colors.red)),
+                              child: Text(
+                                'Error loading applications: ${snapshot.error}',
+                                style: const TextStyle(color: Colors.red),
+                              ),
                             );
                           }
 
@@ -231,7 +253,9 @@ class CompanyApplicantsScreen extends StatelessWidget {
                                     color: AppColors.textSecondary,
                                     size: 60,
                                   ),
-                                  const SizedBox(height: AppDimensions.paddingM),
+                                  const SizedBox(
+                                    height: AppDimensions.paddingM,
+                                  ),
                                   Text(
                                     'No applicants yet',
                                     style: AppTextStyles.bodyMedium.copyWith(
@@ -245,8 +269,10 @@ class CompanyApplicantsScreen extends StatelessWidget {
 
                           final sortedDocs = docs.toList();
                           sortedDocs.sort((a, b) {
-                            final aTime = (a.data() as Map)['appliedAt'] as Timestamp?;
-                            final bTime = (b.data() as Map)['appliedAt'] as Timestamp?;
+                            final aTime =
+                                (a.data() as Map)['appliedAt'] as Timestamp?;
+                            final bTime =
+                                (b.data() as Map)['appliedAt'] as Timestamp?;
                             if (aTime == null || bTime == null) return 0;
                             return bTime.compareTo(aTime);
                           });
@@ -257,11 +283,11 @@ class CompanyApplicantsScreen extends StatelessWidget {
                             ),
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              crossAxisSpacing: AppDimensions.paddingS,
-                              mainAxisSpacing: AppDimensions.paddingS,
-                              childAspectRatio: 0.85,
-                            ),
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing: AppDimensions.paddingS,
+                                  mainAxisSpacing: AppDimensions.paddingS,
+                                  childAspectRatio: 0.85,
+                                ),
                             itemCount: sortedDocs.length,
                             itemBuilder: (context, index) {
                               return _LiveApplicantCard(
@@ -299,7 +325,7 @@ class _LiveApplicantCard extends StatelessWidget {
 
     // 4. 🛡️ CRASH PREVENTION: Do not search Firebase if the ID is missing
     if (applicantId.isEmpty || jobId.isEmpty) {
-      return const SizedBox.shrink(); 
+      return const SizedBox.shrink();
     }
 
     return FutureBuilder(
@@ -329,12 +355,14 @@ class _LiveApplicantCard extends StatelessWidget {
         String userName = 'Unknown User';
         if (userDoc.exists && userDoc.data() != null) {
           final userData = userDoc.data() as Map<String, dynamic>;
-          userName = userData['displayName'] ?? userData['fullName'] ?? 'Applicant';
+          userName =
+              userData['displayName'] ?? userData['fullName'] ?? 'Applicant';
         }
 
         String jobTitle = 'Deleted Job';
         if (jobDoc.exists && jobDoc.data() != null) {
-          jobTitle = (jobDoc.data() as Map<String, dynamic>)['title'] ?? 'Unknown Job';
+          jobTitle =
+              (jobDoc.data() as Map<String, dynamic>)['title'] ?? 'Unknown Job';
         }
 
         final fullApplicationData = {
@@ -501,4 +529,3 @@ class _ApplicantCard extends StatelessWidget {
     );
   }
 }
-

@@ -49,9 +49,14 @@ class _FreelancerSkillsScreenState extends State<FreelancerSkillsScreen> {
   Future<void> _initializeData() async {
     try {
       User? user = FirebaseAuth.instance.currentUser;
-      user ??= await FirebaseAuth.instance.authStateChanges().firstWhere((u) => u != null);
+      user ??= await FirebaseAuth.instance.authStateChanges().firstWhere(
+        (u) => u != null,
+      );
 
-      final doc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .get();
       if (doc.exists && doc.data() != null && mounted) {
         final data = doc.data()!;
         if (data['skills'] != null) {
@@ -121,7 +126,11 @@ class _FreelancerSkillsScreenState extends State<FreelancerSkillsScreen> {
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange))
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryOrange,
+                ),
+              )
             : Column(
                 children: [
                   Padding(

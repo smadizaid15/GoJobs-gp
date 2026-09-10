@@ -28,21 +28,38 @@ async function seed(path) {
 
 before(async () => {
   testEnv = await makeTestEnv('demo-gojobs-storage-test');
-  // Warm-up: the Storage emulator needs a variable amount of time to
-  // finish registering a brand-new project id after
-  // initializeTestEnvironment() resolves — observed anywhere from
-  // instant to 1500ms+ across runs. A single warm-up attempt was not
-  // reliable (it can itself fail with the same transient
-  // "storage/unauthorized" while the emulator is still catching up), so
-  // retry the throwaway admin (rules-bypassed) write until it succeeds
-  // or a generous timeout elapses, before any real assertion runs.
-  const deadline = Date.now() + 20_000;
+  // Readiness probe: the Storage emulator can accept connections before it
+  // has finished loading storage.rules — observed as a real, not
+  // theoretical, flake on a cold GitHub Actions runner (two spuriously
+  // failing tests, "no Storage ruleset is currently loaded", even though
+  // every later test in the same run passed). A rules-*bypassed* warm-up
+  // write (the previous approach, via withSecurityRulesDisabled) only
+  // proves the emulator process itself is responding — it can succeed
+  // before the ruleset is active, which is exactly the false-ready signal
+  // that let this race through locally without ever reproducing it.
+  //
+  // Instead, retry a real rules-ENFORCED write to a path storage.rules
+  // explicitly allows the OWNER to write (cvs/{userId}/{fileName}, see
+  // storage.rules:60-63) until it succeeds or a generous deadline elapses.
+  // This can only succeed once the real ruleset is loaded and evaluating
+  // correctly — the actual condition every test below depends on — so it
+  // is a direct readiness check, not a proxy for one.
+  //
+  // Deadline is 90s, not 20s: observed in CI (not locally) that a fully
+  // cold GitHub Actions runner — no cached emulator binaries, forced to
+  // download cloud-storage-rules-runtime-*.jar fresh — can take longer
+  // than 20s just to finish loading the ruleset, which made this same
+  // deterministic probe correctly report "not ready yet" for the entire
+  // 20s window and fail loudly (as designed) rather than silently race.
+  // 90s is a maximum cold-start allowance, not an intended wait: the loop
+  // still returns the moment the real condition is met, same as before.
+  const readinessPath = `cvs/${OWNER}/_warmup.bin`;
+  const ownerDb = testEnv.authenticatedContext(OWNER).storage();
+  const deadline = Date.now() + 90_000;
   let lastError;
   while (Date.now() < deadline) {
     try {
-      await testEnv.withSecurityRulesDisabled(async (context) => {
-        await uploadBytes(ref(context.storage(), '_warmup/ping.bin'), new Uint8Array([0]));
-      });
+      await uploadBytes(ref(ownerDb, readinessPath), new Uint8Array([0]));
       lastError = undefined;
       break;
     } catch (err) {
@@ -50,7 +67,49 @@ before(async () => {
       await new Promise((resolve) => setTimeout(resolve, 250));
     }
   }
-  if (lastError) throw lastError;
+  if (lastError) {
+    throw new Error(
+      `Storage emulator readiness probe never succeeded within the deadline ` +
+        `(the rules-enforced warm-up write to "${readinessPath}" kept failing): ` +
+        `${lastError.message}`,
+    );
+  }
+  // Remove the warm-up object via the same authorized owner context, so it
+  // can never be mistaken for real test data by anything below — every
+  // other test in this file uses its own distinct file name, but cleaning
+  // up explicitly (rather than relying on that) keeps warm-up state from
+  // ever being able to affect a real assertion.
+  //
+  // This delete gets its own short bounded retry and is intentionally
+  // best-effort, not fatal: a CI run diagnosed the readiness *write*
+  // above succeeding quickly every time, but this unprotected delete
+  // still throwing "storage/unauthorized" and crashing the whole
+  // before() hook — evidently the same class of just-loaded-ruleset
+  // propagation lag, one write/delete evaluation behind. A failed delete
+  // here can never affect a real test (readinessPath is never reused,
+  // and the emulator's in-memory state disappears with the process), so
+  // rather than let cleanup flakiness cascade into failing all 49 real
+  // Storage tests, retry briefly and fall back to a clear console
+  // warning instead of throwing.
+  const cleanupDeadline = Date.now() + 10_000;
+  let cleanupError;
+  while (Date.now() < cleanupDeadline) {
+    try {
+      await deleteObject(ref(ownerDb, readinessPath));
+      cleanupError = undefined;
+      break;
+    } catch (err) {
+      cleanupError = err;
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+  }
+  if (cleanupError) {
+    console.warn(
+      `[storage.test.js] Could not clean up the warm-up object at "${readinessPath}" ` +
+        `after the readiness probe succeeded — leaving it in place, this does not ` +
+        `affect any test below: ${cleanupError.message}`,
+    );
+  }
 });
 
 after(async () => {
@@ -136,6 +195,27 @@ describe('storage: company_logos/{uid}.jpg — second-pass fix, not yet deployed
     const db = testEnv.unauthenticatedContext().storage();
     await assertFails(uploadBytes(ref(db, `company_logos/${OWNER}.jpg`), PAYLOAD));
     await assertFails(getBytes(ref(db, `company_logos/${OWNER}.jpg`)));
+  });
+
+  // Phase 1 Storage-rules review (2026-09-09): company_logos previously had
+  // no delete coverage at all, unlike every other prefix (which gets
+  // delete-by-owner and delete-by-stranger for free via the parameterized
+  // loop above). The write rule covers create/update/delete uniformly in
+  // Storage, so this was a real, if likely low-risk, coverage gap rather
+  // than an actual behavior difference — closing it explicitly.
+
+  it('[Phase 1 review] allows the owner to delete their own logo', async () => {
+    const seedDb = testEnv.authenticatedContext(OWNER).storage();
+    await uploadBytes(ref(seedDb, `company_logos/${OWNER}.jpg`), PAYLOAD);
+    const ownerDb = testEnv.authenticatedContext(OWNER).storage();
+    await assertSucceeds(deleteObject(ref(ownerDb, `company_logos/${OWNER}.jpg`)));
+  });
+
+  it('[Phase 1 review] denies a different user from deleting the owner\'s logo', async () => {
+    const seedDb = testEnv.authenticatedContext(OWNER).storage();
+    await uploadBytes(ref(seedDb, `company_logos/${OWNER}.jpg`), PAYLOAD);
+    const otherDb = testEnv.authenticatedContext(OTHER).storage();
+    await assertFails(deleteObject(ref(otherDb, `company_logos/${OWNER}.jpg`)));
   });
 });
 

@@ -189,12 +189,15 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                     bool matchesSearch = title.contains(_searchQuery);
 
                     bool matchesFilter = true;
-                    if (_filters[_selectedFilter] == 'Free')
+                    if (_filters[_selectedFilter] == 'Free') {
                       matchesFilter = isFree;
-                    if (_filters[_selectedFilter] == 'Online')
+                    }
+                    if (_filters[_selectedFilter] == 'Online') {
                       matchesFilter = isOnline;
-                    if (_filters[_selectedFilter] == 'On-Site')
+                    }
+                    if (_filters[_selectedFilter] == 'On-Site') {
                       matchesFilter = !isOnline;
+                    }
 
                     return matchesSearch && matchesFilter;
                   }).toList();

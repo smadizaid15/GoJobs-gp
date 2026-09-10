@@ -17,7 +17,6 @@ class CompanyHomeScreen extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, authSnapshot) {
-        
         // 2. While Firebase is thinking, show a loading screen (prevents the 'null' crash)
         if (authSnapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
@@ -69,12 +68,16 @@ class CompanyHomeScreen extends StatelessWidget {
                               vertical: AppDimensions.paddingXS,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.companyGold.withValues(alpha: 0.2),
+                              color: AppColors.companyGold.withValues(
+                                alpha: 0.2,
+                              ),
                               borderRadius: BorderRadius.circular(
                                 AppDimensions.radiusFull,
                               ),
                               border: Border.all(
-                                color: AppColors.companyGold.withValues(alpha: 0.5),
+                                color: AppColors.companyGold.withValues(
+                                  alpha: 0.5,
+                                ),
                               ),
                             ),
                             child: Text(
@@ -88,7 +91,8 @@ class CompanyHomeScreen extends StatelessWidget {
                           Row(
                             children: [
                               GestureDetector(
-                                onTap: () => context.go('/company/notifications'),
+                                onTap: () =>
+                                    context.go('/company/notifications'),
                                 child: const Icon(
                                   Icons.notifications_outlined,
                                   color: Colors.white,
@@ -123,8 +127,11 @@ class CompanyHomeScreen extends StatelessWidget {
                                       .snapshots(),
                                   builder: (context, snapshot) {
                                     String? logoUrl;
-                                    if (snapshot.hasData && snapshot.data!.exists) {
-                                      final data = snapshot.data!.data() as Map<String, dynamic>?;
+                                    if (snapshot.hasData &&
+                                        snapshot.data!.exists) {
+                                      final data =
+                                          snapshot.data!.data()
+                                              as Map<String, dynamic>?;
                                       logoUrl = data?['logoUrl']?.toString();
                                     }
 
@@ -141,15 +148,22 @@ class CompanyHomeScreen extends StatelessWidget {
                                         borderRadius: BorderRadius.circular(
                                           AppDimensions.radiusS,
                                         ),
-                                        child: logoUrl != null && logoUrl.isNotEmpty
+                                        child:
+                                            logoUrl != null &&
+                                                logoUrl.isNotEmpty
                                             ? Image.network(
                                                 logoUrl,
                                                 fit: BoxFit.cover,
-                                                errorBuilder: (context, error, stackTrace) =>
-                                                    const Icon(
-                                                  Icons.business,
-                                                  color: AppColors.textSecondary,
-                                                ),
+                                                errorBuilder:
+                                                    (
+                                                      context,
+                                                      error,
+                                                      stackTrace,
+                                                    ) => const Icon(
+                                                      Icons.business,
+                                                      color: AppColors
+                                                          .textSecondary,
+                                                    ),
                                               )
                                             : const Icon(
                                                 Icons.business,
@@ -264,7 +278,10 @@ class CompanyHomeScreen extends StatelessWidget {
                               child: StreamBuilder<QuerySnapshot>(
                                 stream: FirebaseFirestore.instance
                                     .collection('jobs')
-                                    .where('companyId', isEqualTo: currentUserId)
+                                    .where(
+                                      'companyId',
+                                      isEqualTo: currentUserId,
+                                    )
                                     .where('isActive', isEqualTo: true)
                                     .snapshots(),
                                 builder: (context, snapshot) {
@@ -273,12 +290,19 @@ class CompanyHomeScreen extends StatelessWidget {
                                     return Container(
                                       padding: const EdgeInsets.all(8),
                                       color: Colors.red.shade100,
-                                      child: const Text('Index Req.',
-                                          style: TextStyle(color: Colors.red, fontSize: 10)),
+                                      child: const Text(
+                                        'Index Req.',
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                          fontSize: 10,
+                                        ),
+                                      ),
                                     );
                                   }
 
-                                  final count = snapshot.hasData ? snapshot.data!.docs.length : 0;
+                                  final count = snapshot.hasData
+                                      ? snapshot.data!.docs.length
+                                      : 0;
                                   return _StatCard(
                                     icon: Icons.work_outline,
                                     label: 'Active jobs',
@@ -293,10 +317,15 @@ class CompanyHomeScreen extends StatelessWidget {
                               child: StreamBuilder<QuerySnapshot>(
                                 stream: FirebaseFirestore.instance
                                     .collection('jobs')
-                                    .where('companyId', isEqualTo: currentUserId)
+                                    .where(
+                                      'companyId',
+                                      isEqualTo: currentUserId,
+                                    )
                                     .snapshots(),
                                 builder: (context, snapshot) {
-                                  final count = snapshot.hasData ? snapshot.data!.docs.length : 0;
+                                  final count = snapshot.hasData
+                                      ? snapshot.data!.docs.length
+                                      : 0;
                                   return _StatCard(
                                     icon: Icons.post_add_outlined,
                                     label: 'Jobs posted',
@@ -311,15 +340,21 @@ class CompanyHomeScreen extends StatelessWidget {
                               child: StreamBuilder<QuerySnapshot>(
                                 stream: FirebaseFirestore.instance
                                     .collection('applications')
-                                    .where('companyId', isEqualTo: currentUserId)
+                                    .where(
+                                      'companyId',
+                                      isEqualTo: currentUserId,
+                                    )
                                     .snapshots(),
                                 builder: (context, snapshot) {
-                                  final count = snapshot.hasData ? snapshot.data!.docs.length : 0;
+                                  final count = snapshot.hasData
+                                      ? snapshot.data!.docs.length
+                                      : 0;
                                   return _StatCard(
                                     icon: Icons.people_outline,
                                     label: 'Applicants',
                                     value: '$count',
-                                    onTap: () => context.go('/company/applicants'),
+                                    onTap: () =>
+                                        context.go('/company/applicants'),
                                   );
                                 },
                               ),
@@ -333,11 +368,16 @@ class CompanyHomeScreen extends StatelessWidget {
                               child: StreamBuilder<QuerySnapshot>(
                                 stream: FirebaseFirestore.instance
                                     .collection('jobs')
-                                    .where('companyId', isEqualTo: currentUserId)
+                                    .where(
+                                      'companyId',
+                                      isEqualTo: currentUserId,
+                                    )
                                     .where('isActive', isEqualTo: false)
                                     .snapshots(),
                                 builder: (context, snapshot) {
-                                  final count = snapshot.hasData ? snapshot.data!.docs.length : 0;
+                                  final count = snapshot.hasData
+                                      ? snapshot.data!.docs.length
+                                      : 0;
                                   return _StatCard(
                                     icon: Icons.delete_outline,
                                     label: 'Deleted jobs',

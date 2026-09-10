@@ -28,7 +28,7 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
   bool _isPosting = false;
 
   final ImagePicker _picker = ImagePicker();
-  List<XFile> _selectedImages = [];
+  final List<XFile> _selectedImages = [];
 
   @override
   void dispose() {
@@ -253,8 +253,9 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                         final result = await context.push<String>(
                           '/company/job-position-picker',
                         );
-                        if (result != null)
+                        if (result != null) {
                           setState(() => _jobPosition = result);
+                        }
                       },
                     ),
 
@@ -265,8 +266,9 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                         final result = await context.push<String>(
                           '/company/workplace-type',
                         );
-                        if (result != null)
+                        if (result != null) {
                           setState(() => _workplaceType = result);
+                        }
                       },
                     ),
 
@@ -277,8 +279,9 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                         final result = await context.push<String>(
                           '/company/location-picker',
                         );
-                        if (result != null)
+                        if (result != null) {
                           setState(() => _jobLocation = result);
+                        }
                       },
                     ),
 
@@ -289,8 +292,9 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                         final result = await context.push<String>(
                           '/company/job-type',
                         );
-                        if (result != null)
+                        if (result != null) {
                           setState(() => _employmentType = result);
+                        }
                       },
                     ),
 
@@ -428,28 +432,32 @@ class _CompanyAddJobScreenState extends State<CompanyAddJobScreen> {
                     const SizedBox(height: AppDimensions.paddingL),
 
                     Align(
-                    alignment: Alignment.centerRight,
-                    child: GestureDetector(
-                       onTap: () async {
-                       final result = await context.push<String>('/ai-job-description');
-                         if (result != null && result.isNotEmpty) {
-                          setState(() {
-                            _descriptionController.text = result;
-                          });
-                               }
-                         },
-                         child: Container(
+                      alignment: Alignment.centerRight,
+                      child: GestureDetector(
+                        onTap: () async {
+                          final result = await context.push<String>(
+                            '/ai-job-description',
+                          );
+                          if (result != null && result.isNotEmpty) {
+                            setState(() {
+                              _descriptionController.text = result;
+                            });
+                          }
+                        },
+                        child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: AppDimensions.paddingM,
                             vertical: AppDimensions.paddingXS,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.companyGold.withOpacity(0.1),
+                            color: AppColors.companyGold.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(
                               AppDimensions.radiusFull,
                             ),
                             border: Border.all(
-                              color: AppColors.companyGold.withOpacity(0.3),
+                              color: AppColors.companyGold.withValues(
+                                alpha: 0.3,
+                              ),
                             ),
                           ),
                           child: Row(

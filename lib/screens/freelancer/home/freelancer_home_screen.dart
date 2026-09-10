@@ -12,20 +12,26 @@ import '../../../widgets/freelancer_bottom_nav.dart';
 class FreelancerHomeScreen extends StatelessWidget {
   const FreelancerHomeScreen({super.key});
 
-  Future<void> _updateRequestStatus(BuildContext context, String requestId, String status) async {
+  Future<void> _updateRequestStatus(
+    BuildContext context,
+    String requestId,
+    String status,
+  ) async {
     try {
       await FirebaseFirestore.instance
           .collection('freelancer_requests')
           .doc(requestId)
           .update({'status': status});
-      
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
               status == 'accepted' ? 'Request Accepted!' : 'Request Declined',
             ),
-            backgroundColor: status == 'accepted' ? Colors.green : AppColors.error,
+            backgroundColor: status == 'accepted'
+                ? Colors.green
+                : AppColors.error,
           ),
         );
       }
@@ -39,11 +45,12 @@ class FreelancerHomeScreen extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, authSnapshot) {
-        
         if (authSnapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             backgroundColor: Color(0xFFF0F0F5),
-            body: Center(child: CircularProgressIndicator(color: AppColors.primaryOrange)),
+            body: Center(
+              child: CircularProgressIndicator(color: AppColors.primaryOrange),
+            ),
           );
         }
 
@@ -80,13 +87,18 @@ class FreelancerHomeScreen extends StatelessWidget {
                             String freelancerName = 'Freelancer';
                             String? profileImageUrl;
 
-                            if (userSnapshot.hasData && userSnapshot.data!.exists) {
-                              final data = userSnapshot.data!.data() as Map<String, dynamic>;
-                              freelancerName = data['fullName']?.toString() ??
-                                               data['displayName']?.toString() ?? 
-                                               'Freelancer';
-                              profileImageUrl = data['freelancerAvatarUrl']?.toString() ??
-                                                data['profileImageUrl']?.toString();
+                            if (userSnapshot.hasData &&
+                                userSnapshot.data!.exists) {
+                              final data =
+                                  userSnapshot.data!.data()
+                                      as Map<String, dynamic>;
+                              freelancerName =
+                                  data['fullName']?.toString() ??
+                                  data['displayName']?.toString() ??
+                                  'Freelancer';
+                              profileImageUrl =
+                                  data['freelancerAvatarUrl']?.toString() ??
+                                  data['profileImageUrl']?.toString();
                             }
 
                             return Row(
@@ -108,8 +120,11 @@ class FreelancerHomeScreen extends StatelessWidget {
                                         vertical: 2,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: AppColors.primaryOrange.withValues(alpha: 0.15),
-                                        borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                                        color: AppColors.primaryOrange
+                                            .withValues(alpha: 0.15),
+                                        borderRadius: BorderRadius.circular(
+                                          AppDimensions.radiusFull,
+                                        ),
                                       ),
                                       child: Text(
                                         'Freelance',
@@ -124,13 +139,16 @@ class FreelancerHomeScreen extends StatelessWidget {
                                 Row(
                                   children: [
                                     GestureDetector(
-                                      onTap: () => context.go('/freelancer/settings'),
+                                      onTap: () =>
+                                          context.go('/freelancer/settings'),
                                       child: const Icon(
                                         Icons.settings_outlined,
                                         color: AppColors.textPrimary,
                                       ),
                                     ),
-                                    const SizedBox(width: AppDimensions.paddingS),
+                                    const SizedBox(
+                                      width: AppDimensions.paddingS,
+                                    ),
                                     GestureDetector(
                                       onTap: () => context.push('/ai-chat'),
                                       child: Container(
@@ -138,7 +156,9 @@ class FreelancerHomeScreen extends StatelessWidget {
                                         height: 36,
                                         decoration: BoxDecoration(
                                           color: AppColors.primaryNavy,
-                                          borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                                          borderRadius: BorderRadius.circular(
+                                            AppDimensions.radiusS,
+                                          ),
                                         ),
                                         child: const Icon(
                                           Icons.smart_toy_outlined,
@@ -147,22 +167,34 @@ class FreelancerHomeScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(width: AppDimensions.paddingS),
+                                    const SizedBox(
+                                      width: AppDimensions.paddingS,
+                                    ),
                                     GestureDetector(
-                                      onTap: () => context.go('/freelancer/profile'),
+                                      onTap: () =>
+                                          context.go('/freelancer/profile'),
                                       child: CircleAvatar(
                                         radius: 20,
                                         backgroundColor: AppColors.primaryNavy,
-                                        backgroundImage: profileImageUrl != null && profileImageUrl.isNotEmpty
+                                        backgroundImage:
+                                            profileImageUrl != null &&
+                                                profileImageUrl.isNotEmpty
                                             ? NetworkImage(profileImageUrl)
                                             : null,
-                                        child: profileImageUrl == null || profileImageUrl.isEmpty
+                                        child:
+                                            profileImageUrl == null ||
+                                                profileImageUrl.isEmpty
                                             ? Text(
-                                                freelancerName.isNotEmpty ? freelancerName[0].toUpperCase() : 'F',
-                                                style: AppTextStyles.bodyMedium.copyWith(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
+                                                freelancerName.isNotEmpty
+                                                    ? freelancerName[0]
+                                                          .toUpperCase()
+                                                    : 'F',
+                                                style: AppTextStyles.bodyMedium
+                                                    .copyWith(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
                                               )
                                             : null,
                                       ),
@@ -194,22 +226,31 @@ class FreelancerHomeScreen extends StatelessWidget {
                               .snapshots(),
                           builder: (context, snapshot) {
                             if (snapshot.hasError) {
-                              return const Center(child: Text('Error loading requests.'));
+                              return const Center(
+                                child: Text('Error loading requests.'),
+                              );
                             }
 
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return const Center(child: CircularProgressIndicator());
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
                             }
 
                             final requests = snapshot.data?.docs ?? [];
 
                             if (requests.isEmpty) {
                               return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingXL),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: AppDimensions.paddingXL,
+                                ),
                                 child: Center(
                                   child: Text(
                                     'No pending requests right now.',
-                                    style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                                    style: AppTextStyles.bodyMedium.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
                                   ),
                                 ),
                               );
@@ -220,47 +261,71 @@ class FreelancerHomeScreen extends StatelessWidget {
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: requests.length,
                               itemBuilder: (context, index) {
-                                final requestData = requests[index].data() as Map<String, dynamic>;
+                                final requestData =
+                                    requests[index].data()
+                                        as Map<String, dynamic>;
                                 final requestId = requests[index].id;
-                                final clientId = requestData['clientId']?.toString() ?? '';
+                                final clientId =
+                                    requestData['clientId']?.toString() ?? '';
 
-                                final createdAt = requestData['timestamp'] as Timestamp?;
+                                final createdAt =
+                                    requestData['timestamp'] as Timestamp?;
                                 final dateString = createdAt != null
                                     ? 'Posted on ${DateFormat('dd/MM/yy').format(createdAt.toDate())}'
                                     : 'Recently';
 
                                 // THE FIX: Dynamically fetching the client's name so it's not a generic placeholder
                                 return FutureBuilder<DocumentSnapshot>(
-                                  future: FirebaseFirestore.instance.collection('users').doc(clientId).get(),
+                                  future: FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(clientId)
+                                      .get(),
                                   builder: (context, clientSnapshot) {
                                     String clientName = 'A user';
-                                    if (clientSnapshot.hasData && clientSnapshot.data!.exists) {
-                                      final clientData = clientSnapshot.data!.data() as Map<String, dynamic>;
-                                      clientName = clientData['fullName'] ?? clientData['displayName'] ?? 'A user';
+                                    if (clientSnapshot.hasData &&
+                                        clientSnapshot.data!.exists) {
+                                      final clientData =
+                                          clientSnapshot.data!.data()
+                                              as Map<String, dynamic>;
+                                      clientName =
+                                          clientData['fullName'] ??
+                                          clientData['displayName'] ??
+                                          'A user';
                                     }
 
                                     return Padding(
-                                      padding: const EdgeInsets.only(bottom: AppDimensions.paddingM),
+                                      padding: const EdgeInsets.only(
+                                        bottom: AppDimensions.paddingM,
+                                      ),
                                       child: _PendingJobCard(
                                         title: 'Request from $clientName',
                                         location: 'Needs your services',
-                                        description: 'Accept to view details or message the client directly.',
+                                        description:
+                                            'Accept to view details or message the client directly.',
                                         postedDate: dateString,
-                                        onAccept: () => _updateRequestStatus(context, requestId, 'accepted'),
-                                        onDecline: () => _updateRequestStatus(context, requestId, 'declined'),
+                                        onAccept: () => _updateRequestStatus(
+                                          context,
+                                          requestId,
+                                          'accepted',
+                                        ),
+                                        onDecline: () => _updateRequestStatus(
+                                          context,
+                                          requestId,
+                                          'declined',
+                                        ),
                                         onMessage: () {
                                           // Passing the clientId and Name to the chat screen
                                           context.push(
-                                            '/freelancer/chat', 
+                                            '/freelancer/chat',
                                             extra: {
                                               'targetUserId': clientId,
                                               'targetUserName': clientName,
-                                            }
+                                            },
                                           );
                                         },
                                       ),
                                     );
-                                  }
+                                  },
                                 );
                               },
                             );
@@ -359,11 +424,17 @@ class _PendingJobCard extends StatelessWidget {
                   onPressed: onAccept,
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.primaryNavy),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusFull)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusFull,
+                      ),
+                    ),
                   ),
                   child: Text(
                     'Accept',
-                    style: AppTextStyles.bodySmall.copyWith(color: AppColors.primaryNavy),
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.primaryNavy,
+                    ),
                   ),
                 ),
               ),
@@ -373,11 +444,17 @@ class _PendingJobCard extends StatelessWidget {
                   onPressed: onDecline,
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.divider),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusFull)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusFull,
+                      ),
+                    ),
                   ),
                   child: Text(
                     'Decline',
-                    style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ),
               ),
@@ -386,11 +463,17 @@ class _PendingJobCard extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: onMessage,
                   style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusFull)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusFull,
+                      ),
+                    ),
                   ),
                   child: Text(
                     'Message',
-                    style: AppTextStyles.bodySmall.copyWith(color: Colors.white),
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),

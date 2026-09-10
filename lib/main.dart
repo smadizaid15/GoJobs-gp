@@ -10,14 +10,14 @@ import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // HACK 1: Hides the yellow overflow boxes globally
   ErrorWidget.builder = (FlutterErrorDetails details) {
-    return const SizedBox.shrink(); 
+    return const SizedBox.shrink();
   };
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  
+
   // Initialize notification
   try {
     final notificationService = NotificationService();
@@ -25,7 +25,7 @@ void main() async {
   } catch (e) {
     debugPrint('Notification init error: $e');
   }
-  
+
   runApp(
     MultiProvider(
       providers: [
@@ -53,17 +53,16 @@ class GoJobsApp extends StatelessWidget {
         darkTheme: AppTheme.darkTheme,
         themeMode: themeProvider.themeMode,
         routerConfig: AppRouter.router,
-        
+
         // HACK 2: Locks text scale to 1.0, ignoring Android phone settings
         builder: (context, child) {
           return MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-              textScaler: const TextScaler.linear(1.0),
-            ),
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: const TextScaler.linear(1.0)),
             child: child!,
           );
         },
-        
       ),
     );
   }

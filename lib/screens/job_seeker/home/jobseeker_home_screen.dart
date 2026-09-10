@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -8,7 +7,6 @@ import '../../../core/theme/app_dimensions.dart';
 import '../../../widgets/jobseeker_bottom_nav.dart';
 import '../../../services/job_service.dart';
 import '../../../models/job_model.dart';
-import '../../../providers/auth_provider.dart';
 
 class JobseekerHomeScreen extends StatelessWidget {
   const JobseekerHomeScreen({super.key});
@@ -18,7 +16,6 @@ class JobseekerHomeScreen extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, authSnapshot) {
-        
         if (authSnapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             backgroundColor: Color(0xFFF0F0F5),
@@ -29,7 +26,7 @@ class JobseekerHomeScreen extends StatelessWidget {
         }
 
         if (!authSnapshot.hasData || authSnapshot.data == null) {
-           return const Scaffold(
+          return const Scaffold(
             backgroundColor: Color(0xFFF0F0F5),
             body: Center(child: Text('Loading user data...')),
           );
@@ -58,14 +55,13 @@ class JobseekerHomeScreen extends StatelessWidget {
                           children: [
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                
-                              ],
+                              children: [],
                             ),
                             Row(
                               children: [
                                 GestureDetector(
-                                  onTap: () => context.go('/jobseeker/settings'),
+                                  onTap: () =>
+                                      context.go('/jobseeker/settings'),
                                   child: const Icon(
                                     Icons.settings_outlined,
                                     color: AppColors.textPrimary,
@@ -97,9 +93,11 @@ class JobseekerHomeScreen extends StatelessWidget {
                                     radius: 20,
                                     backgroundColor: AppColors.primaryNavy,
                                     child: Text(
-                                      currentUser.displayName?.isNotEmpty == true
-                                          ? currentUser.displayName![0].toUpperCase()
-                                          : 'S', 
+                                      currentUser.displayName?.isNotEmpty ==
+                                              true
+                                          ? currentUser.displayName![0]
+                                                .toUpperCase()
+                                          : 'S',
                                       style: AppTextStyles.bodyMedium.copyWith(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
@@ -210,7 +208,8 @@ class JobseekerHomeScreen extends StatelessWidget {
                                             'companyName': job.companyName,
                                             'location': job.location,
                                             'workplaceType': job.workplaceType,
-                                            'employmentType': job.employmentType,
+                                            'employmentType':
+                                                job.employmentType,
                                             'description': job.description,
                                           },
                                         ),
@@ -220,21 +219,34 @@ class JobseekerHomeScreen extends StatelessWidget {
                                         onSave: () async {
                                           if (currentUser.uid.isEmpty) return;
                                           try {
-                                            await JobService().toggleSavedJob(currentUser.uid, job.id);
+                                            await JobService().toggleSavedJob(
+                                              currentUser.uid,
+                                              job.id,
+                                            );
                                             if (context.mounted) {
-                                              ScaffoldMessenger.of(context).showSnackBar(
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
                                                 const SnackBar(
-                                                  content: Text('Saved to your profile!'),
-                                                  duration: Duration(seconds: 2),
+                                                  content: Text(
+                                                    'Saved to your profile!',
+                                                  ),
+                                                  duration: Duration(
+                                                    seconds: 2,
+                                                  ),
                                                   backgroundColor: Colors.green,
                                                 ),
                                               );
                                             }
                                           } catch (e) {
                                             if (context.mounted) {
-                                              ScaffoldMessenger.of(context).showSnackBar(
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
                                                 const SnackBar(
-                                                  content: Text('Failed to save job.'),
+                                                  content: Text(
+                                                    'Failed to save job.',
+                                                  ),
                                                   backgroundColor: Colors.red,
                                                 ),
                                               );
@@ -312,16 +324,18 @@ class JobseekerHomeScreen extends StatelessWidget {
                                           ),
                                           Text(
                                             '$jobCount',
-                                            style: AppTextStyles.heading3.copyWith(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                            style: AppTextStyles.heading3
+                                                .copyWith(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                           ),
                                           Text(
                                             'Jobs',
-                                            style: AppTextStyles.bodySmall.copyWith(
-                                              color: Colors.white70,
-                                            ),
+                                            style: AppTextStyles.bodySmall
+                                                .copyWith(
+                                                  color: Colors.white70,
+                                                ),
                                           ),
                                         ],
                                       ),
@@ -360,16 +374,18 @@ class JobseekerHomeScreen extends StatelessWidget {
                                           ),
                                           Text(
                                             '$internshipCount',
-                                            style: AppTextStyles.heading3.copyWith(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                            style: AppTextStyles.heading3
+                                                .copyWith(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                           ),
                                           Text(
                                             'Internships',
-                                            style: AppTextStyles.bodySmall.copyWith(
-                                              color: Colors.white70,
-                                            ),
+                                            style: AppTextStyles.bodySmall
+                                                .copyWith(
+                                                  color: Colors.white70,
+                                                ),
                                           ),
                                         ],
                                       ),
@@ -384,16 +400,21 @@ class JobseekerHomeScreen extends StatelessWidget {
                         const SizedBox(height: AppDimensions.paddingL),
 
                         GestureDetector(
-                          onTap: () => context.go('/jobseeker/service-providers'),
+                          onTap: () =>
+                              context.go('/jobseeker/service-providers'),
                           child: Container(
                             width: double.infinity,
-                            padding: const EdgeInsets.all(AppDimensions.paddingL),
+                            padding: const EdgeInsets.all(
+                              AppDimensions.paddingL,
+                            ),
                             decoration: BoxDecoration(
                               color: const Color(0xFFFFF3E0),
                               borderRadius: BorderRadius.circular(
                                 AppDimensions.radiusL,
                               ),
-                              border: Border.all(color: AppColors.primaryOrange),
+                              border: Border.all(
+                                color: AppColors.primaryOrange,
+                              ),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

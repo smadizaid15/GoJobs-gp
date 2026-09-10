@@ -12,23 +12,25 @@ class StudentInternshipDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = jobData ?? {};
-    
+
     // Dynamic data extraction
     final title = data['title']?.toString() ?? 'Internship';
     final company = data['companyName']?.toString() ?? 'Company';
     final location = data['location']?.toString() ?? 'Location';
     final type = data['workplaceType']?.toString() ?? 'On-site';
     final duration = data['duration']?.toString() ?? 'Duration unlisted';
-    final description = data['description']?.toString() ?? 'No description available.';
-    
+    final description =
+        data['description']?.toString() ?? 'No description available.';
+
     // Safely handle requirements list
     final rawRequirements = data['requirements'];
-    final requirements = rawRequirements is List 
-        ? List<String>.from(rawRequirements) 
+    final requirements = rawRequirements is List
+        ? List<String>.from(rawRequirements)
         : <String>[];
-        
+
     final qualifications = data['qualifications']?.toString() ?? 'None listed';
-    final experienceLevel = data['experienceLevel']?.toString() ?? 'Entry Level';
+    final experienceLevel =
+        data['experienceLevel']?.toString() ?? 'Entry Level';
     final logoUrl = data['logoUrl']?.toString();
 
     return Scaffold(
@@ -197,9 +199,7 @@ class StudentInternshipDetailScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: AppDimensions.paddingS),
-                      ...requirements
-                          .map((req) => _BulletItem(text: req))
-                          .toList(),
+                      ...requirements.map((req) => _BulletItem(text: req)),
                       const SizedBox(height: AppDimensions.paddingL),
                     ],
 

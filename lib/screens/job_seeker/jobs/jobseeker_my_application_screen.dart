@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -69,7 +70,9 @@ class _JobseekerMyApplicationScreenState
         _isLoading = false;
       });
     } catch (e) {
-      print('Error fetching application: $e');
+      if (kDebugMode) {
+        debugPrint('Error fetching application: $e');
+      }
       setState(() {
         _actualCvName = 'Error Loading CV';
         _isLoading = false;
@@ -90,7 +93,10 @@ class _JobseekerMyApplicationScreenState
 
       await launchUrl(url);
     } catch (e) {
-      print('Error opening CV link: $e');
+      if (kDebugMode) {
+        debugPrint('Error opening CV link: $e');
+      }
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Unable to open file attachment link.')),
       );

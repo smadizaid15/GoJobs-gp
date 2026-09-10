@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -63,7 +64,9 @@ class _JobseekerApplicationSuccessScreenState
         _isLoading = false;
       });
     } catch (e) {
-      print('Error fetching application: $e');
+      if (kDebugMode) {
+        debugPrint('Error fetching application: $e');
+      }
       setState(() {
         _actualCvName = 'Error Loading CV';
         _isLoading = false;

@@ -194,10 +194,12 @@ class _StudentNotificationsScreenState
                           final type =
                               (doc.data() as Map<String, dynamic>)['type'] ??
                               'general';
-                          if (_selectedFilter == 1 && type != 'job')
+                          if (_selectedFilter == 1 && type != 'job') {
                             return false;
-                          if (_selectedFilter == 2 && type != 'message')
+                          }
+                          if (_selectedFilter == 2 && type != 'message') {
                             return false;
+                          }
                           return true;
                         }).toList();
 

@@ -14,7 +14,8 @@ class FreelancerPortfolioScreen extends StatefulWidget {
   const FreelancerPortfolioScreen({super.key});
 
   @override
-  State<FreelancerPortfolioScreen> createState() => _FreelancerPortfolioScreenState();
+  State<FreelancerPortfolioScreen> createState() =>
+      _FreelancerPortfolioScreenState();
 }
 
 class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
@@ -99,7 +100,8 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
 
       for (var image in _newSelectedImages) {
         final bytes = await image.readAsBytes();
-        final fileName = '${DateTime.now().millisecondsSinceEpoch}_${image.name}';
+        final fileName =
+            '${DateTime.now().millisecondsSinceEpoch}_${image.name}';
         final ref = FirebaseStorage.instance.ref().child(
           'portfolio_images/${user.uid}/$fileName',
         );
@@ -143,13 +145,18 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool hasAnyPhotos = _existingImages.isNotEmpty || _newSelectedImages.isNotEmpty;
+    final bool hasAnyPhotos =
+        _existingImages.isNotEmpty || _newSelectedImages.isNotEmpty;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F5),
       body: SafeArea(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange))
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryOrange,
+                ),
+              )
             : Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,
@@ -236,12 +243,13 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
                         child: GridView.builder(
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: AppDimensions.paddingM,
-                            mainAxisSpacing: AppDimensions.paddingM,
-                          ),
+                                crossAxisCount: 2,
+                                crossAxisSpacing: AppDimensions.paddingM,
+                                mainAxisSpacing: AppDimensions.paddingM,
+                              ),
                           itemCount:
-                              _existingImages.length + _newSelectedImages.length,
+                              _existingImages.length +
+                              _newSelectedImages.length,
                           itemBuilder: (context, index) {
                             if (index < _existingImages.length) {
                               final imageUrl = _existingImages[index];
@@ -261,7 +269,8 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
                                     top: 8,
                                     right: 8,
                                     child: GestureDetector(
-                                      onTap: () => _removeExistingImage(imageUrl),
+                                      onTap: () =>
+                                          _removeExistingImage(imageUrl),
                                       child: Container(
                                         padding: const EdgeInsets.all(4),
                                         decoration: const BoxDecoration(
@@ -280,9 +289,11 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
                               );
                             }
 
-                            final newImageIndex = index - _existingImages.length;
+                            final newImageIndex =
+                                index - _existingImages.length;
                             return FutureBuilder<Uint8List>(
-                              future: _newSelectedImages[newImageIndex].readAsBytes(),
+                              future: _newSelectedImages[newImageIndex]
+                                  .readAsBytes(),
                               builder: (context, snapshot) {
                                 if (!snapshot.hasData) {
                                   return const Center(
@@ -305,7 +316,8 @@ class _FreelancerPortfolioScreenState extends State<FreelancerPortfolioScreen> {
                                       top: 8,
                                       right: 8,
                                       child: GestureDetector(
-                                        onTap: () => _removeNewImage(newImageIndex),
+                                        onTap: () =>
+                                            _removeNewImage(newImageIndex),
                                         child: Container(
                                           padding: const EdgeInsets.all(4),
                                           decoration: const BoxDecoration(

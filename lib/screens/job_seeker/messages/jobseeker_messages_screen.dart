@@ -221,7 +221,6 @@ class _MessageTile extends StatelessWidget {
   final String message;
   final String time;
   final bool hasUnread;
-  final bool isDeleted;
   final VoidCallback onTap;
 
   const _MessageTile({
@@ -230,7 +229,6 @@ class _MessageTile extends StatelessWidget {
     required this.time,
     required this.hasUnread,
     required this.onTap,
-    this.isDeleted = false,
   });
 
   @override
@@ -304,12 +302,6 @@ class _MessageTile extends StatelessWidget {
                       color: AppColors.primaryOrange,
                       shape: BoxShape.circle,
                     ),
-                  ),
-                if (isDeleted)
-                  const Icon(
-                    Icons.delete_outline,
-                    color: AppColors.primaryOrange,
-                    size: 18,
                   ),
               ],
             ),

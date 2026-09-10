@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -32,7 +33,9 @@ class _CompanyNotificationsScreenState
         context.go(route);
       }
     } catch (e) {
-      print("Error marking notification as read: $e");
+      if (kDebugMode) {
+        debugPrint("Error marking notification as read: $e");
+      }
     }
   }
 
@@ -186,10 +189,12 @@ class _CompanyNotificationsScreenState
                           docs = docs.where((doc) {
                             final type =
                                 (doc.data() as Map)['type']?.toString() ?? '';
-                            if (_currentFilter == 'Jobs')
+                            if (_currentFilter == 'Jobs') {
                               return type == 'job' || type == 'application';
-                            if (_currentFilter == 'Messages')
+                            }
+                            if (_currentFilter == 'Messages') {
                               return type == 'message';
+                            }
                             return true;
                           }).toList();
                         }

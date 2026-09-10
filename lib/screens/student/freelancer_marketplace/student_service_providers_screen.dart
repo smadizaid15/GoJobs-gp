@@ -9,7 +9,7 @@ import '../../../core/theme/app_dimensions.dart';
 import '../../../widgets/jobseeker_bottom_nav.dart';
 
 class StudentServiceProvidersScreen extends StatelessWidget {
-  const StudentServiceProvidersScreen ({super.key});
+  const StudentServiceProvidersScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +56,8 @@ class StudentServiceProvidersScreen extends StatelessWidget {
                           .where('isAvailable', isEqualTo: true)
                           .snapshots(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return const Center(
                             child: CircularProgressIndicator(),
                           );
@@ -91,24 +92,30 @@ class StudentServiceProvidersScreen extends StatelessWidget {
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: providers.length,
                           itemBuilder: (context, index) {
-                            final data = providers[index].data() as Map<String, dynamic>;
-                            final freelancerId = providers[index].id; // The ID of the freelancer
+                            final data =
+                                providers[index].data() as Map<String, dynamic>;
+                            final freelancerId =
+                                providers[index].id; // The ID of the freelancer
 
-                            final name = data['fullName']?.toString() ??
-                                         data['displayName']?.toString() ??
-                                         data['name']?.toString() ??
-                                         'Freelancer';
-                                         
-                            final profession = data['category']?.toString() ??
-                                               data['profession']?.toString() ??
-                                               'Service Provider';
-                                               
-                            final description = data['aboutMe']?.toString() ??
-                                                data['description']?.toString() ??
-                                                'Available for hire.';
-                                                
-                            final profileImageUrl = data['freelancerAvatarUrl']?.toString() ??
-                                                    data['profileImageUrl']?.toString();
+                            final name =
+                                data['fullName']?.toString() ??
+                                data['displayName']?.toString() ??
+                                data['name']?.toString() ??
+                                'Freelancer';
+
+                            final profession =
+                                data['category']?.toString() ??
+                                data['profession']?.toString() ??
+                                'Service Provider';
+
+                            final description =
+                                data['aboutMe']?.toString() ??
+                                data['description']?.toString() ??
+                                'Available for hire.';
+
+                            final profileImageUrl =
+                                data['freelancerAvatarUrl']?.toString() ??
+                                data['profileImageUrl']?.toString();
 
                             return Padding(
                               padding: const EdgeInsets.only(
@@ -121,22 +128,31 @@ class StudentServiceProvidersScreen extends StatelessWidget {
                                 imageUrl: profileImageUrl,
                                 time: 'Available now',
                                 onViewProfile: () {
-                                  context.push('/public-freelancer-profile', extra: data);
+                                  context.push(
+                                    '/public-freelancer-profile',
+                                    extra: data,
+                                  );
                                 },
                                 onRequest: () async {
-                                  final currentUser = FirebaseAuth.instance.currentUser;
+                                  final currentUser =
+                                      FirebaseAuth.instance.currentUser;
                                   if (currentUser == null) return;
 
                                   try {
-                                    await FirebaseFirestore.instance.collection('freelancer_requests').add({
-                                      'freelancerId': freelancerId,
-                                      'clientId': currentUser.uid,
-                                      'status': 'pending',
-                                      'timestamp': FieldValue.serverTimestamp(),
-                                    });
-                                    
+                                    await FirebaseFirestore.instance
+                                        .collection('freelancer_requests')
+                                        .add({
+                                          'freelancerId': freelancerId,
+                                          'clientId': currentUser.uid,
+                                          'status': 'pending',
+                                          'timestamp':
+                                              FieldValue.serverTimestamp(),
+                                        });
+
                                     if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         const SnackBar(
                                           content: Text('Request sent!'),
                                           backgroundColor: Colors.green,
@@ -145,7 +161,9 @@ class StudentServiceProvidersScreen extends StatelessWidget {
                                     }
                                   } catch (e) {
                                     if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         SnackBar(
                                           content: Text('Error: $e'),
                                           backgroundColor: AppColors.error,
@@ -292,7 +310,9 @@ class _ServiceProviderCard extends StatelessWidget {
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.primaryNavy),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusFull,
+                      ),
                     ),
                   ),
                   child: Text(
@@ -310,7 +330,9 @@ class _ServiceProviderCard extends StatelessWidget {
                   onPressed: onRequest,
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusFull,
+                      ),
                     ),
                   ),
                   child: Text(

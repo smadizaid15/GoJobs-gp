@@ -53,12 +53,16 @@ class JobseekerJobDetailScreen extends StatelessWidget {
                     GestureDetector(
                       onTap: () async {
                         if (jobId.isEmpty) return;
-                        final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
-                        
+                        final currentUserId =
+                            FirebaseAuth.instance.currentUser?.uid ?? '';
+
                         if (currentUserId.isEmpty) return;
 
                         try {
-                          await JobService().toggleSavedJob(currentUserId, jobId);
+                          await JobService().toggleSavedJob(
+                            currentUserId,
+                            jobId,
+                          );
 
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
