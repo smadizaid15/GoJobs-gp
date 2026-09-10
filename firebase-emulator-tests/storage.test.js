@@ -28,21 +28,29 @@ async function seed(path) {
 
 before(async () => {
   testEnv = await makeTestEnv('demo-gojobs-storage-test');
-  // Warm-up: the Storage emulator needs a variable amount of time to
-  // finish registering a brand-new project id after
-  // initializeTestEnvironment() resolves — observed anywhere from
-  // instant to 1500ms+ across runs. A single warm-up attempt was not
-  // reliable (it can itself fail with the same transient
-  // "storage/unauthorized" while the emulator is still catching up), so
-  // retry the throwaway admin (rules-bypassed) write until it succeeds
-  // or a generous timeout elapses, before any real assertion runs.
+  // Readiness probe: the Storage emulator can accept connections before it
+  // has finished loading storage.rules — observed as a real, not
+  // theoretical, flake on a cold GitHub Actions runner (two spuriously
+  // failing tests, "no Storage ruleset is currently loaded", even though
+  // every later test in the same run passed). A rules-*bypassed* warm-up
+  // write (the previous approach, via withSecurityRulesDisabled) only
+  // proves the emulator process itself is responding — it can succeed
+  // before the ruleset is active, which is exactly the false-ready signal
+  // that let this race through locally without ever reproducing it.
+  //
+  // Instead, retry a real rules-ENFORCED write to a path storage.rules
+  // explicitly allows the OWNER to write (cvs/{userId}/{fileName}, see
+  // storage.rules:60-63) until it succeeds or a generous deadline elapses.
+  // This can only succeed once the real ruleset is loaded and evaluating
+  // correctly — the actual condition every test below depends on — so it
+  // is a direct readiness check, not a proxy for one.
+  const readinessPath = `cvs/${OWNER}/_warmup.bin`;
+  const ownerDb = testEnv.authenticatedContext(OWNER).storage();
   const deadline = Date.now() + 20_000;
   let lastError;
   while (Date.now() < deadline) {
     try {
-      await testEnv.withSecurityRulesDisabled(async (context) => {
-        await uploadBytes(ref(context.storage(), '_warmup/ping.bin'), new Uint8Array([0]));
-      });
+      await uploadBytes(ref(ownerDb, readinessPath), new Uint8Array([0]));
       lastError = undefined;
       break;
     } catch (err) {
@@ -50,7 +58,19 @@ before(async () => {
       await new Promise((resolve) => setTimeout(resolve, 250));
     }
   }
-  if (lastError) throw lastError;
+  if (lastError) {
+    throw new Error(
+      `Storage emulator readiness probe never succeeded within the deadline ` +
+        `(the rules-enforced warm-up write to "${readinessPath}" kept failing): ` +
+        `${lastError.message}`,
+    );
+  }
+  // Remove the warm-up object via the same authorized owner context, so it
+  // can never be mistaken for real test data by anything below — every
+  // other test in this file uses its own distinct file name, but cleaning
+  // up explicitly (rather than relying on that) keeps warm-up state from
+  // ever being able to affect a real assertion.
+  await deleteObject(ref(ownerDb, readinessPath));
 });
 
 after(async () => {
