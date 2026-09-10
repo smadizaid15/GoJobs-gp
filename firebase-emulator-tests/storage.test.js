@@ -79,7 +79,37 @@ before(async () => {
   // other test in this file uses its own distinct file name, but cleaning
   // up explicitly (rather than relying on that) keeps warm-up state from
   // ever being able to affect a real assertion.
-  await deleteObject(ref(ownerDb, readinessPath));
+  //
+  // This delete gets its own short bounded retry and is intentionally
+  // best-effort, not fatal: a CI run diagnosed the readiness *write*
+  // above succeeding quickly every time, but this unprotected delete
+  // still throwing "storage/unauthorized" and crashing the whole
+  // before() hook — evidently the same class of just-loaded-ruleset
+  // propagation lag, one write/delete evaluation behind. A failed delete
+  // here can never affect a real test (readinessPath is never reused,
+  // and the emulator's in-memory state disappears with the process), so
+  // rather than let cleanup flakiness cascade into failing all 49 real
+  // Storage tests, retry briefly and fall back to a clear console
+  // warning instead of throwing.
+  const cleanupDeadline = Date.now() + 10_000;
+  let cleanupError;
+  while (Date.now() < cleanupDeadline) {
+    try {
+      await deleteObject(ref(ownerDb, readinessPath));
+      cleanupError = undefined;
+      break;
+    } catch (err) {
+      cleanupError = err;
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+  }
+  if (cleanupError) {
+    console.warn(
+      `[storage.test.js] Could not clean up the warm-up object at "${readinessPath}" ` +
+        `after the readiness probe succeeded — leaving it in place, this does not ` +
+        `affect any test below: ${cleanupError.message}`,
+    );
+  }
 });
 
 after(async () => {
