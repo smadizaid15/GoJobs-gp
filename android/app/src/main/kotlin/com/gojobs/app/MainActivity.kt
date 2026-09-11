@@ -1,4 +1,4 @@
-package com.example.gp1_mvp
+package com.gojobs.app
 
 import io.flutter.embedding.android.FlutterActivity
 

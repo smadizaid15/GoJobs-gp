@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'config/app_environment.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/theme_provider.dart';
 import 'router/app_router.dart';
@@ -16,7 +16,11 @@ void main() async {
     return const SizedBox.shrink();
   };
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // AppEnvironmentConfig.current reads Flutter's own appFlavor (set
+  // directly by --flavor at build time) — throws immediately below if no
+  // flavor was provided or it doesn't match a known environment, rather
+  // than silently initializing against production.
+  await Firebase.initializeApp(options: AppEnvironmentConfig.firebaseOptions);
 
   // Initialize notification
   try {
@@ -56,11 +60,26 @@ class GoJobsApp extends StatelessWidget {
 
         // HACK 2: Locks text scale to 1.0, ignoring Android phone settings
         builder: (context, child) {
-          return MediaQuery(
+          final scaled = MediaQuery(
             data: MediaQuery.of(
               context,
             ).copyWith(textScaler: const TextScaler.linear(1.0)),
             child: child!,
+          );
+          // Non-prod visual indicator: catches a tester glancing at a
+          // dev/staging build before they act on data they see in it.
+          // Centralized here rather than per-screen, per the environment
+          // design in docs/architecture/ENVIRONMENTS.md.
+          if (AppEnvironmentConfig.current == AppEnvironment.prod) {
+            return scaled;
+          }
+          return Banner(
+            message: AppEnvironmentConfig.name.toUpperCase(),
+            location: BannerLocation.topStart,
+            color: AppEnvironmentConfig.current == AppEnvironment.dev
+                ? Colors.green
+                : Colors.orange,
+            child: scaled,
           );
         },
       ),

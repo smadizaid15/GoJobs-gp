@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "17773055683",
+    "project_id": "gojobs-dev",
+    "storage_bucket": "gojobs-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:17773055683:android:f651c0657b9f0838b9dc76",
+        "android_client_info": {
+          "package_name": "com.gojobs.app.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDxn9O13oKGId7rN46n7teLMi2G-aVC3M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
