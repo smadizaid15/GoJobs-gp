@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1047239227213",
+    "project_id": "gojobs-staging",
+    "storage_bucket": "gojobs-staging.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1047239227213:android:8d09899232529d9fd52904",
+        "android_client_info": {
+          "package_name": "com.gojobs.app.staging"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBs1T-BkMdVjOJYcyFgCIuqrNNM2qNdnUs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
