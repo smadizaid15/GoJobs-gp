@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "944928167403",
+    "firebase_url": "https://gojobs-187af-default-rtdb.firebaseio.com",
     "project_id": "gojobs-187af",
     "storage_bucket": "gojobs-187af.firebasestorage.app"
   },
@@ -10,6 +11,25 @@
         "mobilesdk_app_id": "1:944928167403:android:445fcf1e636646e9cc75ae",
         "android_client_info": {
           "package_name": "com.example.gp1_mvp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbUHbXrJUCWFPknagffYhPiiKXHQ86u6I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:944928167403:android:e4c953e9b51fcab7cc75ae",
+        "android_client_info": {
+          "package_name": "com.gojobs.app"
         }
       },
       "oauth_client": [],

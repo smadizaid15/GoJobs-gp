@@ -1,0 +1,9 @@
+{
+  "projects": {
+    "dev": "gojobs-dev",
+    "staging": "gojobs-staging",
+    "prod": "gojobs-187af"
+  },
+  "targets": {},
+  "etags": {}
+}

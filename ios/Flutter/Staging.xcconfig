@@ -1,0 +1,10 @@
+// Environment-specific build settings for the "staging" environment.
+// NOT YET WIRED INTO Xcode — no scheme/build-configuration currently
+// includes this file. Prepared from Windows as far as is safely possible;
+// actually creating the Xcode scheme/configuration that #includes this
+// file requires Xcode on macOS. See docs/architecture/ENVIRONMENTS.md
+// ("iOS environment configuration") for exactly what remains.
+#include "Generated.xcconfig"
+
+PRODUCT_BUNDLE_IDENTIFIER = com.gojobs.app.staging
+PRODUCT_NAME = GoJobs Staging

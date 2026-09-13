@@ -80,6 +80,24 @@ None of the above creates a `develop` branch, a `.fvmrc`, a `services/api/` dire
 - **Rollback**: new projects can be deleted without affecting the existing single-project setup if this phase needs to be abandoned; flavor config changes are additive, not destructive, to the existing default build.
 - **Dependencies**: Phase 1 (stable client to branch flavors from).
 
+### Status as of 2026-09-11 (branch `feature/phase1-environment-isolation`, not yet merged)
+
+**Done — architecture:**
+- `gojobs-dev` and `gojobs-staging` Firebase projects created.
+- Permanent identifiers approved (`com.gojobs.app`, `.dev`, `.staging`); new Firebase Android/iOS apps registered under all three projects (legacy `com.example.*` registrations in `gojobs-187af` left untouched).
+- `.firebaserc` with explicit `dev`/`staging`/`prod` aliases, no implicit default.
+- `lib/config/app_environment.dart` — Flutter's native `appFlavor` is the sole environment selector (the earlier `--dart-define=ENVIRONMENT=...` plus `package_info_plus` runtime cross-check was removed once a single selector made the cross-check structurally unnecessary). No silent production fallback — missing/unrecognized flavor throws. 17-case test suite across two files, including a structural check that the committed native config files (`google-services.json`/`GoogleService-Info.plist`) agree with the Dart-side project mapping.
+- Android product flavors (`dev`/`staging`/`prod`) implemented and verified building with `--flavor` alone — distinct `applicationId`, app label, and real per-flavor `google-services.json` each, confirmed via `aapt` inspection of the built APKs.
+- `android:namespace` changed to the canonical `com.gojobs.app`; `MainActivity.kt` moved and repackaged to match.
+- iOS: bundle IDs, `.xcconfig` files, and per-environment `GoogleService-Info.plist` prepared; actual Xcode scheme creation explicitly deferred to macOS verification (not claimed done).
+- `ci.yml` builds the `dev` flavor explicitly (`--flavor dev`, no dart-define); still no production credential, no deploy.
+
+**Done — service provisioning and live verification (2026-09-11, approved):** Firestore `(default)` database created in both `gojobs-dev` and `gojobs-staging` (`FIRESTORE_NATIVE`, `STANDARD`, `me-central2` — production parity). `firestore.rules`/`firestore.indexes.json` deployed to both, byte-verified against source, 8/8 indexes `READY`. Email/Password Auth enabled in both via `firebase.json`'s config-as-code path. A one-time controlled live smoke test (real projects, not emulator) confirmed account creation, sign-in, an authorized write, and a denied unauthorized write in both dev and staging, then fully cleaned up — independently verified 0 users remaining in each afterward (production has 5, untouched, never copied, never write-tested).
+
+**Done — Storage and non-production billing (2026-09-11, approved):** `GoJobs Non-Production` Cloud Billing account created (Console self-serve) and linked to `gojobs-dev`/`gojobs-staging` only — never `gojobs-187af`, independently re-verified unchanged throughout. Default Storage buckets provisioned (`US-EAST1`, `STANDARD` class) in both. `storage.rules` re-audited for environment-specific literals (none found), deployed to both, byte-verified against source. A live Storage smoke test (real projects) confirmed an authorized upload, a denied cross-user write, and full cleanup in both — independently re-verified via the Admin-level Auth/Storage APIs, not just the client SDK. A $20/month budget with alerts at exactly 5%/25%/50%/100% was created, scoped to the whole `GoJobs Non-Production` account (monitoring only — no automated spend-limiting action). Full detail, including the Storage upload-path abuse/cost-hardening audit and the lifecycle-policy assessment (recommended, not created), in `ENVIRONMENTS.md`.
+
+**Still open** (tracked as separate work, not blocking this phase): actually opening the project in Xcode to create the three schemes and verify iOS builds; APNs configuration for iOS FCM; iOS `Info.plist` camera/photo usage-description keys (`PRODUCTION_READINESS.md`); Android release signing (still the debug keystore).
+
 ---
 
 ## PHASE 3 — Authentication
@@ -155,7 +173,7 @@ None of the above creates a `develop` branch, a `.fvmrc`, a `services/api/` dire
 ## PHASE 8 — Storage
 
 - **Objective**: Close SECURITY_AUDIT.md H-2 — move uploads behind backend-issued signed URLs or backend-mediated upload endpoints with real size/MIME/path enforcement.
-- **Prerequisites**: Phase 6 (backend must exist to issue signed URLs).
+- **Prerequisites**: Phase 6 (backend must exist to issue signed URLs) for the full backend-mediated redesign below. The rules-only interim hardening task does **not** depend on Phase 6 and should land before Phase 6 — see "Immediate pre-beta interim hardening" below.
 - **Tasks**: implement a backend upload-authorization endpoint (verifies uid, issues a scoped signed URL or proxies the upload); enforce file-size caps and MIME/extension validation server-side (not just client `FilePicker` restriction); randomize/safe-guard filenames; update `storage.rules` to only allow writes matching the backend-issued grant.
 - **Files affected**: `services/api/src/routes/uploads.ts`, `lib/services/storage_service.dart` (calls the new authorization endpoint before uploading), `storage.rules`.
 - **Tests**: integration tests confirming an oversized or wrong-MIME upload is rejected server-side even if a client bypasses the picker UI; confirm a user cannot upload into another user's storage path.
@@ -163,6 +181,19 @@ None of the above creates a `develop` branch, a `.fvmrc`, a `services/api/` dire
 - **Acceptance criteria**: a scripted upload attempt (bypassing the Flutter UI entirely, simulating a modified client) against another user's CV path, or with an oversized file, is rejected.
 - **Rollback**: Storage rules are versioned/redeployable like Firestore rules; upload endpoint can be feature-flagged.
 - **Dependencies**: Phase 6.
+
+### Immediate pre-beta interim hardening (tracked 2026-09-11, not implemented — no backend/Phase 6 dependency)
+
+Discovered during the Phase 1B environment-isolation hygiene pass: `storage.rules` currently has **no `request.resource.size` or `request.resource.contentType` check on any of the five live upload paths** (`cvs/`, `user_resumes/`, `company_logos/`, `job_images/`, `portfolio_images/`) — write rules are ownership-only. This is independent of the full backend-mediated redesign above and should be closed **before public beta/release**, not deferred all the way to Phase 6/8:
+
+- Size cap + MIME allowlist in `storage.rules` for CV/resume uploads (`cvs/`, `user_resumes/` — PDF/DOC/DOCX, ~5MB).
+- Size cap + MIME allowlist for company logo uploads (`company_logos/` — JPEG/PNG, ~2MB).
+- Size cap + MIME allowlist for job image uploads (`job_images/` — JPEG/PNG, ~5MB per file).
+- Size cap + MIME allowlist for portfolio image uploads (`portfolio_images/` — JPEG/PNG, ~5MB per file).
+- Emulator tests covering both the allowed case (within size/type) and rejected cases (oversized, wrong type) for all four paths above.
+- **Explicitly documented limitation**: Firebase Storage's `request.resource.contentType` reflects the `Content-Type` header the uploading client declares — it is not magic-byte/content inspection. A rules-level check stops accidental oversized/wrong-type uploads from the app itself (the overwhelming majority of real cases) but does **not** stop a determined attacker calling the Storage REST API directly with a false `Content-Type`. Real content verification requires a backend/Cloud Function step (tracked under the full Phase 8 backend-mediated redesign above), not implied to exist once the rules-level check lands.
+- **Deferred to full Phase 8** (needs a backend to enforce, not achievable in rules alone): per-post/per-user image-*count* caps (Storage rules are per-object, not aggregate) and backend magic-byte content validation.
+- **Separately assessed, not yet actioned**: a Cloud Storage lifecycle auto-delete policy on `gojobs-dev`/`gojobs-staging` buckets only (disposable test data) — recommended once real dev/staging usage patterns exist; not created as of 2026-09-11 since both buckets are currently empty and the retention window isn't yet informed by real usage. See `ENVIRONMENTS.md`'s Storage lifecycle assessment for detail.
 
 ---
 

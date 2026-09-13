@@ -40,8 +40,11 @@ jobs:
       - name: Test
         run: flutter test
 
-      - name: Build verification (debug APK, not a release artifact)
-        run: flutter build apk --debug
+      - name: Build verification (dev flavor, debug APK, not a release artifact)
+        # --flavor is the sole environment selector (see
+        # lib/config/app_environment.dart) — never target prod from CI,
+        # which holds no production credentials.
+        run: flutter build apk --debug --flavor dev
 
   rules-tests:
     name: Firebase security rules tests
